@@ -60,7 +60,7 @@ if (!defined('QUICKBOOKS_DRIVER_SQL_PGSQL_PREFIX'))
 if (!defined('QUICKBOOKS_DRIVER_SQL_PGSQL_QUEUETABLE'))
 {
 	/**
-	 * MySQL table name to store queued requests in
+	 * PgSQL table name to store queued requests in
 	 *
 	 * @var string
 	 */
@@ -70,7 +70,7 @@ if (!defined('QUICKBOOKS_DRIVER_SQL_PGSQL_QUEUETABLE'))
 if (!defined('QUICKBOOKS_DRIVER_SQL_PGSQL_USERTABLE'))
 {
 	/**
-	 * MySQL table name to store usernames/passwords for the QuickBooks SOAP server
+	 * PgSQL table name to store usernames/passwords for the QuickBooks SOAP server
 	 *
 	 * @var string
 	 */
@@ -183,9 +183,9 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
     protected $last_insert_table;
 
 	/**
-	 * Create a new MySQL back-end driver
+	 * Create a new PgSQL back-end driver
 	 *
-	 * @param string $dsn		A DSN-style connection string (i.e.: "mysql://your-mysql-username:your-mysql-password@your-mysql-host:port/your-mysql-database")
+	 * @param string $dsn		A DSN-style connection string (i.e.: "pgsql://your-pgsql-username:your-pgsql-password@your-pgsql-host:port/your-pgsql-database")
 	 * @param array $config		Configuration options for the driver (not currently supported)
 	 */
 	public function __construct($dsn_or_conn, $config)
@@ -284,7 +284,7 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 	 * @param string $pass				Password for connecting
 	 * @param string $db				The database name
 	 * @param boolean $new_link			TRUE for establishing a new link to the database, FALSE to re-use an existing one
-	 * @param integer $client_flags		Database connection flags (see the PHP/MySQL documentation)
+	 * @param integer $client_flags		Database connection flags (see the PHP/PgSQL documentation)
 	 * @return boolean
 	 */
 	protected function _connect($host, $port, $user, $pass, $db, $new_link, $client_flags = null)
@@ -645,7 +645,7 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 	 * @return string
 	 */
 	/**
-	 * Map a default SQL table name to a MySQL table name
+	 * Map a default SQL table name to a PgSQL table name
 	 *
 	 * @param string
 	 * @return string
@@ -703,6 +703,11 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 	 */
 	protected function _generateFieldSchema($name, $def)
 	{
+		if ($this->foldsToLower())
+		{
+			$name = strtolower($name);
+		}
+
 		switch ($def[0])
 		{
             case QUICKBOOKS_DRIVER_SQL_INTEGER:
@@ -801,7 +806,23 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 			case QUICKBOOKS_DRIVER_SQL_SERIAL:
 				$sql = '"' . $name . '" SERIAL NOT NULL '; // AUTO_INCREMENT
 
-				return $sql;
+				break;
+			case QUICKBOOKS_DRIVER_SQL_DATE:
+				$sql = '"' . $name . '" DATE ';
+
+				if (isset($def[2]))
+				{
+					if (strtolower($def[2]) == 'null')
+					{
+						$sql .= ' DEFAULT NULL ';
+					}
+				}
+				else
+				{
+					$sql .= ' NOT NULL ';
+				}
+
+				break;
 			case QUICKBOOKS_DRIVER_SQL_TIMESTAMP:
 			case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_INSERT_OR_UPDATE:
 			case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_UPDATE:
@@ -826,27 +847,7 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 					$sql .= ' NOT NULL ';
 				}
 
-
-			/*case QUICKBOOKS_DRIVER_SQL_BOOLEAN:
-				$sql = $name . ' tinyint(1) ';
-
-				if (isset($def[2]))
-				{
-					if (strtolower($def[2]) == 'null')
-					{
-						$sql .= ' DEFAULT NULL ';
-					}
-					else if ($def[2])
-					{
-						$sql .= ' DEFAULT 1 ';
-					}
-					else
-					{
-						$sql .= ' DEFAULT 0 ';
-					}
-				}
-
-				return $sql;*/
+				break;
             case QUICKBOOKS_DRIVER_SQL_VARCHAR:
 				$sql = '"' . $name . '" VARCHAR';
 
@@ -943,6 +944,11 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 	 */
 	protected function _generateCreateTable($name, $arr, $primary = array(), $keys = array(), $uniques = array(), $if_not_exists = true)
 	{
+		if ($this->foldsToLower())
+		{
+			$name = strtolower($name);
+		}
+
 		$arr_sql = parent::_generateCreateTable('"' . $name . '"', $arr, $primary, $keys, $if_not_exists);
 
 		if (is_array($primary) and count($primary) == 1)
@@ -957,6 +963,10 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 		}
 		else if ($primary)
 		{
+			if ($this->foldsToLower())
+			{
+				$primary = strtolower($primary);
+			}
 			$arr_sql[] = 'ALTER TABLE ONLY "' . $name . '"
 				ADD CONSTRAINT "' . $name . '_pkey" PRIMARY KEY ("' . $primary . '");';
 		}
@@ -965,10 +975,18 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 		{
 			if (is_array($key))		// compound key
 			{
+				if ($this->foldsToLower())
+				{
+					$key = array_map('strtolower', $key);
+				}
 				$arr_sql[] = 'CREATE INDEX "' . implode('_', $key) . '_' . $name . '_index" ON "' . $name . '" USING btree ("' . implode('", "', $key) . '")';
 			}
 			else
 			{
+				if ($this->foldsToLower())
+				{
+					$key = strtolower($key);
+				}
 				$arr_sql[] = 'CREATE INDEX "' . $key . '_' . $name . '_index" ON "' . $name . '" USING btree ("' . $key . '")';
 			}
 		}
@@ -976,11 +994,25 @@ class QuickBooks_Driver_Sql_Pgsql extends QuickBooks_Driver_Sql
 		return $arr_sql;
 	}
 
+	/**
+	 * Table and field names are folded to lowercase
+	 *
+	 * @return boolean
+	 */
 	public function foldsToLower()
 	{
 		return true;
 	}
 
+	/**
+	 * Boolean datatype is a true boolean (true/false) and not 1/0
+	 *
+	 * @return boolean
+	 */
+	public function hasTrueBoolean()
+	{
+		return true;
+	}
 
     /**
 	 * Insert a new record into an SQL table
