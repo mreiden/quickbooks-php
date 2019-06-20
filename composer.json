@@ -14,10 +14,12 @@
         }
     ],
     "require": {
-        "php": ">=5.0.0"
+        "php": ">=7.1.0",
+        "symfony/polyfill-php72": "^1.11",
+        "symfony/polyfill-php73": "^1.11"
     },
-
+    "optimize-autoloader": true,
     "autoload": {
-        "files": ["QuickBooks.php"]
-     }
+        "psr-4": { "QuickBooksPhpDevKit\\": "src/QuickBooksPhpDevKit/" }
+    }
 }
