@@ -65,14 +65,21 @@ class QuickBooks_SQL_Schema
 
 		$errnum = 0;
 		$errmsg = '';
+
+		// XML xpath /QBXML
 		$tmp = $Parser->parse($errnum, $errmsg);
 
+		// XML xpath /QBXML/QBXMLMsgsRq & /QBXML/QBXMLMsgsRs (The 2nd ("next") child is the QBXMLMsgsRs node we want)
 		$tmp = $tmp->children();
-		$base = current($tmp);
+		// XML xpath /QBXML/QBXMLMsgsRs
+		$base = next($tmp);
 
+		// XML xpath /QBXML/QBXMLMsgsRs/*
 		$tmp = $base->children();
-		$rs = next($tmp);
+		// /QBXML/QBXMLMsgsRs/*[1] (The 1st ("current") child is the {Object}QueryRs node we want)
+		$rs = current($tmp);
 
+		// Loop through and transform the QueryRs node
 		foreach ($rs->children() as $qbxml)
 		{
 			QuickBooks_SQL_Schema::_transform('', $qbxml, $tables);
