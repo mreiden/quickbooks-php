@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * XML parser interface
@@ -13,19 +13,21 @@
  * @subpackage XML
  */
 
+namespace QuickBooksPhpDevKit\XML\Backend;
+
 /**
  * XML parser interface
  *
  *
  */
-interface QuickBooks_XML_Backend
+interface BackendInterface
 {
 	/**
 	 * Create the XML parser
 	 *
 	 * @param string $xml
 	 */
-	public function __construct($xml);
+	public function __construct(string $xml);
 
 	/**
 	 * Validate the XML string
@@ -34,7 +36,7 @@ interface QuickBooks_XML_Backend
 	 * @param string $errmsg
 	 * @return boolean
 	 */
-	public function validate(&$errnum, &$errmsg);
+	public function validate(?int &$errnum, ?string &$errmsg);
 
 	/**
 	 * Parse an XML string
@@ -43,13 +45,10 @@ interface QuickBooks_XML_Backend
 	 * @param string $errmsg
 	 * @return QuickBooks_XML_Document
 	 */
-	public function parse(&$errnum, &$errmsg);
+	public function parse(?int &$errnum, ?string &$errmsg);
 
 	/**
 	 * Load a new string to parse
-	 *
-	 * @param string $str
-	 * @return boolean
 	 */
-	public function load($str);
+	public function load(string $str): bool;
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Simple QuickBooks XML parsing class
@@ -20,30 +20,12 @@
  * @subpackage XML
  */
 
-/**
- * XML base constants
- */
-QuickBooks_Loader::load('/QuickBooks/XML.php');
+namespace QuickBooksPhpDevKit\XML;
 
-/**
- * XML_Node class
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Node.php');
-
-/**
- * XML_Document class
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Document.php');
-
-/**
- * XML backend interface
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Backend.php');
-
-/**
- * XML parser backends
- */
-QuickBooks_Loader::import('/QuickBooks/XML/Backend');
+use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\XML\Document;
+use QuickBooksPhpDevKit\XML\Backend;
 
 /**
  * QuickBooks XML Parser
@@ -74,7 +56,7 @@ QuickBooks_Loader::import('/QuickBooks/XML/Backend');
  * }
  * </code>
  */
-class QuickBooks_XML_Parser
+class Parser
 {
 	/**
 	 *
@@ -90,52 +72,47 @@ class QuickBooks_XML_Parser
 	/**
 	 *
 	 */
-	const BACKEND_SIMPLEXML = 'simplexml';
+	public const BACKEND_SIMPLEXML = 'simplexml';
 
 	/**
 	 *
 	 */
-	const BACKEND_BUILTIN = 'builtin';
+	public const BACKEND_BUILTIN = 'builtin';
 
 	/**
 	 * Create a new QuickBooks_XML parser object
 	 *
 	 * @param string $xml_or_file
 	 */
-	public function __construct($xml_or_file = null, $use_backend = null)
+	public function __construct(?string $xml_or_file = null, ?string $use_backend = null)
 	{
-		$xml_or_file = $this->_read($xml_or_file);
+		$this->_xml = $this->_read($xml_or_file);
 
-		$this->_xml = $xml_or_file;
-
-		if (is_null($use_backend) and
-			function_exists('simplexml_load_string'))
+		if (is_null($use_backend) && function_exists('simplexml_load_string'))
 		{
-			$use_backend = QuickBooks_XML::PARSER_SIMPLEXML;
+			$use_backend = XML::PARSER_SIMPLEXML;
 		}
 		else if (is_null($use_backend))
 		{
-			$use_backend = QuickBooks_XML::PARSER_BUILTIN;
+			$use_backend = XML::PARSER_BUILTIN;
 		}
 
-		$class = 'QuickBooks_XML_Backend_' . ucfirst(strtolower($use_backend));
-		$this->_backend = new $class($xml_or_file);
+		$class = __NAMESPACE__ ."\\Backend\\" . ucfirst(strtolower($use_backend));
+		$this->_backend = new $class($this->_xml);
 	}
 
 	/**
 	 * Read an open file descriptor, XML file, or string
 	 *
 	 * @param mixed $mixed
-	 * @return string
 	 */
-	protected function _read($mixed)
+	protected function _read($mixed): string
 	{
 		if (empty($mixed))
 		{
 			return '';
 		}
-		else if (is_resource($mixed) and
-			get_resource_type($mixed) == 'stream')
+		else if (is_resource($mixed) && get_resource_type($mixed) == 'stream')
 		{
 			$buffer = '';
 			$tmp = '';
@@ -164,15 +141,13 @@ class QuickBooks_XML_Parser
 	/**
 	 * Load the XML parser with data from a string or file
 	 *
-	 * @param string $xml_or_file		An XML string or
-	 * @return integer
+	 * @param string $xml_or_file		An XML string or file path
 	 */
-	public function load($xml_or_file)
+	public function load(string $xml_or_file): bool
 	{
-		$xml_or_file = $this->_read($xml_or_file);
+		$this->_xml = $this->_read($xml_or_file);
 
-		$this->_xml = $xml_or_file;
-		return $this->_backend->load($xml_or_file);
+		return $this->_backend->load($this->_xml);
 	}
 
 	/**
@@ -187,7 +162,7 @@ class QuickBooks_XML_Parser
 	 * @param string $errmsg
 	 * @return boolean
 	 */
-	public function validate(&$errnum, &$errmsg)
+	public function validate(?int &$errnum, ?string &$errmsg): bool
 	{
 		return $this->_backend->validate($errnum, $errmsg);
 	}
@@ -195,14 +170,14 @@ class QuickBooks_XML_Parser
 	/**
 	 *
 	 */
-	public function beautify(&$errnum, &$errmsg, $compress_empty_elements = true)
+	public function beautify(?int &$errnum, ?string &$errmsg, bool $compress_empty_elements = true)
 	{
 		$errnum = 0;
 		$errmsg = '';
 
 		$Node = $this->parse($errnum, $errmsg);
 
-		if (!$errnum and is_object($Node))
+		if (!$errnum && is_object($Node))
 		{
 			return $Node->asXML($compress_empty_elements);
 		}
@@ -219,15 +194,16 @@ class QuickBooks_XML_Parser
 	 *
 	 * @param integer $errnum
 	 * @param string $errmsg
-	 * @return QuickBooks_XML_Document
+	 * @return XML\Document|null
 	 */
-	public function parse(&$errnum, &$errmsg)
+	public function parse(?int &$errnum, ?string &$errmsg): ?Document
 	{
 		if (!strlen($this->_xml))
 		{
-			$errnum = QuickBooks_XML::ERROR_CONTENT;
+			$errnum = XML::ERROR_CONTENT;
 			$errmsg = 'No XML content to parse.';
-			return false;
+
+			return null;
 		}
 
 		// first, let's remove all of the comments
@@ -236,12 +212,11 @@ class QuickBooks_XML_Parser
 			return $this->_backend->parse($errnum, $errmsg);
 		}
 
-		return false;
+		return null;
 	}
 
-	public function backend()
+	public function backend(): string
 	{
-		$str = get_class($this->_backend);
-		return str_replace('quickbooks_xml_backend_', '', strtolower($str));
+		return strtolower(get_class($this->_backend));
 	}
 }

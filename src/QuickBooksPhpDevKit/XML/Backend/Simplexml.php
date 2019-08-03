@@ -1,26 +1,24 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/XML.php');
+namespace QuickBooksPhpDevKit\XML\Backend;
 
-QuickBooks_Loader::load('/QuickBooks/XML/Parser.php');
+use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\XML\Backend\BackendInterface;
+use QuickBooksPhpDevKit\XML\Document;
+use QuickBooksPhpDevKit\XML\Node;
+use \SimpleXMLElement;
 
-QuickBooks_Loader::load('/QuickBooks/XML/Backend.php');
-
-QuickBooks_Loader::load('/QuickBooks/XML/Node.php');
-
-QuickBooks_Loader::load('/QuickBooks/XML/Document.php');
-
-class QuickBooks_XML_Backend_Simplexml implements QuickBooks_XML_Backend
+class Simplexml implements BackendInterface
 {
 	protected $_xml;
 	protected $_root;
 
-	public function __construct($xml)
+	public function __construct(string $xml)
 	{
 		$this->_xml = $xml;
 	}
 
-	public function load($xml)
+	public function load(string $xml): bool
 	{
 		$this->_xml = $xml;
 		$this->_root = null;
@@ -28,27 +26,27 @@ class QuickBooks_XML_Backend_Simplexml implements QuickBooks_XML_Backend
 		return strlen($xml) > 0;
 	}
 
-	public function validate(&$errnum, &$errmsg)
+	public function validate(?int &$errnum, ?string &$errmsg): bool
 	{
 		// Turn off the displayed error warnings
 		$previous = libxml_use_internal_errors(true);
 		libxml_clear_errors();
 
 		// Parse it
-		$root = simplexml_load_string($this->_xml);
+		$root = new SimpleXMLElement($this->_xml);
 
 		// Check for errors
 		$errs = libxml_get_errors();
 
 		$pcdata_chars = 'PCDATA invalid Char';
-		if (count($errs) > 0 and
+		if (count($errs) > 0 &&
 			substr($errs[0]->message, 0, strlen($pcdata_chars)) == $pcdata_chars)
 		{
 			// Try to remove special chars, and try again
 			libxml_clear_errors();
 
 			$this->_xml = preg_replace ('/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u', ' ', $this->_xml);
-			$root = simplexml_load_string($this->_xml);
+			$root = new SimpleXMLElement($this->_xml);
 			$errs = libxml_get_errors();
 
 			//die('this ran!  ' . print_r($errs, true));
@@ -61,13 +59,12 @@ class QuickBooks_XML_Backend_Simplexml implements QuickBooks_XML_Backend
 		libxml_clear_errors();
 		libxml_use_internal_errors($previous);
 
-		if (is_array($errs) and
-			count($errs))
+		if (is_array($errs) && count($errs))
 		{
-			$errnum = QuickBooks_XML::ERROR_INTERNAL;
+			$errnum = XML::ERROR_INTERNAL;
 
 			$errmsg = '';
-			$tmp = array();
+			$tmp = [];
 			foreach ($errs as $err)
 			{
 				$tmp[] = '{' . $err->code . ': ' . trim($err->message) . ' on line ' . $err->line . '}';
@@ -76,41 +73,39 @@ class QuickBooks_XML_Backend_Simplexml implements QuickBooks_XML_Backend
 
 			return false;
 		}
-		else
-		{
-			$this->_root = $root;
-			$errnum = QuickBooks_XML::ERROR_OK;
-			return true;
-		}
+
+		$this->_root = $root;
+		$errnum = XML::ERROR_OK;
+
+		return true;
 	}
 
-	public function parse(&$errnum, &$errmsg)
+	public function parse(?int &$errnum, ?string &$errmsg)
 	{
 		if ($this->validate($errnum, $errmsg))
 		{
-			$Root = new QuickBooks_XML_Node($this->_root->getName());
+			$Root = new Node($this->_root->getName());
 
 			$Root = $this->_parseHelper($Root, $this->_root);
 
 			//exit;
-			return new QuickBooks_XML_Document($Root);
+			return new Document($Root);
 		}
 
 		// Don't worry about the error code, validate() will take care of that
 		return false;
 	}
 
-	protected function _parseHelper($Base, $simplexml_node, $data = '')
+	protected function _parseHelper(Node $Base, SimpleXMLElement $simplexml_node, string $data = ''): Node
 	{
-		$children = $simplexml_node->children();
-
 		$Base->setData($data);
 
+		$children = $simplexml_node->children();
 		foreach ($children as $simplexml_child)
 		{
 			$children = $simplexml_child->children();
 
-			$Child = new QuickBooks_XML_Node($simplexml_child->getName());
+			$Child = new Node($simplexml_child->getName());
 
 			$data = '';
 			$children = $simplexml_child->children();

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * XML constants (and backward compat. class)
@@ -13,35 +13,17 @@
  * @subpackage XML
  */
 
-/**
- * Node class
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Node.php');
+namespace QuickBooksPhpDevKit;
 
-/**
- * Document class
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Document.php');
-
-/**
- * XML parser
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Parser.php');
-
-/**
- * XML backend interface
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Backend.php');
-
-/**
- * XML parser backends
- */
-QuickBooks_Loader::import('/QuickBooks/XML/Backend');
+use QuickBooksPhpDevKit\XML\Backend;
+use QuickBooksPhpDevKit\XML\Document;
+use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\XML\Parser;
 
 /**
  * QuickBooks XML base class
  */
-class QuickBooks_XML
+class XML
 {
 	/**
 	 * Indicates an error *did not* occur
@@ -120,12 +102,12 @@ class QuickBooks_XML
 	/**
 	 *
 	 * <code>
-	 * $arr = array(
-	 * 	'Person' => array(
+	 * $arr = [
+	 * 	'Person' => [
 	 * 		'Name' => 'Keith',
 	 * 		'Name_type' => 'firstname',
-	 * 		),
-	 * 	);
+	 * 		],
+	 * ];
 	 * </code>
 	 *
 	 */
@@ -133,22 +115,22 @@ class QuickBooks_XML
 
 	/**
 	 * <code>
-	 * $arr = array(
-	 * 	0 => array(
+	 * $arr = [
+	 * 	0 => [
 	 * 		'name' => 'Person',
-	 * 		'attributes' => array( ),
-	 * 		'children' => array(
-	 * 			0 => array(
+	 * 		'attributes' => [],
+	 * 		'children' => [
+	 * 			0 => [
 	 * 				'name' => 'Name',
-	 * 				'attributes' => array(
+	 * 				'attributes' => [
 	 * 					'type' => 'firstname',
-	 * 				),
-	 * 				'children' => array(  ),
+	 * 				],
+	 * 				'children' => [],
 	 * 				'data' => 'Keith',
-	 * 			),
-	 * 		),
+	 * 			],
+	 * 		],
 	 * 		'data' => null,
-	 * 	),
+	 * 	],
 	 * );
 	 * </code>
 	 */
@@ -157,9 +139,9 @@ class QuickBooks_XML
 	/**
 	 *
 	 * <code>
-	 * $arr = array(
+	 * $arr = [
 	 * 	'Person Name' => 'Keith',
-	 * 	);
+	 * 	];
 	 * </code>
 	 *
 	 */
@@ -208,7 +190,7 @@ class QuickBooks_XML
 	 *
 	 * <code>
 	 * $xml = '<document><stuff>bla bla</stuff><other>ble ble</other></document>';
-	 * $contents = QuickBooks_Utilities::_extractTagContents('stuff', $xml);
+	 * $contents = self::extractTagContents('stuff', $xml);
 	 * print($contents); 	// prints "bla bla"
 	 * </code>
 	 *
@@ -216,11 +198,11 @@ class QuickBooks_XML
 	 * @param string $data		The XML document
 	 * @return string			The contents of the tag
 	 */
-	static public function extractTagContents($tag, $data)
+	static public function extractTagContents(string $tag, string $data): ?string
 	{
 		$tag = trim($tag, '<> ');
 
-		if (false !== strpos($data, '<' . $tag . '>') and
+		if (false !== strpos($data, '<' . $tag . '>') &&
 			false !== strpos($data, '</' . $tag . '>'))
 		{
 			$data = strstr($data, '<' . $tag . '>');
@@ -236,8 +218,8 @@ class QuickBooks_XML
 	static public function extractTagAttribute($attribute, $tag_w_attrs, $which = 0)
 	{
 		/*
-		if (false !== ($start = strpos($tag_w_attrs, $attribute . '="')) and
-			false !== ($end = strpos($tag_w_attrs,  '"', $start + strlen($attribute) + 2)))
+		if (false !== ($start = strpos($tag_w_attrs, $attribute . '="')) &&
+			false !== ($end = strpos($tag_w_attrs, '"', $start + strlen($attribute) + 2)))
 		{
 			return substr($tag_w_attrs, $start + strlen($attribute) + 2, $end - $start - strlen($attribute) - 2);
 		}
@@ -254,7 +236,7 @@ class QuickBooks_XML
 			$data = substr($data, $spos + strlen($attr));
 		}
 
-		if (false !== ($spos = strpos($data, $attr . '="')) and
+		if (false !== ($spos = strpos($data, $attr . '="')) &&
 			false !== ($epos = strpos($data, '"', $spos + strlen($attr) + 2)))
 		{
 			//print('start: ' . $spos . "\n");
@@ -272,21 +254,20 @@ class QuickBooks_XML
 	 * @todo Holy confusing code Batman!
 	 *
 	 * @param string $tag_w_attributes
-	 * @param string $tag
-	 * @param array $attributes
-	 * @return void
+	 * @param bool $return_tag_first
+	 * @return array
 	 */
-	static public function extractTagAttributes($tag_w_attrs, $return_tag_first = false)
+	static public function extractTagAttributes(string $tag_w_attrs, bool $return_tag_first = false): array
 	{
 		$tag = '';
-		$attributes = array();
+		$attributes = [];
 
 		$tag_w_attrs = trim($tag_w_attrs);
 
 		/*if (substr($tag_w_attrs, -1, 1) == '/')		// condensed empty tag
 		{
 			$tag = trim($tag_w_attrs, '/ ');
-			$attributes = array();
+			$attributes = [];
 		}
 		else*/
 		if (false !== strpos($tag_w_attrs, ' '))
@@ -295,7 +276,7 @@ class QuickBooks_XML
 			//$tag = trim(array_shift($tmp), " \n\r\t<>");
 			$tag = trim(array_shift($tmp));
 
-			$attributes = array();
+			$attributes = [];
 
 			$attrs = trim(implode(' ', $tmp));
 			$length = strlen($attrs);
@@ -316,19 +297,19 @@ class QuickBooks_XML
 					$expect_value = true;
 				}
 				/*
-				else if ($attrs{$i} == '"' and $expect_value)
+				else if ($attrs{$i} == '"' && $expect_value)
 				{
 					$in_value = true;
 					$expect_value = false;
 				}
 				*/
-				/*else if ($attrs{$i} == '"' and $in_value)*/
-				else if (($attrs{$i} == '"' or $attrs{$i} == '\'') and $expect_value)
+				/*else if ($attrs{$i} == '"' && $in_value)*/
+				else if (($attrs{$i} == '"' || $attrs{$i} == '\'') && $expect_value)
 				{
 					$in_value = true;
 					$expect_value = false;
 				}
-				else if (($attrs{$i} == '"' or $attrs{$i} == '\'') and $in_value)
+				else if (($attrs{$i} == '"' || $attrs{$i} == '\'') && $in_value)
 				{
 					$attributes[trim($key)] = $value;
 
@@ -338,7 +319,7 @@ class QuickBooks_XML
 					$in_value = false;
 					$expect_key = true;
 				}
-				else if ($attrs{$i} == ' ' and $expect_key)
+				else if ($attrs{$i} == ' ' && $expect_key)
 				{
 					$expect_key = false;
 					$in_key = true;
@@ -368,7 +349,7 @@ class QuickBooks_XML
 		else
 		{
 			$tag = $tag_w_attrs;
-			$attributes = array();
+			$attributes = [];
 		}
 
 		// This returns the actual tag without attributes as the first key of the array
@@ -389,21 +370,25 @@ class QuickBooks_XML
 	 * @param boolean $for_qbxml
 	 * @return string
 	 */
-	static public function encode($str, $for_qbxml = true, $double_encode = true)
+	static public function encode(?string $str, bool $for_qbxml = true, bool $double_encode = true): string
 	{
-		$transform = array(
+		if (null === $str || '' === $str) {
+			return '';
+		}
+
+		$transform = [
 			'&' => '&amp;',
 			'<' => '&lt;',
 			'>' => '&gt;',
 			//'\'' => '&apos;',
 			'"' => '&quot;',
-			);
+		];
 
 		$str = str_replace(array_keys($transform), array_values($transform), $str);
 
 		if (!$double_encode)
 		{
-			$fix = array();
+			$fix = [];
 			foreach ($transform as $raw => $encoded)
 			{
 				$fix[str_replace('&', '&amp;', $encoded)] = $encoded;
@@ -424,16 +409,42 @@ class QuickBooks_XML
 	 * @param boolean $for_qbxml
 	 * @return string
 	 */
-	static public function decode($str, $for_qbxml = true)
+	static public function decode(string $str, bool $for_qbxml = true): string
 	{
-		$transform = array(
+		$transform = [
 			'&lt;' => '<',
 			'&gt;' => '>',
 			'&apos;' => '\'',
 			'&quot;' => '"',
 			'&amp;' => '&', 		// Make sure that this is *the last* transformation to run, otherwise we end up double-un-encoding things
-			);
+		];
 
 		return str_replace(array_keys($transform), array_values($transform), $str);
+	}
+
+	/**
+	 * Validate XML, add missing XML declaration, and format output
+	 *
+	 * @param string 		$xml		The XML
+	 * @param string|null 	$xmlVersion	Defaults to 1.0
+	 * @param string|null 	$encoding	Defaults to utf-8
+	 * @return string
+	 */
+	static public function cleanXML(string $xml, ?string $xmlVersion = null, ?string $encoding = null): ?string
+	{
+		$dom = new \DomDocument();
+		$dom->preserveWhiteSpace = false;
+
+		$loaded = $dom->loadXML($xml);
+		if ($loaded !== true)
+		{
+			return null;
+		}
+
+		$dom->formatOutput = true;
+		$dom->xmlVersion = $xmlVersion ?? '1.0';
+		$dom->encoding = $encoding ?? 'utf-8';
+
+		return $dom->saveXML();
 	}
 }

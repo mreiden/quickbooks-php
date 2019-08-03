@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks XML document class
@@ -15,17 +15,14 @@
  * @subpackage XML
  */
 
-/**
- * Node class
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Node.php');
+namespace QuickBooksPhpDevKit\XML;
+
+use QuickBooksPhpDevKit\XML;
 
 /**
  * QuickBooks XML document container
- *
- *
  */
-class QuickBooks_XML_Document
+class Document
 {
 	/**
 	 * QuickBooks root node
@@ -55,20 +52,16 @@ class QuickBooks_XML_Document
 
 	/**
 	 * Return the children of the root node (For backward compatability *only*! DO NOT use this function in new code!)
-	 *
-	 * @return array
 	 */
-	public function children()
+	public function children(): array
 	{
 		return $this->_root->children();
 	}
 
 	/**
 	 * Return the XML object as an XML string
-	 *
-	 * @return string
 	 */
-	public function asXML($todo_for_empty_elements = true, $indent = "\t")
+	public function asXML(int $todo_for_empty_elements = XML::XML_DROP, string $indent = "\t"): string
 	{
 		return $this->_root->asXML();
 	}

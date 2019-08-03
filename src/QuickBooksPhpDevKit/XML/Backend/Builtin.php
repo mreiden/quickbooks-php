@@ -1,29 +1,36 @@
-<?php
+<?php declare(strict_types=1);
 
-class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
+namespace QuickBooksPhpDevKit\XML\Backend;
+
+use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\XML\Backend\BackendInterface;
+use QuickBooksPhpDevKit\XML\Document;
+use QuickBooksPhpDevKit\XML\Node;
+
+class Builtin implements BackendInterface
 {
 	protected $_xml;
 
-	public function __construct($xml)
+	public function __construct(string $xml)
 	{
 		$this->_xml = $xml;
 	}
 
-	public function load($xml)
+	public function load(string $xml): bool
 	{
 		$this->_xml = $xml;
 
 		return strlen($xml) > 0;
 	}
 
-	public function validate(&$errnum, &$errmsg)
+	public function validate(?int &$errnum, ?string &$errmsg): bool
 	{
 		if (!strlen($this->_xml))
 		{
 			return false;
 		}
 
-		$stack = array();
+		$stack = [];
 		$xml = $this->_xml;
 
 
@@ -33,7 +40,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 			$start = strpos($xml, '<!--');
 			$end = strpos($xml, '-->', $start);
 
-			if (false !== $start and false !== $end)
+			if (false !== $start && false !== $end)
 			{
 				$xml = substr($xml, 0, $start) . substr($xml, $end + 3);
 			}
@@ -52,7 +59,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 			$start = strpos($xml, '<![CDATA[');
 			$end = strpos($xml, ']]>', $start);
 
-			if (false !== $start and false !== $end)
+			if (false !== $start && false !== $end)
 			{
 				$xml = substr($xml, 0, $start) . substr($xml, $end + 3);
 			}
@@ -71,7 +78,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 			$tag_w_attrs = trim(substr($xml, $opentag_start + 1, $opentag_end - $opentag_start - 1));
 
 			$tag = '';
-			$attributes = array();
+			$attributes = [];
 			$this->_extractAttributes($tag_w_attrs, $tag, $attributes);
 
 			if (substr($tag_w_attrs, 0, 1) == '?')			// < ? x m l
@@ -94,7 +101,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 
 				if ($pop != $tag)
 				{
-					$errnum = QuickBooks_XML::ERROR_MISMATCH;
+					$errnum = XML::ERROR_MISMATCH;
 					$errmsg = 'Mismatched tags, found: ' . $tag . ', expected: ' . $pop;
 
 					return false;
@@ -110,14 +117,14 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 
 		if (strlen($xml))
 		{
-			$errnum = QuickBooks_XML::ERROR_GARBAGE;
+			$errnum = XML::ERROR_GARBAGE;
 			$errmsg = 'Found this garbage data at end of stream: ' . $xml;
 			return false;
 		}
 
 		if (count($stack))
 		{
-			$errnum = QuickBooks_XML::ERROR_DANGLING;
+			$errnum = XML::ERROR_DANGLING;
 			$errmsg = 'XML stack still contains this after parsing: ' . var_export($stack, true);
 			return false;
 		}
@@ -125,19 +132,19 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 		return true;
 	}
 
-	public function parse(&$errnum, &$errmsg)
+	public function parse(?int &$errnum, ?string &$errmsg)
 	{
-		$base = new QuickBooks_XML_Node('root');
+		$base = new Node('root');
 		$this->_parseHelper($this->_xml, $base, $errnum, $errmsg);
 
-		if ($errnum != QuickBooks_XML::ERROR_OK)
+		if ($errnum != XML::ERROR_OK)
 		{
 			return false;
 		}
 
 		$tmp = $base->children();
 
-		return new QuickBooks_XML_Document(current($tmp));
+		return new Document(current($tmp));
 	}
 
 	/**
@@ -147,12 +154,12 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 	 * @param QuickBooks_XML_Node $root
 	 * @return void
 	 */
-	protected function _parseHelper($xml, &$Root, &$errnum, &$errmsg, $indent = 0)
+	protected function _parseHelper(string $xml, &$Root, int &$errnum, string &$errmsg, int $indent = 0)
 	{
-		$errnum = QuickBooks_XML::ERROR_OK;
+		$errnum = XML::ERROR_OK;
 		$errmsg = '';
 
-		$arr = array();
+		$arr = [];
 		$xml = trim($xml);
 
 		if (!strlen($xml))
@@ -162,8 +169,8 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 
 		$data = '';
 
-		$vstack = array();
-		$dstack = array();
+		$vstack = [];
+		$dstack = [];
 
 		// Remove comments
 		while (false !== strpos($xml, '<!--'))
@@ -171,7 +178,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 			$start = strpos($xml, '<!--');
 			$end = strpos($xml, '-->', $start);
 
-			if (false !== $start and false !== $end)
+			if (false !== $start && false !== $end)
 			{
 				$xml = substr($xml, 0, $start) . substr($xml, $end + 3);
 			}
@@ -216,7 +223,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 			$tag_w_attrs = trim(substr($xml, $opentag_start + 1, $opentag_end - $opentag_start - 1));
 
 			$tag = '';
-			$attributes = array();
+			$attributes = [];
 			$this->_extractAttributes($tag_w_attrs, $tag, $attributes);
 
 			if (substr($tag_w_attrs, 0, 1) == '?')		// xml declration
@@ -246,8 +253,8 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 				$tag = rtrim($tag, '/');
 
 				// Shove the item on to the stack
-				array_unshift($vstack, array( $tag, $tag_w_attrs, $current + $opentag_end ) );
-				array_unshift($dstack, array( $tag, $tag_w_attrs, $current + $opentag_end ) );
+				array_unshift($vstack, [$tag, $tag_w_attrs, $current + $opentag_end]);
+				array_unshift($dstack, [$tag, $tag_w_attrs, $current + $opentag_end]);
 
 				$key = key($vstack);
 				$tmp = array_shift($vstack);
@@ -260,13 +267,13 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 				$length = 0;
 				$data = null;
 
-				if (count($vstack))
+				if (is_countable($vstack) && count($vstack))
 				{
 					array_shift($dstack);
 				}
 				else
 				{
-					$dstack[$key] = array( $pop, $gnk, $pos, $length, $data );
+					$dstack[$key] = [$pop, $gnk, $pos, $length, $data];
 				}
 			}
 			else if (substr($tag_w_attrs, 0, 1) == '/')		// close tag
@@ -286,7 +293,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 
 				if ($pop != $tag)
 				{
-					$errnum = QuickBooks_XML::ERROR_MISMATCH;
+					$errnum = XML::ERROR_MISMATCH;
 					$errmsg = 'Mismatched tags, found: ' . $tag . ', expected: ' . $pop;
 
 					return false;
@@ -300,7 +307,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 					$cdata_end = strpos($data, ']]>');
 
 					// Set the data to the CDATA section...
-					$data = QuickBooks_XML::encode(substr($data, 9, $cdata_end - 9));
+					$data = XML::encode(substr($data, 9, $cdata_end - 9));
 
 					// ... and remove the CDATA from the remaining XML string
 					//$current = $current + strlen($data) + 12;
@@ -312,13 +319,13 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 				}
 				else
 				{
-					$dstack[$key] = array( $pop, $gnk, $pos, $current + $opentag_start - $pos, $data );
+					$dstack[$key] = [$pop, $gnk, $pos, $current + $opentag_start - $pos, $data];
 				}
 			}
 			else	// open tag
 			{
-				array_unshift($vstack, array( $tag, $tag_w_attrs, $current + $opentag_end + 1 ) );
-				array_unshift($dstack, array( $tag, $tag_w_attrs, $current + $opentag_end + 1 ) );
+				array_unshift($vstack, [$tag, $tag_w_attrs, $current + $opentag_end + 1]);
+				array_unshift($dstack, [$tag, $tag_w_attrs, $current + $opentag_end + 1]);
 			}
 
 			//print('stacks' . "\n");
@@ -332,14 +339,14 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 
 		if (strlen($xml))
 		{
-			$errnum = QuickBooks_XML::ERROR_GARBAGE;
+			$errnum = XML::ERROR_GARBAGE;
 			$errmsg = 'Found this garbage data at end of stream: ' . $xml;
 			return false;
 		}
 
-		if (count($vstack))
+		if (is_countable($vstack) && count($vstack))
 		{
-			$errnum = QuickBooks_XML::ERROR_DANGLING;
+			$errnum = XML::ERROR_DANGLING;
 			$errmsg = 'XML stack still contains this after parsing: ' . var_export($vstack, true);
 			return false;
 		}
@@ -356,7 +363,7 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 			$tag_w_attrs = $node[1];
 			$start = $node[2];
 
-			if (count($node) < 5)
+			if (is_countable($node) && count($node) < 5)
 			{
 				continue;
 			}
@@ -365,18 +372,18 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 			$payload = $node[4];
 
 			$tmp = '';
-			$attributes = array();
+			$attributes = [];
 			$this->_extractAttributes($tag_w_attrs, $tmp, $attributes);
 
-			$Node = new QuickBooks_XML_Node($tag);
+			$Node = new Node($tag);
 			foreach ($attributes as $key => $value)
 			{
-				$value = QuickBooks_XML::decode($value, true);
+				$value = XML::decode($value, true);
 
 				$Node->addAttribute($key, $value);
 			}
 
-			if (false !== strpos($payload, '<'))
+			if (null !== $payload && false !== strpos($payload, '<'))
 			{
 				// The tag contains child tags
 
@@ -391,7 +398,10 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 				// This tag has no child tags contained inside it
 
 				// Make sure we decode any entities
-				$payload = QuickBooks_XML::decode($payload, true);
+				if (null !== $payload)
+				{
+					$payload = XML::decode($payload, true);
+				}
 
 				$Node->setData($payload);
 			}
@@ -404,12 +414,12 @@ class QuickBooks_XML_Backend_Builtin implements QuickBooks_XML_Backend
 		return $Root;
 	}
 
-	protected function _extractAttributes($tag_w_attrs, &$tag, &$attributes)
+	protected function _extractAttributes($tag_w_attrs, &$tag, &$attributes): bool
 	{
 		$tag = '';
-		$attributes = array();
+		$attributes = [];
 
-		$tmp = QuickBooks_XML::extractTagAttributes($tag_w_attrs, true);
+		$tmp = XML::extractTagAttributes($tag_w_attrs, true);
 
 		$tag = array_shift($tmp);
 		$attributes = $tmp;
