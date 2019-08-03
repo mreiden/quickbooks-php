@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks encryption library base class
@@ -15,36 +15,28 @@
  * @package QuickBooks
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Encryption/Factory.php');
+namespace QuickBooksPhpDevKit;
 
 /**
  *
  *
  */
-abstract class QuickBooks_Encryption
+abstract class Encryption
 {
 	/**
 	 *
 	 *
 	 *
 	 */
-	public function prefix($str)
+	public function prefix(string $str): string
 	{
 		return '{' . strlen(get_class($this)) . ':' . strtolower(get_class($this)) . '}' . $str;
 	}
 
 	/**
-	 * AES encryption
 	 *
-	 * @param string $key
-	 * @param string $data		Content to be encrypted
-	 * @param bool $hex
-	 * @return string
 	 */
-	static function salt()
+	static function salt(): string
 	{
 		$tmp = array_merge(range('a', 'z'), range('A', 'Z'), range(0, 9));
 		shuffle($tmp);

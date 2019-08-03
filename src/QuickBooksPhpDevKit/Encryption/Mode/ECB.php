@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks encryption library factory method
@@ -16,7 +16,11 @@
  * @subpackage Encryption
  */
 
-class QuickBooks_Encryption_Mode_ECB
+namespace QuickBooksPhpDevKit\Encryption\Mode;
+
+use QuickBooks\Encryption;
+
+class ECB
 {
 
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks encryption library: Blowfish
@@ -16,18 +16,17 @@
  * @subpackage Encryption
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Encryption.php');
+namespace QuickBooksPhpDevKit\Encryption;
 
-define('CRYPT_ENGINE_BUILTIN', 'builtin');
-define('CRYPT_ENGINE_MCRYPT', 'mcrypt');
-define('CRYPT_ENGINE_GUESS', 'guess');
-define('CRYPT_ENGINE__', CRYPT_ENGINE_GUESS);
+use QuickBooks\Encryption;
 
-class QuickBooks_Encryption_Blowfish extends QuickBooks_Encryption
+class Blowfish extends Encryption
 {
+	public const CRYPT_ENGINE_BUILTIN = 'builtin';
+	public const CRYPT_ENGINE_MCRYPT = 'mcrypt';
+	public const CRYPT_ENGINE_GUESS = 'guess';
+	public const CRYPT_ENGINE__ = 'guess';
+
 	public function __construct()
 	{
 

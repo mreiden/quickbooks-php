@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -11,23 +11,19 @@
  *
  */
 
-//
-QuickBooks_Loader::load('/QuickBooks/Encryption.php');
+namespace QuickBooksPhpDevKit\Encryption;
+
+use QuickBooks\Encryption;
 
 /**
  *
  */
-class QuickBooks_Encryption_Rc4 extends QuickBooks_Encryption
+class Rc4 extends Encryption
 {
 	/**
 	 * RC4 encrypt
-	 *
-	 * @param string $key
-	 * @param string $data		Content to be encrypted
-	 * @param bool $hex
-	 * @return string
 	 */
-	public function encrypt($key, $data, $hex = false)
+	public function encrypt(string $key, string $data, bool $hex = false): string
 	{
 		if ($hex)
 		{
@@ -72,7 +68,7 @@ class QuickBooks_Encryption_Rc4 extends QuickBooks_Encryption
 		return $cipher;
 	}
 
-	public function decrypt($key, $data, $hex = false)
+	public function decrypt(string $key, string $data, bool $hex = false): string
 	{
 		return $this->encrypt($key, $data, $hex);
 	}

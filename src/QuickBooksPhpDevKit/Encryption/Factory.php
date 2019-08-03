@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks encryption library factory method
@@ -16,44 +16,38 @@
  * @subpackage Encryption
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Encryption.php');
+namespace QuickBooksPhpDevKit\Encryption;
+
+use QuickBooks\Encryption;
 
 /**
  *
  *
  *
  */
-class QuickBooks_Encryption_Factory
+class Factory
 {
 	// , $iv = null, $mode = null
-	static public function create($encrypt)
+	static public function create(string $encrypt)
 	{
-		$class = 'QuickBooks_Encryption_' . ucfirst(strtolower($encrypt));
-		$file = '/QuickBooks/Encryption/' . ucfirst(strtolower($encrypt)) . '.php';
-
-		QuickBooks_Loader::load($file);
+		$class = __NAMESPACE__ . "\\". ucfirst(strtolower($encrypt));
 
 		return new $class();
 	}
 
 	/**
 	 *
-	 *
-	 * @param string $encrypted
-	 * @return string
 	 */
-	static public function determine(&$encrypted)
+	static public function determine(string &$encrypted): ?string
 	{
-		if ($encrypted[0] == '{' and
+		if ($encrypted[0] == '{' &&
 			false !== ($end = strpos($encrypted, ':')))
 		{
 			$number = substr($encrypted, 1, $end);
 
 			$method = substr($encrypted, 1 + strlen($number), $number);
 			$encrypted = substr($encrypted, $number + 4);
+
 			return $method;
 		}
 
