@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Base class for QuickBooks objects
@@ -16,64 +16,82 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks XML stuff (we need this for some constants)
- */
-QuickBooks_Loader::load('/QuickBooks/XML.php', false);
+namespace QuickBooksPhpDevKit\QBXML;
 
-/**
- * QuickBooks XML parser class
- */
-QuickBooks_Loader::load('/QuickBooks/XML/Parser.php');
-
-/**
- * QuickBooks data type casting
- */
-QuickBooks_Loader::load('/QuickBooks/Cast.php');
+use QuickBooksPhpDevKit\Cast;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\QBXML\Object\Generic;
+use QuickBooksPhpDevKit\QBXML\Schema\AbstractSchemaObject as SchemaObject;
+use QuickBooksPhpDevKit\XML\Parser;
 
 /**
  * Base class for QuickBooks objects
  */
-abstract class QuickBooks_QBXML_Object
+abstract class AbstractQbxmlObject
 {
 	/**
 	 * QuickBooks XML parser option - preserve empty XML elements
 	 */
-	const XML_PRESERVE = QuickBooks_XML::XML_PRESERVE;
+	public const XML_PRESERVE = XML::XML_PRESERVE;
 
 	/**
 	 * QuickBooks XML parser option - drop empty XML elements
 	 */
-	const XML_DROP = QuickBooks_XML::XML_DROP;
+	public const XML_DROP = XML::XML_DROP;
 
 	/**
 	 * QuickBooks XML parser option - compress /> empty XML elements
 	 */
-	const XML_COMPRESS = QuickBooks_XML::XML_COMPRESS;
+	public const XML_COMPRESS = XML::XML_COMPRESS;
 
 	/**
 	 * Keys/values stored within the object
 	 *
 	 * @var array
 	 */
-	protected $_object = array();
+	protected $_object = [];
+
+	/**
+	 * Controls whether this object adds the parent node's path to its own when it is a child node.
+	 * Needed for ItemSitesQuery where multiple ListID tags are present but they are not contained in a child node (i.e. they are all direct children of the ItemSitesQueryRq node.
+	 *
+	 * @var bool
+	 */
+	protected $_parent_is_node = true;
 
 	/**
 	 * Create a new instance of this QuickBooks class
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr)
+	public function __construct(array $arr)
 	{
 		$this->_object = $arr;
 	}
 
 	/**
 	 * Return a constant indicating the type of object
-	 *
-	 * @return string
 	 */
-	abstract public function object();
+	abstract public function object(): string;
+
+
+	/**
+	 * Set whether the parent's path should be added to the object's paths (see var $_parent_is_node)
+	 */
+	public function setParentIsNode(bool $isNode): bool
+	{
+		$this->_parent_is_node = $isNode;
+
+		return true;
+	}
+	/**
+	 * Get whether the parent's path should be added to the object's paths (see var $_parent_is_node)
+	 */
+	public function getParentIsNode(): bool
+	{
+		return $this->_parent_is_node;
+	}
 
 	/**
 	 * Get the date/time this object was created in QuickBooks
@@ -81,7 +99,7 @@ abstract class QuickBooks_QBXML_Object
 	 * @param string $format		If you want the date/time in a particular format, specify the format here (use the notation from {@link http://www.php.net/date})
 	 * @return string
 	 */
-	public function getTimeCreated($format = null)
+	public function getTimeCreated(?string $format = null): string
 	{
 		if (!is_null($format))
 		{
@@ -97,7 +115,7 @@ abstract class QuickBooks_QBXML_Object
 	 * @param string $format		If you want the date/time in a particular format, specify the format here (use the notation from {@link http://www.php.net/date})
 	 * @return string
 	 */
-	public function getTimeModified($format = null)
+	public function getTimeModified(?string $format = null): string
 	{
 		if (!is_null($format))
 		{
@@ -107,41 +125,40 @@ abstract class QuickBooks_QBXML_Object
 		return $this->get('TimeModified');
 	}
 
-	public function setEditSequence($value)
+	public function setEditSequence($value): bool
 	{
-		return $this->set('EditSequence', $value);
+		return $this->set('EditSequence', (string) $value);
 	}
 
 	/**
 	 * Get the QuickBooks EditSequence for this object
-	 *
-	 * @return integer
 	 */
-	public function getEditSequence()
+	public function getEditSequence(): ?string
 	{
 		return $this->get('EditSequence');
 	}
 
 	/**
 	 * Set a value within the object
-	 *
-	 * @param string $key
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function set($key, $value, $cast = true)
+	public function set(string $key, $value, bool $cast = true): bool
 	{
 		if (is_array($value))
 		{
 			$this->_object[$key] = $value;
 		}
+		else if (false === $cast && null === $value)
+		{
+			// Unset (remove) the object property completely
+			unset($this->_object[$key]);
+		}
 		else
 		{
 			//print('set(' . $key . ', ' . $value . ', ' . $cast . ')' . "\n");
 
-			if ($cast and $value != '__EMPTY__')
+			if ($cast && $value != '__EMPTY__')
 			{
-				$value = QuickBooks_Cast::cast($this->object(), $key, $value, true, false);
+				$value = Cast::cast($this->object(), $key, $value, true, false);
 			}
 
 			//print('	setting [' . $key . '] to value {' . $value . '}' . "\n");
@@ -159,7 +176,7 @@ abstract class QuickBooks_QBXML_Object
 	 * @param mixed $default	If there is no value set for the given key, this will be returned
 	 * @return mixed			The value fetched
 	 */
-	public function get($key, $default = null)
+	public function get(string $key, $default = null)
 	{
 		if (isset($this->_object[$key]))
 		{
@@ -178,7 +195,7 @@ abstract class QuickBooks_QBXML_Object
 	 * @param mixed $default
 	 * @return string
 	 */
-	public function getFullNameType($fullname_key, $name_key, $parent_key, $default = null)
+	public function getFullNameType(string $fullname_key, string $name_key, string $parent_key, ?string $default = null): string
 	{
 		$fullname = $this->get($fullname_key);
 		if (!$fullname)
@@ -186,14 +203,7 @@ abstract class QuickBooks_QBXML_Object
 			$name = $this->get($name_key);
 			$parent = $this->get($parent_key);
 
-			if ($name and $parent)
-			{
-				$fullname = $parent . ':' . $name;
-			}
-			else
-			{
-				$fullname = $name;
-			}
+			$fullname = ($name && $parent) ? "$parent:$name" : $name;
 		}
 
 		return $fullname;
@@ -201,30 +211,36 @@ abstract class QuickBooks_QBXML_Object
 
 	/**
 	 * Set a Name field
-	 *
-	 * @param string $name_key
-	 * @param string $value
-	 * @return void
 	 */
-	public function setNameType($name_key, $value)
+	public function setNameType(string $name_key, string $value): bool
 	{
 		return $this->set($name_key, str_replace(':', '-', $value));
 	}
 
 	/**
 	 * Set a FullName field
-	 *
-	 * @param string $fullname_key
-	 * @param string $name_key
-	 * @param string $parent_key
-	 * @param string $value
-	 * @return void
 	 */
-	public function setFullNameType($fullname_key, $name_key, $parent_key, $value)
+	public function setFullNameType(string $fullname_key, ?string $name_key, ?string $parent_key, string $value): bool
 	{
-		if (false !== strpos($value, ':'))
+		if (false === strpos($value, ':'))
 		{
-			if ($name_key and $parent_key)
+			// Value does not contain a colon, so there is no parent
+
+			$key = $name_key ?? $fullname_key;
+			$this->set($key, $value);
+
+			if (null !== $parent_key && !empty($this->get($parent_key)))
+			{
+				// Parent key is set and shouldn't be since there is no parent
+				$this->set($parent_key, '');
+			}
+
+			// Fetch the Name (need to fetch because they might have been casted/truncate)
+			$value = $this->get($key);
+		}
+		else
+		{
+			if (!is_null($name_key) && !is_null($parent_key))
 			{
 				// This covers the case where we are setting FullName, which
 				//	needs to be broken up into:
@@ -232,8 +248,8 @@ abstract class QuickBooks_QBXML_Object
 				//		ParentRef FullName
 
 				$explode = explode(':', $value);
-				$name = end($explode);
-				$parent = implode(':', array_slice($explode, 0, -1));
+				$name = array_pop($explode);
+				$parent = implode(':', $explode);
 
 				$this->set($name_key, $name);
 				$this->set($parent_key, $parent);
@@ -246,69 +262,45 @@ abstract class QuickBooks_QBXML_Object
 				// This covers the case where we are setting
 				//	CustomerType_FullName, there is no separate parent element,
 				//	so we just set the whole chunk
-
-				;
 			}
 		}
-		else
-		{
-			$this->set($name_key, $value);
 
-			// Fetch the Name (need to fetch because they might have been casted/truncate)
-			$value = $this->get($name_key);
-		}
-
-		$this->set($fullname_key, $value);
+		return $this->set($fullname_key, $value);
 	}
 
 	/**
 	 * Set a boolean value
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return boolean
 	 */
-	public function setBooleanType($key, $value)
+	public function setBooleanType(string $key, $value): bool
 	{
 		//print('setting BooleanType [' . $key . '] to ' . $value . "\n");
 
-		if ($value == 'true' or $value === 1 or $value === true)
+		if (null === $value)
 		{
-			//print("\t" . ' set to TRUE' . "\n");
-			return $this->set($key, 'true');
+			return $this->set($key, $value);
 		}
 
-		//print("\t" . ' set to FALSE' . "\n");
-		return $this->set($key, 'false');
+		$value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+		if (null === $value)
+		{
+			// Something other than true/false, 1/0, or boolean strings (i.e. 'true', 'false', 'on', 'off', 'yes', 'no'
+			return false;
+		}
+
+		return $this->set($key, $value ? 'true' : 'false');
 	}
 
 	/**
 	 *
-	 *
-	 * @param string $key
-	 * @param boolean $default
-	 * @return boolean
 	 */
-	public function getBooleanType($key, $default = null)
+	public function getBooleanType(string $key, ?bool $default = null): ?bool
 	{
-		if ($this->exists($key))
+		if (!$this->exists($key))
 		{
-			$boolean = $this->get($key);
-			if (is_bool($boolean))
-			{
-				return $boolean;
-			}
-			else if ($boolean == 'false')
-			{
-				return false;
-			}
-			else if ($boolean == 'true')
-			{
-				return true;
-			}
+			return $default;
 		}
 
-		return $default == 'true' or $default === 1 or $default === true;
+		return filter_var($this->get($key), FILTER_VALIDATE_BOOLEAN);
 	}
 
 	/**
@@ -318,27 +310,53 @@ abstract class QuickBooks_QBXML_Object
 	 * @param mixed $date		The date value (accepts anything www.php.net/strtotime can convert or unix timestamps)
 	 * @return boolean
 	 */
-	public function setDateType($key, $date, $dont_allow_19691231 = true)
+	public function setDateType(string $key, $date, bool $dont_allow_19691231 = true): bool
 	{
-		if ($date == '1969-12-31' and $dont_allow_19691231)
+		if (null === $date)
+		{
+			// This will unset the value
+			return $this->set($key, null);
+		}
+
+		// $date must be a string or number
+		if (!(is_string($date) || is_int($date) || is_float($date)))
 		{
 			return false;
 		}
 
-		if (!strlen($date) or
-			$date == '0')
+		// Convert numbers to strings (for unix timestamps)
+		if (!is_string($date))
+		{
+			$date = (string)$date;
+		}
+
+		// Disallow empty string and '0'
+		if ($date == '0' || !strlen($date))
 		{
 			return false;
 		}
 
-		// 1228241458		vs.		19830102
-		if (ctype_digit($date) and strlen($date) > 8)
+		// Disallow special date 1969-12-31.  This is the date you get from date('Y-m-d', null|false)
+		if ($date == '1969-12-31' && $dont_allow_19691231)
 		{
-			// It's a unix timestamp (seconds since unix epoch, convert to string)
-			$date = date('Y-m-d', $date);
+			return false;
 		}
 
-		return $this->set($key, date('Y-m-d', strtotime($date)));
+		// Convert string to a unix timestamp unless it already is a unix timestamp.
+		// We assume an 8 digit number is a date in YYYMMDD format like 20190704
+		if (!ctype_digit($date) || strlen($date) <= 8)
+		{
+			// Convert date string to a unix timestamp
+			$date = strtotime($date);
+			if ($date === false)
+			{
+				// Invalid Date: could not be parsed by strtotime
+				return false;
+			}
+		}
+
+		// Set the DateType value in the Y-m-d format QuickBooks expects
+		return $this->set($key, date('Y-m-d', $date));
 	}
 
 	/**
@@ -348,49 +366,57 @@ abstract class QuickBooks_QBXML_Object
 	 * @param string $format	The format (any format from www.php.net/date)
 	 * @return string
 	 */
-	public function getDateType($key, $format = 'Y-m-d')
+	public function getDateType(string $key, ?string $format = 'Y-m-d'): ?string
 	{
-		if (!strlen($format))
+		if (is_null($format) || !strlen($format))
 		{
 			$format = 'Y-m-d';
 		}
 
-		if ($this->exists($key) and $this->get($key))
+		if ($this->exists($key))
 		{
-			return date($format, strtotime($this->get($key)));
+			$value = $this->get($key);
+
+			// Convert value to unix timestamp
+			$timestamp = strtotime($value);
+			if ($timestamp !== false)
+			{
+				// Return the formatted date if strtotime successfully parsed the date
+				return date($format, $timestamp);
+			}
 		}
 
 		return null;
 	}
 
-	public function setAmountType($key, $amount)
+	public function setAmountType(string $key, $amount): bool
 	{
-		$this->set($key, sprintf('%01.2f', (float) $amount));
+		$float = filter_var($amount, FILTER_VALIDATE_FLOAT, FILTER_FLAG_ALLOW_THOUSAND);
+		if ($float === false)
+		{
+			throw new \TypeError('Argument 2 passed to ' . __METHOD__ . ' must be convertable to the type float');
+		}
+
+		return $this->set($key, sprintf('%01.2f', $float));
 	}
 
-	public function getAmountType($key)
+	public function getAmountType(string $key): string
 	{
-		return sprintf('%01.2f', (float) $this->get($key));
+		return sprintf('%01.2f', floatval($this->get($key)));
 	}
 
 	/**
 	 * Tell if a data field exists within the object
-	 *
-	 * @param string $key
-	 * @return boolean
 	 */
-	public function exists($key)
+	public function exists(string $key): bool
 	{
 		return isset($this->_object[$key]);
 	}
 
 	/**
 	 * Removes a key from this object
-	 *
-	 * @param string $key
-	 * @return boolean
 	 */
-	public function remove($key)
+	public function remove(string $key): bool
 	{
 		if (isset($this->_object[$key]))
 		{
@@ -401,7 +427,7 @@ abstract class QuickBooks_QBXML_Object
 		return false;
 	}
 
-	public function getListItem($key, $index)
+	public function getListItem(string $key, int $index)
 	{
 		$list = $this->getList($key);
 
@@ -417,7 +443,7 @@ abstract class QuickBooks_QBXML_Object
 	 *
 	 *
 	 */
-	public function addListItem($key, $obj)
+	public function addListItem(string $key, $obj): bool
 	{
 		$list = $this->getList($key);
 
@@ -429,13 +455,13 @@ abstract class QuickBooks_QBXML_Object
 	/**
 	 *
 	 */
-	public function getList($key)
+	public function getList(string $key): array
 	{
-		$list = $this->get($key, array());
+		$list = $this->get($key, []);
 
 		if (!is_array($list))
 		{
-			$list = array();
+			$list = [];
 		}
 
 		return $list;
@@ -444,17 +470,17 @@ abstract class QuickBooks_QBXML_Object
 	/**
 	 *
 	 */
-	public function getArray($pattern, $defaults = array(), $defaults_if_empty = true)
+	public function getArray(string $pattern, array $defaults = [], bool $defaults_if_empty = true): array
 	{
-		$list = array();
+		$list = [];
 		foreach ($this->_object as $key => $value)
 		{
 			if ($this->_fnmatch($pattern, $key))
 			{
 				$list[$key] = $value;
 
-				if ($defaults_if_empty and
-					empty($value) and
+				if ($defaults_if_empty &&
+					empty($value) &&
 					isset($defaults[$key]))
 				{
 					$list[$key] = $defaults[$key];
@@ -467,14 +493,10 @@ abstract class QuickBooks_QBXML_Object
 
 	/**
 	 * Do some fancy string matching
-	 *
-	 * @param string $pattern
-	 * @param string $str
-	 * @return boolean
 	 */
-	protected function _fnmatch($pattern, $str)
+	protected function _fnmatch(string $pattern, string $str): bool
 	{
-		return QuickBooks_Utilities::fnmatch($pattern, $str);
+		return Utilities::fnmatch($pattern, $str);
 	}
 
 	/**
@@ -486,24 +508,22 @@ abstract class QuickBooks_QBXML_Object
 	 * @param string $request		A valid QuickBooks API request (for example: CustomerAddRq, InvoiceQueryRq, CustomerModRq, etc.)
 	 * @return QuickBooks_QBXML_Schema_Object
 	 */
-	protected function _schema($request)
+	protected function _schema(string $request)
 	{
 		if (strtolower(substr($request, -2, 2)) != 'rq')
 		{
 			$request = $request . 'Rq';
 		}
 
-		$class = 'QuickBooks_QBXML_Schema_Object_' . $request;
-		$file = 'QuickBooks/QBXML/Schema/Object/' . $request . '.php';
-
-		include_once $file;
-
-		if (class_exists($class))
+		$class = PackageInfo::NAMESPACE_QBXML_SCHEMA_OBJECT ."\\$request";
+		try
 		{
 			return new $class();
 		}
-
-		return false;
+		catch (\Exception $e)
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -511,9 +531,9 @@ abstract class QuickBooks_QBXML_Object
 	 *
 	 * @param string $root			The node to use as the root node of the XML node structure
 	 * @param string $parent
-	 * @return QuickBooks_XML_Node
+	 * @return Node
 	 */
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, $object = null)
 	{
 		if (is_null($root))
 		{
@@ -525,7 +545,7 @@ abstract class QuickBooks_QBXML_Object
 			$object = $this->_object;
 		}
 
-		$Node = new QuickBooks_XML_Node($root);
+		$Node = new Node($root);
 
 		foreach ($object as $key => $value)
 		{
@@ -546,7 +566,6 @@ abstract class QuickBooks_QBXML_Object
 				$Node->setChildDataAt($root . ' ' . $key, $value, true);
 			}
 		}
-
 		//print_r($Node);
 
 		return $Node;
@@ -554,12 +573,8 @@ abstract class QuickBooks_QBXML_Object
 
 	/**
 	 * Get an array representation of this Class object
-	 *
-	 * @param string $request
-	 * @param boolean $nest
-	 * @return array
 	 */
-	public function asArray($request, $nest = true)
+	public function asArray(string $request, bool $nest = true): array
 	{
 		$this->_cleanup();
 
@@ -568,10 +583,8 @@ abstract class QuickBooks_QBXML_Object
 
 	/**
 	 * Perform any needed clean-up of the object data members
-	 *
-	 * @return boolean
 	 */
-	protected function _cleanup()
+	protected function _cleanup(): bool
 	{
 		return true;
 	}
@@ -582,30 +595,30 @@ abstract class QuickBooks_QBXML_Object
 	 * @todo Support for qbXML versions
 	 *
 	 * @param string $request	The type of request to convert this to (examples: "{Object}AddRq", "{Object}ModRq", "{Object}QueryRq")
-	 * @param float  $version	The required qbXML version  ***[unused - does nothing and subclasses default to QuickBooks_XML::XML_DROP]
+	 * @param float  $version	The required qbXML version  ***[unused - does nothing and subclasses default to XML::XML_DROP]
 	 * @param string $locale	The QuickBooks locale ('OE', 'AU', 'CA', 'UK', 'US')  ***[unused - subclasses default to "\t"]
 	 * @param string $root		The node to use as the root node of the XML node structure  ***[unused in function]
 	 * @return string
 	 */
-	public function asQBXML($request, $version = null, $locale = null, $root = null)
+	public function asQBXML(string $request, ?float $version = null, ?string $locale = null, ?string $root = null)
 	{
-		$todo_for_empty_elements = QuickBooks_XML::XML_DROP;
+		$todo_for_empty_elements = XML::XML_DROP;
 		$indent = "\t";
 
 		// Call any cleanup routines
 		$this->_cleanup();
 
-		//
+		// Add the Request suffix (Rq)
 		if (strtolower(substr($request, -2, 2)) != 'rq')
 		{
 			$request .= 'Rq';
 		}
 
-		$Request = new QuickBooks_XML_Node($request);
+		$RequestNode = new Node($request);
 
 		if ($schema = $this->_schema($request))
 		{
-			$tmp = array();
+			$tmp = [];
 
 			// Restrict it to a specific qbXML version?
 			if ($version)
@@ -617,99 +630,84 @@ abstract class QuickBooks_QBXML_Object
 			if ($locale)
 			{
 				// List of fields which are not supported for some versions of qbXML
-
 				if (strlen($locale) == 2)
 				{
-					// The OSR lists locales as 'QBOE', 'QBUK', 'QBCA', etc. vs. our QUICKBOOKS_LOCALE_* constants of just 'OE', 'UK', 'CA', etc.
+					// The OSR lists locales as 'QBOE', 'QBUK', 'QBCA', etc. vs. our PackageInfo::Locale constants of just 'OE', 'UK', 'CA', etc.
 					$locale = 'QB' . $locale;
 				}
 
 				$locales = $schema->localePaths();
 			}
 
+			// Get all this objects values as a list
 			$thelist = $this->asList($request);
+
+			// ReorderPaths reorders the properties in the order they appear in the QBXML spec.
+			// It also discards fields that do not belong in the Action (e.g. AppliedToTxn and IsAutoApply are dropped from ReceivePaymentMod)
 			$reordered = $schema->reorderPaths(array_keys($thelist));
 
-			foreach ($reordered as $key => $path)
+			foreach ($reordered as $path) // This is a standard array, so we do not need the $key in the loop
 			{
 				$value = $this->_object[$path];
-
 				if (is_array($value))
 				{
-					$tmp[$path] = array();
+					// This path is an array of objects (subnodes)
 
-					foreach ($value as $arr)
+					$tmp[$path] = [];
+					foreach ($value as $arr_original)
 					{
-						$tmp2 = array();
+						// Clone the object so we don't alter the original
+						$arr = clone $arr_original;
+						// $arr is the subnode QBXML object
 
-						foreach ($arr->asList('') as $inkey => $invalue)
+						// $tmp2 will hold the subnode xml values
+						$tmp2 = [];
+						if ($arr->getParentIsNode())
 						{
-							$arr->set($path . ' ' . $inkey, $invalue);
+							foreach ($arr->asList('') as $inkey => $invalue)
+							{
+								//fwrite(STDERR, "\n\tsubnode: path=$path, inkey=$inkey, invalue=$invalue");
+								$arr->set($path . ' ' . $inkey, $invalue);
+								$arr->set($inkey, null, false);
+							}
 						}
 
-						foreach ($schema->reorderPaths(array_keys($arr->asList(''))) as $subkey => $subpath)
+						$schema_reordered_paths = $schema->reorderPaths(array_keys($arr->asList('')));
+						foreach ($schema_reordered_paths as $fullpath)
 						{
 							// We need this later, so store it
-							$fullpath = $subpath;
+							$subpath = $arr->getParentIsNode() ? substr($fullpath, strlen($path) + 1) : $path;
+							//fwrite(STDERR, "\n\n\t\tfullpath: ". print_r($fullpath,true) . ' | subpath: '. print_r($subpath,true));
 
-							if ($locale and
-								isset($locales[$subpath]))
+							if (!$locale || !isset($locales[$fullpath]) || !in_array($locale, $locales[$fullpath]))
 							{
-								if (in_array($locale, $locales[$subpath]))
-								{
-									//
-									//print('found: ' . $subpath . ' (' . $locale . ') so skipping!' . "\n");
-								}
-								else
-								{
-									$subpath = substr($subpath, strlen($path) + 1);
-									$tmp2[$subpath] = $arr->get($subpath);
-								}
-							}
-							else
-							{
-								$subpath = substr($subpath, strlen($path) + 1);
-								$tmp2[$subpath] = $arr->get($subpath);
+								$tmp2[$subpath] = $arr->get($fullpath);
 							}
 
-							if ($schema->dataType($fullpath) == QUICKBOOKS_QBXML_SCHEMA_TYPE_AMTTYPE and
-								isset($tmp2[$subpath]))
+							if (isset($tmp2[$subpath]) && $schema->dataType($fullpath) == SchemaObject::TYPE_AMTTYPE)
 							{
+								// This value is an amount type, so format it with 2 decimal places
 								$tmp2[$subpath] = sprintf('%01.2f', $tmp2[$subpath]);
 							}
 						}
 
-						$tmp2 = new QuickBooks_QBXML_Object_Generic($tmp2, $arr->object());
-
-						$tmp[$path][] = $tmp2;
+						//fwrite(STDERR, "\n\tSubnode values: ". print_r($tmp2,true) ."\n\nSubnode arrObject: \n".var_export($arr->object(),true));
+						$tmp[$path][] = new Generic($tmp2, $arr->object());
 					}
 				}
 				else
 				{
+					// This is a value and not a subnode, so format it based on its datatype in the schema.
+					// Exclude it if it is in $locales ($locales is an exclude list of fields for the locale)
+
 					// Do some simple data type casting...
-					if ($schema->dataType($path) == QUICKBOOKS_QBXML_SCHEMA_TYPE_AMTTYPE)
+					if ($schema->dataType($path) == SchemaObject::TYPE_AMTTYPE)
 					{
 						$this->_object[$path] = sprintf('%01.2f', $this->_object[$path]);
 					}
 
-					if ($locale and 				// If a locale is specified...
-						isset($locales[$path]))		// ... and this path is set in the locales restriction array
+					if (!$locale || !isset($locales[$path]) || !in_array($locale, $locales[$path]))
 					{
-						// Check to see if it's supported by the given locale
-
-						if (in_array($locale, $locales[$path]))
-						{
-							// It's not supported by this locale, don't show add it
-						}
-						else
-						{
-							$tmp[$path] = $this->_object[$path];
-						}
-					}
-					else
-					{
-						// If we don't know whether or not it's supported, return it!
-
 						$tmp[$path] = $this->_object[$path];
 					}
 				}
@@ -720,11 +718,10 @@ abstract class QuickBooks_QBXML_Object
 
 			if ($wrapper = $schema->qbxmlWrapper())
 			{
-
 				$Node = $this->asXML($wrapper, null, $tmp);
-				$Request->addChild($Node);
+				$RequestNode->addChild($Node);
 
-				return $Request->asXML($todo_for_empty_elements, $indent);
+				return $RequestNode->asXML($todo_for_empty_elements, $indent);
 			}
 			else if (count($this->_object) == 0)
 			{
@@ -735,7 +732,7 @@ abstract class QuickBooks_QBXML_Object
 
 				$Node = $this->asXML($request, null, $tmp);
 
-				return $Node->asXML(QuickBooks_XML::XML_PRESERVE, $indent);
+				return $Node->asXML(XML::XML_PRESERVE, $indent);
 			}
 			else
 			{
@@ -753,15 +750,14 @@ abstract class QuickBooks_QBXML_Object
 	 *
 	 *
 	 */
-	public function asList($request)
+	public function asList(string $request)
 	{
 		$arr = $this->_object;
-		$object = $this->object();
 
 		/*
 		foreach ($arr as $key => $value)
 		{
-			$arr[$key] = QuickBooks_Cast::cast($object, $key, $value);
+			$arr[$key] = Cast::cast($object, $key, $value);
 		}
 		*/
 
@@ -772,11 +768,11 @@ abstract class QuickBooks_QBXML_Object
 	 *
 	 *
 	 */
-	static protected function _fromXMLHelper($class, $XML)
+	static protected function _fromXMLHelper(string $class, ?Node $XML): ?AbstractQbxmlObject
 	{
 		if (is_object($XML))
 		{
-			$paths = $XML->asArray(QuickBooks_XML::ARRAY_PATHS);
+			$paths = $XML->asArray(XML::ARRAY_PATHS);
 			foreach ($paths as $path => $value)
 			{
 				$newpath = implode(' ', array_slice(explode(' ', $path), 1));
@@ -791,35 +787,31 @@ abstract class QuickBooks_QBXML_Object
 	}
 
 	/**
-	 * Convert a QuickBooks_XML_Node object to a QuickBooks_Object_* object instance
-	 *
-	 * @param QuickBooks_XML_Node $XML
-	 * @param string $action_or_object
-	 * @return QuickBooks_Object
+	 * Convert a Node object to a QuickBooks_Object_* object instance
 	 */
-	static public function fromXML($XML, $action_or_object = null)
+	static public function fromXML(Node $XML, string $action_or_object = null): ?AbstractQbxmlObject
 	{
-		if (!$action_or_object or $action_or_object == QUICKBOOKS_QUERY_ITEM)
+		if (!$action_or_object || $action_or_object == PackageInfo::Actions['QUERY_ITEM'])
 		{
 			$action_or_object = $XML->name();
 		}
 
-		$type = QuickBooks_Utilities::actionToObject($action_or_object);
+		$type = Utilities::actionToObject($action_or_object);
 
-		$exceptions = array(
-			QUICKBOOKS_OBJECT_SERVICEITEM => 'ServiceItem',
-			QUICKBOOKS_OBJECT_INVENTORYITEM => 'InventoryItem',
-			QUICKBOOKS_OBJECT_NONINVENTORYITEM => 'NonInventoryItem',
-			QUICKBOOKS_OBJECT_DISCOUNTITEM => 'DiscountItem',
-			QUICKBOOKS_OBJECT_FIXEDASSETITEM => 'FixedAssetItem',
-			QUICKBOOKS_OBJECT_GROUPITEM => 'GroupItem',
-			QUICKBOOKS_OBJECT_OTHERCHARGEITEM => 'OtherChargeItem',
-			QUICKBOOKS_OBJECT_SALESTAXITEM => 'SalesTaxItem',
-			QUICKBOOKS_OBJECT_SALESTAXGROUPITEM => 'SalesTaxGroupItem',
-			QUICKBOOKS_OBJECT_SUBTOTALITEM => 'SubtotalItem',
-			QUICKBOOKS_OBJECT_INVENTORYASSEMBLYITEM => 'InventoryAssemblyItem',
-			);
-
+		// The QBXML item classes end in "Item" while the QuickBooks action begins with "Item" (e.g. ServiceItem instead of ItemService)
+		$exceptions = [
+			PackageInfo::Actions['OBJECT_SERVICEITEM'] => 'ServiceItem',
+			PackageInfo::Actions['OBJECT_INVENTORYITEM'] => 'InventoryItem',
+			PackageInfo::Actions['OBJECT_NONINVENTORYITEM'] => 'NonInventoryItem',
+			PackageInfo::Actions['OBJECT_DISCOUNTITEM'] => 'DiscountItem',
+			PackageInfo::Actions['OBJECT_FIXEDASSETITEM'] => 'FixedAssetItem',
+			PackageInfo::Actions['OBJECT_GROUPITEM'] => 'GroupItem',
+			PackageInfo::Actions['OBJECT_OTHERCHARGEITEM'] => 'OtherChargeItem',
+			PackageInfo::Actions['OBJECT_SALESTAXITEM'] => 'SalesTaxItem',
+			PackageInfo::Actions['OBJECT_SALESTAXGROUPITEM'] => 'SalesTaxGroupItem',
+			PackageInfo::Actions['OBJECT_SUBTOTALITEM'] => 'SubtotalItem',
+			PackageInfo::Actions['OBJECT_INVENTORYASSEMBLYITEM'] => 'InventoryAssemblyItem',
+		];
 		if (isset($exceptions[$type]))
 		{
 			$type = $exceptions[$type];
@@ -827,136 +819,123 @@ abstract class QuickBooks_QBXML_Object
 
 		//print('trying to create type: {' . $type . '}' . "\n");
 
-		$class = 'QuickBooks_QBXML_Object_' . ucfirst(strtolower($type));
+		$class = PackageInfo::NAMESPACE_QBXML_OBJECT . "\\" . $type;
+		$Object = static::_fromXMLHelper($class, $XML);
 
-		if (true) 		//class_exists($class, false))
+		if (!is_object($Object))
 		{
-			$Object = QuickBooks_QBXML_Object::_fromXMLHelper($class, $XML);
-
-			if (!is_object($Object))
-			{
-				return false;
-			}
-
-			$children = array();
-			switch ($Object->object())
-			{
-				case QUICKBOOKS_OBJECT_RECEIVEPAYMENT:
-
-					$children = array(
-						'AppliedToTxnRet' => array( 'QuickBooks_QBXML_Object_ReceivePayment_AppliedToTxn', 'addAppliedToTxn' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_BILL:
-
-					$children = array(
-						'ItemLineRet' => array( 'QuickBooks_QBXML_Object_Bill_ItemLine', 'addItemLine' ),
-						'ExpenseLineRet' => array( 'QuickBooks_QBXML_Object_Bill_ExpenseLine', 'addExpenseLine' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_PURCHASEORDER:
-
-					$children = array(
-						'PurchaseOrderLineRet' => array( 'QuickBooks_QBXML_Object_PurchaseOrder_PurchaseOrderLine', 'addPurchaseOrderLine' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_INVOICE:
-
-					$children = array(
-						'InvoiceLineRet' => array( 'QuickBooks_QBXML_Object_Invoice_InvoiceLine', 'addInvoiceLine' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_ESTIMATE:
-
-					$children = array(
-						'EstimateLineRet' => array( 'QuickBooks_QBXML_Object_Estimate_EstimateLine', 'addEstimateLine' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_SALESRECEIPT:
-
-					$children = array(
-						'SalesReceiptLineRet' => array( 'QuickBooks_QBXML_Object_SalesReceipt_SalesReceiptLine', 'addSalesReceiptLine' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_JOURNALENTRY:
-
-					$children = array(
-						'JournalCreditLineRet' => array( 'QuickBooks_QBXML_Object_JournalEntry_JournalCreditLine', 'addCreditLine' ),
-						'JournalDebitLineRet' => array( 'QuickBooks_QBXML_Object_JournalEntry_JournalDebitLine', 'addDebitLine' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_SALESTAXGROUPITEM:
-
-					$children = array(
-						'ItemSalesTaxRef' => array( 'QuickBooks_QBXML_Object_SalesTaxGroupItem_ItemSalesTaxRef', 'addItemSalesTaxRef' ),
-						);
-
-					break;
-				case QUICKBOOKS_OBJECT_UNITOFMEASURESET:
-
-					$children = array(
-						'RelatedUnit' => array( 'QuickBooks_QBXML_Object_UnitOfMeasureSet_RelatedUnit', 'addRelatedUnit' ),
-						'DefaultUnit' => array( 'QuickBooks_QBXML_Object_UnitOfMeasureSet_DefaultUnit', 'addDefaultUnit' ),
-						);
-
-					break;
-			}
-
-			foreach ($children as $node => $tmp)
-			{
-				$childclass = $tmp[0];
-				$childmethod = $tmp[1];
-
-				if (class_exists($childclass))
-				{
-					foreach ($XML->children() as $ChildXML)
-					{
-						if ($ChildXML->name() == $node)
-						{
-							$ChildObject = QuickBooks_QBXML_Object::_fromXMLHelper($childclass, $ChildXML);
-							$Object->$childmethod($ChildObject);
-						}
-					}
-				}
-				else
-				{
-					print('Missing class: ' . $childclass . "\n");
-				}
-			}
-
-			return $Object;
+			return null;
 		}
 
-		return false;
+		$children = [];
+		switch ($Object->object())
+		{
+			case PackageInfo::Actions['OBJECT_BILL']:
+				$children = [
+					'ItemLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\Bill\\ItemLine", 'addItemLine'],
+					'ExpenseLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\Bill\\ExpenseLine", 'addExpenseLine'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_CREDITMEMO']:
+				$children = [
+					'CreditMemoLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\CreditMemo\\CreditMemoLine", 'addCreditMemoLine'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_ESTIMATE']:
+				$children = [
+					'EstimateLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\Estimate\\EstimateLine", 'addEstimateLine'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_INVOICE']:
+				$children = [
+					'InvoiceLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\Invoice\\InvoiceLine", 'addInvoiceLine'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_JOURNALENTRY']:
+				$children = [
+					'JournalCreditLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\JournalEntry\\JournalCreditLine", 'addCreditLine'],
+					'JournalDebitLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\JournalEntry\\JournalDebitLine", 'addDebitLine'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_PURCHASEORDER']:
+				$children = [
+					'PurchaseOrderLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\PurchaseOrder\\PurchaseOrderLine", 'addPurchaseOrderLine'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_RECEIVEPAYMENT']:
+				$children = [
+					'AppliedToTxnRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\ReceivePayment\\AppliedToTxn", 'addAppliedToTxn'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_SALESRECEIPT']:
+				$children = [
+					'SalesReceiptLineRet' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\SalesReceipt\\SalesReceiptLine", 'addSalesReceiptLine'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_SALESTAXGROUPITEM']:
+				$children = [
+					'ItemSalesTaxRef' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\SalesTaxGroupItem\\ItemSalesTaxRef", 'addItemSalesTaxRef'],
+				];
+				break;
+
+			case PackageInfo::Actions['OBJECT_UNITOFMEASURESET']:
+				$children = [
+					'RelatedUnit' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\UnitOfMeasureSet\\RelatedUnit", 'addRelatedUnit'],
+					'DefaultUnit' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\UnitOfMeasureSet\\DefaultUnit", 'addDefaultUnit'],
+				];
+				break;
+		}
+
+		foreach ($children as $node => $tmp)
+		{
+			$childclass = $tmp[0];
+			$childmethod = $tmp[1];
+
+			if (class_exists($childclass))
+			{
+				foreach ($XML->children() as $ChildXML)
+				{
+					if ($ChildXML->name() == $node)
+					{
+						$ChildObject = static::_fromXMLHelper($childclass, $ChildXML);
+						$Object->$childmethod($ChildObject);
+					}
+				}
+			}
+			else
+			{
+				print('Missing class: ' . $childclass . "\n");
+			}
+		}
+
+		return $Object;
 	}
 
 	/**
 	 * Convert a qbXML string to a QuickBooks_Object_* object instance
-	 *
-	 * @param string $qbxml
-	 * @param string $action_or_object
-	 * @return QuickBooks_Object
 	 */
-	static public function fromQBXML($qbxml, $action_or_object = null)
+	static public function fromQBXML(string $qbxml, ?string $action_or_object = null): ?AbstractQbxmlObject
 	{
 		$errnum = null;
 		$errmsg = null;
 
-		$Parser = new QuickBooks_XML_Parser($qbxml);
-		if ($Doc = $Parser->parse($errnum, $errmsg))
+		$Parser = new Parser($qbxml);
+		$Doc = $Parser->parse($errnum, $errmsg);
+		if ($Doc)
 		{
 			$XML = $Doc->getRoot();
 
-			return QuickBooks_QBXML_Object::fromXML($XML, $action_or_object);
+			return static::fromXML($XML, $action_or_object);
 		}
 
-		return false;
+		return null;
 	}
 }
