@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks InvoiceLine object class
@@ -10,43 +10,29 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Invoice;
 
-/**
- * QuickBooks invoice class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Invoice.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice;
 
 /**
  * QuickBooks InvoiceLine class for Invoices
  */
-class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Object
+class InvoiceLine extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks Invoice InvoiceLine object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function getTxnLineID()
-	{
-		return $this->get('TxnLineID');
-	}
-
 	/**
 	 * Set the Item ListID for this InvoiceLine
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setItemListID($ListID)
+	public function setItemListID(string $ListID): bool
 	{
 		return $this->set('ItemRef ListID', $ListID);
 	}
@@ -55,35 +41,29 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 	 * Set the item application ID for this invoice line
 	 *
 	 * @param mixed $value
-	 * @return boolean
 	 */
-	public function setItemApplicationID($value)
+	public function setItemApplicationID($value): bool
 	{
-		return $this->set('ItemRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ITEM, QUICKBOOKS_LISTID, $value));
+		return $this->set('ItemRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ITEM'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	/**
 	 * Set the item name for this invoice line
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setItemName($name)
+	public function setItemName(string $name): bool
 	{
 		return $this->set('ItemRef FullName', $name);
 	}
 
-	public function setItemFullName($FullName)
+	public function setItemFullName(string $FullName): bool
 	{
 		return $this->setFullNameType('ItemRef FullName', null, null, $FullName);
 	}
 
 	/**
 	 * Get the ListID for this item
-	 *
-	 * @return string
 	 */
-	public function getItemListID()
+	public function getItemListID(): string
 	{
 		return $this->get('ItemRef ListID');
 	}
@@ -95,49 +75,47 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 	 */
 	public function getItemApplicationID()
 	{
-		//print($this->get('ItemRef ' . QUICKBOOKS_API_APPLICATIONID) . '<br />');
+		//print($this->get('ItemRef ' . PackageInfo::$API_APPLICATIONID) . '<br />');
 
-		return $this->extractApplicationID($this->get('ItemRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('ItemRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	/**
 	 * Get the name of the item for this invoice line item
-	 *
-	 * @return string
 	 */
-	public function getItemName()
+	public function getItemName(): string
 	{
 		return $this->get('ItemRef FullName');
 	}
 
-	public function getItemFullName()
+	public function getItemFullName(): string
 	{
 		return $this->get('ItemRef FullName');
 	}
 
-	public function setDesc($descrip)
+	public function setDesc(string $descrip): bool
 	{
 		return $this->set('Desc', $descrip);
 	}
 
-	public function getDesc()
+	public function getDesc(): string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setDescription($descrip)
+	public function setDescription(string $descrip): bool
 	{
 		return $this->setDesc($descrip);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->getDesc();
 	}
 
-	public function setQuantity($quan)
+	public function setQuantity($quantity): bool
 	{
-		return $this->set('Quantity', (float) $quan);
+		return $this->setAmountType('Quantity', $quantity);
 	}
 
 	public function getQuantity()
@@ -145,19 +123,19 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 		return $this->get('Quantity');
 	}
 
-	public function setUnitOfMeasure($unit)
+	public function setUnitOfMeasure(string $unit): bool
 	{
 		return $this->set('UnitOfMeasure', $unit);
 	}
 
-	public function getUnitOfMeasure()
+	public function getUnitOfMeasure(): string
 	{
 		return $this->get('UnitOfMeasure');
 	}
 
-	public function setRate($rate)
+	public function setRate($rate): bool
 	{
-		return $this->set('Rate', (float) $rate);
+		return $this->setAmountType('Rate', $rate);
 	}
 
 	public function getRate()
@@ -177,7 +155,7 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 
 	public function setRatePercent($percent)
 	{
-		return $this->set('RatePercent', (float) $percent);
+		return $this->set('RatePercent', floatval($percent));
 	}
 
 	public function getRatePercent()
@@ -190,166 +168,167 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 
 	}
 
-	public function setPriceLevelName($name)
+	public function setPriceLevelName(string $name): bool
 	{
 		return $this->set('PriceLevelRef FullName', $name);
 	}
 
-	public function setPriceLevelListID($ListID)
+	public function setPriceLevelListID(string $ListID): bool
 	{
 		return $this->set('PriceLevelRef ListID', $ListID);
 	}
 
-	public function getPriceLevelName()
+	public function getPriceLevelName(): string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
 
-	public function getPriceLevelListID()
+	public function getPriceLevelListID(): string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
 
 	/**
 	 * Set the class ListID for this invoice line item
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
-	public function setClassApplicationID($value)
+	public function setClassApplicationID($value): void
 	{
 
 	}
 
 	/**
 	 * Set the class name for this invoice line item
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setClassName($name)
+	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function getClassListID()
+	public function getClassListID(): string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName()
+	public function getClassName(): string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function setAmount($amount)
+	public function setAmount($amount): bool
 	{
-		return $this->setAmountType('Amount', $amount);
+		return $this->setAmountType('Amount', floatval($amount));
 	}
 
-	public function setServiceDate($date)
+	public function setServiceDate(string $date): bool
 	{
 		return $this->setDateType('ServiceDate', $date);
 	}
 
-	public function getServiceDate($format = 'Y-m-d')
+	public function getServiceDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('ServiceDate', $format);
 	}
 
-	public function setSalesTaxCodeName($name)
+	public function setSalesTaxCodeName(string $name): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $name);
 	}
 
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
 
-	public function setTaxable()
+	public function setTaxable(): bool
 	{
-		return $this->set('SalesTaxCodeRef FullName', QUICKBOOKS_TAXABLE);
+		return $this->set('SalesTaxCodeRef FullName', PackageInfo::TaxCode['TAXABLE']);
 	}
 
-	public function setNonTaxable()
+	public function setNonTaxable(): bool
 	{
-		return $this->set('SalesTaxCodeRef FullName', QUICKBOOKS_NONTAXABLE);
+		return $this->set('SalesTaxCodeRef FullName', PackageInfo::TaxCode['NONTAXABLE']);
 	}
 
-	public function getTaxable()
+	public function getTaxable(): bool
 	{
-		return $this->get('SalesTaxCodeRef FullName') == QUICKBOOKS_TAXABLE;
+		return $this->get('SalesTaxCodeRef FullName') == PackageInfo::TaxCode['TAXABLE'];
 	}
 
 	/**
 	 * Set the account name for this line item
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setOverrideItemAccountName($name)
+	public function setOverrideItemAccountName(string $name): bool
 	{
 		return $this->set('OverrideItemAccountRef FullName', $name);
 	}
 
 	/**
 	 * Set the account ListID for this line item
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setOverrideItemAccountListID($ListID)
+	public function setOverrideItemAccountListID(string $ListID): bool
 	{
 		return $this->set('OverrideItemAccountRef ListID', $ListID);
 	}
 
-	public function setOverrideItemAccountApplicationID($value)
+	public function setOverrideItemAccountApplicationID($value): void
 	{
 
 	}
 
-	public function getOverrideItemAccountListID()
+	public function getOverrideItemAccountListID(): string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
 
-	public function getOverrideItemAccountName()
+	public function getOverrideItemAccountName(): string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
 
-	public function setOther1($value)
+	/**
+	 * Set the Item TxnLineID for this InvoiceLine
+	 */
+	public function setTxnLineID(int $TxnLineID): bool
+	{
+		return $this->set('TxnLineID', $TxnLineID);
+	}
+	public function getTxnLineID(): int
+	{
+		return $this->get('TxnLineID');
+	}
+
+
+	public function setOther1(string $value): bool
 	{
 		return $this->set('Other1', $value);
 	}
 
-	public function getOther1()
+	public function getOther1(): string
 	{
 		return $this->get('Other1');
 	}
 
-	public function setOther2($value)
+	public function setOther2(string $value): bool
 	{
 		return $this->set('Other2', $value);
 	}
 
-	public function getOther2()
+	public function getOther2(): string
 	{
 		return $this->get('Other2');
 	}
@@ -359,7 +338,7 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 	 *
 	 * @return boolean
 	 */
-	protected function _cleanup()
+	protected function _cleanup(): bool
 	{
 		if ($this->exists('Amount'))
 		{
@@ -369,17 +348,17 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 		return true;
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		$this->_cleanup();
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_INVOICE:
+			case PackageInfo::Actions['ADD_INVOICE']:
 				$root = 'InvoiceLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_INVOICE:
+			case PackageInfo::Actions['MOD_INVOICE']:
 				$root = 'InvoiceLineMod';
 				$parent = null;
 				break;
@@ -390,10 +369,8 @@ class QuickBooks_QBXML_Object_Invoice_InvoiceLine extends QuickBooks_QBXML_Objec
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'InvoiceLine';
 	}

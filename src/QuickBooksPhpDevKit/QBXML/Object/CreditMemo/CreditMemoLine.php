@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks CreditMemoLine object class
@@ -14,125 +14,133 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\CreditMemo;
 
-/**
- * QuickBooks CreditMemo class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/CreditMemo.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\CreditMemo;
 
-class QuickBooks_QBXML_Object_CreditMemo_CreditMemoLine extends QuickBooks_QBXML_Object
+class CreditMemoLine extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks CreditMemo CreditMemoLine object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\CreditMemo\CreditMemoLine object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the item name for this credit memo line
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setItemName($name)
+	public function setItemName(string $name): bool
 	{
-		return $this->set('ItemRef FullName', $name);
+		return $this->setItemFullName($name);
 	}
 
 	//Use this one!
-	public function setItemFullName($FullName)
+	public function setItemFullName(string $FullName): bool
 	{
 		return $this->setFullNameType('ItemRef FullName', null, null, $FullName);
 	}
 
 	/**
 	 * Get the name of the item for this invoice line item
-	 *
-	 * @return string
 	 */
-	public function getItemName()
+	public function getItemName(): string
+	{
+		return $this->getItemFullName();
+	}
+
+	public function getItemFullName(): string
 	{
 		return $this->get('ItemRef FullName');
 	}
 
-	public function getItemFullName()
-	{
-		return $this->get('ItemRef FullName');
-	}
-
-	public function setDescription($descrip)
+	public function setDescription(string $descrip): bool
 	{
 		return $this->setDesc($descrip);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->getDesc();
 	}
 
-	public function setDesc($value)
+	public function setDesc(string $value): bool
 	{
 		return $this->set('Desc', $value);
 	}
-
-	public function setQuantity($quan)
+	public function getDesc(): string
 	{
-		return $this->set('Quantity', (float) $quan);
+		return $this->get('Desc');
 	}
 
-	public function getQuantity()
+	public function setQuantity($quantity): bool
+	{
+		return $this->set('Quantity', (float) $quantity);
+	}
+
+	public function getQuantity(): float
 	{
 		return $this->get('Quantity');
 	}
 
-	public function setRate($value)
+	public function setRate($value): bool
 	{
 		return $this->set('Rate', (float) $value);
 	}
 
-	public function getRate()
+	public function getRate(): float
 	{
 		return $this->get('Rate');
 	}
 
-	public function setClassFullName($value)
+	public function setClassFullName(string $value): bool
 	{
 		return $this->set('ClassRef FullName', $value);
 	}
 
-	public function setAmount($amount)
+	public function setAmount($amount): bool
 	{
 		return $this->setAmountType('Amount', $amount);
 	}
 
 	public function getAmount()
 	{
-		if ($amount = $this->get('Amount'))
+		$amount = $this->getAmountType('Amount');
+		if ($amount)
 		{
-			return $this->get('Amount');
+			return $amount;
 		}
+
 		return $this->get('Rate') * $this->get('Quantity');
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	/**
+	 * Set the Item TxnLineID for this CreditMemoLine
+	 */
+	public function setTxnLineID(int $TxnLineID): bool
+	{
+		return $this->set('TxnLineID', $TxnLineID);
+	}
+	public function getTxnLineID(): int
+	{
+		return $this->get('TxnLineID');
+	}
+
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		$this->_cleanup();
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_CREDITMEMO:
+			case PackageInfo::Actions['ADD_CREDITMEMO']:
 				$root = 'CreditMemoLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_CREDITMEMO:
+
+			case PackageInfo::Actions['MOD_CREDITMEMO']:
 				$root = 'CreditMemoLineMod';
 				$parent = null;
 				break;
@@ -143,10 +151,8 @@ class QuickBooks_QBXML_Object_CreditMemo_CreditMemoLine extends QuickBooks_QBXML
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'CreditMemoLine';
 	}

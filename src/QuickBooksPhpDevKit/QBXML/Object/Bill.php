@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Bill class for QuickBooks
@@ -10,158 +10,141 @@
  * @subpackage Object
  */
 
+namespace QuickBooksPhpDevKit\QBXML\Object;
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
-
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Bill/ItemLine.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\Bill\ItemLine;
+use QuickBooksPhpDevKit\QBXML\Object\Bill\ExpenseLine;
 
 /**
  *
  */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Bill/ExpenseLine.php');
-
-/**
- *
- */
-class QuickBooks_QBXML_Object_Bill extends QuickBooks_QBXML_Object
+class Bill extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_JournalEntry object
-	 *
-	 * @param array $arr
+	 * Create a new QuickBooks Bill object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
-	 * Set the customer ListID
-	 *
-	 * @param string $ListID
-	 * @return boolean
+	 * Set the transaction ID for this Bill
 	 */
-	public function setVendorListID($ListID)
+	public function setTxnID(string $TxnID): bool
 	{
-		return $this->set('VendorRef ListID' , $ListID);
+		return $this->set('TxnID', $TxnID);
+	}
+	/**
+	 * Get the transaction ID for this Bill
+	 */
+	public function getTxnID(): string
+	{
+		return $this->get('TxnID');
+	}
+
+
+	/**
+	 * Set the vendor ListID
+	 */
+	public function setVendorListID(string $ListID): bool
+	{
+		return $this->set('VendorRef ListID', $ListID);
 	}
 
 	/**
-	 * Set the customer ApplicationID (auto-replaced by the API with a ListID)
-	 *
-	 * @param mixed $value
-	 * @return boolean
+	 * Set the vendor ApplicationID (auto-replaced by the API with a ListID)
 	 */
-	public function setVendorApplicationID($value)
+	public function setVendorApplicationID($value): bool
 	{
-		return $this->set('VendorRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_VENDOR, QUICKBOOKS_LISTID, $value));
+		return $this->set('VendorRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_VENDOR'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	/**
-	 * Set the customer name
-	 *
-	 * @param string $name
-	 * @return boolean
+	 * Set the vendor name
 	 */
-	public function setVendorFullname($name)
+	public function setVendorFullname(string $name): bool
 	{
 		return $this->set('VendorRef FullName', $name);
 	}
 
 	/**
-	 * Get the customer ListID
-	 *
-	 * @return string
+	 * Get the vendor ListID
 	 */
-	public function getVendorListID()
+	public function getVendorListID(): string
 	{
 		return $this->get('VendorRef ListID');
 	}
 
 	/**
-	 * Get the customer application ID
+	 * Get the vendor application ID
 	 *
 	 * @return mixed
 	 */
 	public function getVendorApplicationID()
 	{
-		return $this->extractApplicationID($this->get('VendorRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('VendorRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	// Path: TxnDate, datatype: DATETYPE
 
 	/**
-	 * Set the TxnDate for the JournalEntry
-	 *
-	 * @param string $date
-	 * @return boolean
+	 * Set the TxnDate for the Bill
 	 */
-	public function setTxnDate($date)
+	public function setTxnDate($date): bool
 	{
 		return $this->setDateType('TxnDate', $date);
 	}
 
 	/**
-	 * Get the TxnDate for the JournalEntry
-	 *
-	 * @param ? $format = null
-	 * @return string
+	 * Get the TxnDate for the Bill
 	 */
-	public function getTxnDate($format = null)
+	public function getTxnDate(string $format = null): string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
 
 	/**
-	 * @see QuickBooks_Object_JournalEntry::setTxnDate()
+	 * @see Bill::setTxnDate()
 	 */
-	public function setTransactionDate($date)
+	public function setTransactionDate($date): bool
 	{
 		return $this->setTxnDate($date);
 	}
 
 	/**
-	 * @see QuickBooks_Object_JournalEntry::getTxnDate()
+	 * @see Bill::getTxnDate()
 	 */
-	public function getTransactionDate($format = null)
+	public function getTransactionDate(string $format = null): string
 	{
-		$this->getTxnDate($format = null);
+		$this->getTxnDate($format);
 	}
 	// Path: RefNumber, datatype: STRTYPE
 
-	public function setDueDate($date)
+	public function setDueDate($date): bool
 	{
 		return $this->setDateType('DueDate', $date);
 	}
 
-	public function getDueDate($format = 'Y-m-d')
+	public function getDueDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('DueDate', $format);
 	}
 
 	/**
-	 * Set the RefNumber for the JournalEntry
-	 *
-	 * @param string $value
-	 * @return boolean
+	 * Set the RefNumber for the Bill
 	 */
-	public function setRefNumber($value)
+	public function setRefNumber($value): bool
 	{
 		return $this->set('RefNumber', $value);
 	}
 
 	/**
-	 * Get the RefNumber for the JournalEntry
-	 *
-	 * @return string
+	 * Get the RefNumber for the Bill
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): string
 	{
 		return $this->get('RefNumber');
 	}
@@ -169,43 +152,37 @@ class QuickBooks_QBXML_Object_Bill extends QuickBooks_QBXML_Object
 	// Path: Memo, datatype: STRTYPE
 
 	/**
-	 * Set the Memo for the JournalEntry
-	 *
-	 * @param string $value
-	 * @return boolean
+	 * Set the Memo for the Bill
 	 */
-	public function setMemo($value)
+	public function setMemo(string $value): bool
 	{
 		return $this->set('Memo', $value);
 	}
 
 	/**
-	 * Get the Memo for the JournalEntry
-	 *
-	 * @return string
+	 * Get the Memo for the Bill
 	 */
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
 
-	public function addExpenseLine($obj)
+	public function addExpenseLine(ExpenseLine $obj): bool
 	{
 		return $this->addListItem('ExpenseLine', $obj);
 	}
 
-	public function addItemLine($obj)
+	public function addItemLine(ItemLine $obj): bool
 	{
 		return $this->addListItem('ItemLine', $obj);
 	}
 
 
-	public function asList($request)
+	public function asList(string $request)
 	{
 		switch ($request)
 		{
 			case 'BillAddRq':
-
 				if (isset($this->_object['ItemLine']))
 				{
 					$this->_object['ItemLineAdd'] = $this->_object['ItemLine'];
@@ -215,18 +192,25 @@ class QuickBooks_QBXML_Object_Bill extends QuickBooks_QBXML_Object
 				{
 					$this->_object['ExpenseLineAdd'] = $this->_object['ExpenseLine'];
 				}
-
 				break;
+
 			case 'BillModRq':
+				if (isset($this->_object['ItemLine']))
+				{
+					$this->_object['ItemLineMod'] = $this->_object['ItemLine'];
+				}
 
-
+				if (isset($this->_object['ExpenseLine']))
+				{
+					$this->_object['ExpenseLineMod'] = $this->_object['ExpenseLine'];
+				}
 				break;
 		}
 
 		return parent::asList($request);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		if (is_null($object))
 		{
@@ -235,8 +219,7 @@ class QuickBooks_QBXML_Object_Bill extends QuickBooks_QBXML_Object
 
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_BILL:
-
+			case PackageInfo::Actions['ADD_BILL']:
 				if (!empty($object['ItemLineAdd']))
 				{
 					foreach ($object['ItemLineAdd'] as $key => $obj)
@@ -252,10 +235,9 @@ class QuickBooks_QBXML_Object_Bill extends QuickBooks_QBXML_Object
 						$obj->setOverride('ExpenseLineAdd');
 					}
 				}
-
 				break;
-			case QUICKBOOKS_MOD_BILL:
 
+			case PackageInfo::Actions['MOD_BILL']:
 				if (!empty($object['ItemLineMod']))
 				{
 					foreach ($object['ItemLineMod'] as $key => $obj)
@@ -271,7 +253,6 @@ class QuickBooks_QBXML_Object_Bill extends QuickBooks_QBXML_Object
 						$obj->setOverride('ExpenseLineMod');
 					}
 				}
-
 				break;
 		}
 
@@ -280,11 +261,9 @@ class QuickBooks_QBXML_Object_Bill extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_BILL;
+		return PackageInfo::Actions['OBJECT_BILL'];
 	}
 }

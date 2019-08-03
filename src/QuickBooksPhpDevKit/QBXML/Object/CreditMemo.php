@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks CreditCardMemo object container
@@ -14,206 +14,391 @@
  * @subpackage Object
  */
 
-/**
- * Base object class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\CreditMemo\CreditMemoLine;
 
 /**
- * Credit Memo lines
+ * QBXML\Ojbect\CreditMemo class
  */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/CreditMemo/CreditMemoLine.php');
-
-/**
- * QuickBooks object class
- */
-
-class Quickbooks_QBXML_Object_CreditMemo extends QuickBooks_QBXML_Object
+class CreditMemo extends AbstractQbxmlObject
 {
  	/**
-	 * Create a new QuickBooks_Object_Customer object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Ojbect\CreditMemo object
 	 */
-
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setCustomerListID($ListID)
+	/**
+	 * Set the transaction ID of the CreditMemo
+	 */
+	public function setTxnID(string $TxnID): bool
+	{
+		return $this->set('TxnID', $TxnID);
+	}
+	/**
+	 * Get the transaction ID for this CreditMemo
+	 */
+	public function getTxnID(): string
+	{
+		return $this->get('TxnID');
+	}
+
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID', $ListID);
 	}
 
-	public function setCustomerFullName($name)
+	public function setCustomerFullName(string $name): bool
 	{
 		return $this->set('CustomerRef FullName', $name);
 	}
 
-	public function getCustomerListID()
+	public function getCustomerListID(): string
 	{
 		return $this->get('CustomerRef ListID');
 	}
 
-	public function getCustomerFullName()
+	public function getCustomerFullName(): string
 	{
 		return $this->get('CustomerRef FullName');
 	}
 
 	/**
-	 * Set the class ListID for this creditmemo line item
-	 *
-	 * @param string $ListID
-	 * @return boolean
+	 * Set the QB Class ListID for this CreditMemo
 	 */
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
 	/**
-	 * Set the class name for this invoice line item
-	 *
-	 * @param string $name
-	 * @return boolean
+	 * Set the QB Class Name for this CreditMemo
 	 */
-	public function setClassName($name)
+	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function setClassFullName($name)
+	public function setClassFullName(string $name): bool
 	{
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function getClassListID()
+	public function getClassListID(): string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName()
+	public function getClassName(): string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
 	/**
 	 * Set the reference number
-	 *
-	 * @param string $str
-	 * @return boolean
 	 */
-	public function setRefNumber($str)
+	public function setRefNumber($str): bool
 	{
-		return $this->set('RefNumber', $str);
+		return $this->set('RefNumber', (string) $str);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setRefNumber()}
+	 * Alias of {@link QBXML\Ojbect\CreditMemo::setRefNumber()}
 	 */
-	public function setReferenceNumber($str)
+	public function setReferenceNumber($str): bool
 	{
 		return $this->setRefNumber($str);
 	}
 
 	/**
 	 * Get the reference number
-	 *
-	 * @return string
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): string
 	{
 		return $this->get('RefNumber');
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getRefNumber()}
+	 * Alias of {@link QBXML\Ojbect\CreditMemo::getRefNumber()}
 	 */
-	public function getReferenceNumber()
+	public function getReferenceNumber(): string
 	{
 		return $this->getRefNumber();
 	}
 
-	public function setSalesRepName($name)
+	public function setPONumber($num): bool
+	{
+		return $this->set('PONumber', (string) $num);
+	}
+	public function getPONumber(): string
+	{
+		return $this->get('PONumber');
+	}
+
+	public function setSalesRepName(string $name): bool
 	{
 		return $this->set('SalesRepRef FullName', $name);
 	}
 
-	public function getSalesRepName()
+	public function getSalesRepName(): string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
 
-	public function setSalesRepListID($ListID)
+	public function setSalesRepListID(string $ListID): bool
 	{
 		return $this->set('SalesRepRef ListID', $ListID);
 	}
 
-	public function getSalesRepListID()
+	public function getSalesRepListID(): string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
 
 	/**
 	 * Set the transaction date
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
-	public function setTxnDate($date)
+	public function setTxnDate($date): bool
 	{
 		return $this->setDateType('TxnDate', $date);
 	}
 
 	/**
 	 * Get the transaction date
-	 *
-	 * @param string $format	The format you want the date in (as for {@link http://www.php.net/date})
-	 * @return string
 	 */
-	public function getTxnDate($format = 'Y-m-d')
+	public function getTxnDate(string $format = 'Y-m-d'): string
 	{
-		//return date($format, strtotime($this->get('TxnDate')));
 		return $this->getDateType('TxnDate', $format);
 	}
 
-	public function addCreditMemoLine($obj)
+	/**
+	 * Set the due date
+	 */
+	public function setDueDate($date): bool
+	{
+		return $this->setDateType('DueDate', $date);
+	}
+
+	/**
+	 * Get the due date
+	 */
+	public function getDueDate(string $format = 'Y-m-d'): string
+	{
+		return $this->getDateType('DueDate', $format);
+	}
+
+
+	public function addCreditMemoLine(CreditMemoLine $obj): bool
 	{
 		return $this->addListItem('CreditMemoLine', $obj);
 	}
 
-	public function setShipMethodName($name)
+	public function getCreditMemoLine(int $i): CreditMemoLine
+	{
+		return $this->getListItem('CreditMemoLine', $i);
+	}
+
+	public function listCreditMemoLine()
+	{
+		return $this->getList('CreditMemoLine');
+	}
+
+
+	public function setShipMethodName(string $name): bool
 	{
 		return $this->set('ShipMethodRef FullName', $name);
 	}
 
-	public function setShipMethodListID($ListID)
+	public function setShipMethodListID(string $ListID): bool
 	{
 		return $this->set('ShipMethodRef ListID', $ListID);
 	}
 
-	public function getShipMethodName()
+	public function getShipMethodName(): string
 	{
 		return $this->get('ShipMethodRef FullName');
 	}
 
-	public function getShipMethodListID()
+	public function getShipMethodListID(): string
 	{
 		return $this->get('ShipMethodRef ListID');
 	}
 
-	public function setSalesTaxItemFullName($name)
+	public function setSalesTaxItemFullName(string $name): bool
 	{
 		return $this->set('ItemSalesTaxRef FullName', $name);
 	}
 
-	public function getSalesTaxItemName()
+	public function getSalesTaxItemName(): string
 	{
 		return $this->get('ItemSalesTaxRef FullName');
 	}
 
-	public function asList($request)
+	/**
+	 * Set the tax code ListID for the customer
+	 */
+	public function setCustomerSalesTaxCodeListID(string $name): bool
+	{
+		return $this->set('CustomerSalesTaxCodeRef ListID', $name);
+	}
+	/**
+	 * Get the tax code ListID for the customer
+	 */
+	public function getCustomerSalesTaxCodeListID(): string
+	{
+		return $this->get('CustomerSalesTaxCodeRef ListID');
+	}
+
+	/**
+	 * Set the tax code FullName for the customer
+	 */
+	public function setCustomerSalesTaxCodeFullName(string $name): bool
+	{
+		return $this->set('CustomerSalesTaxCodeRef FullName', $name);
+	}
+	/**
+	 * Get the tax code FullName for the customer
+	 */
+	public function getCustomerSalesTaxCodeFullName(): string
+	{
+		return $this->get('CustomerSalesTaxCodeRef FullName');
+	}
+
+	public function setIsToBePrinted(bool $printed): bool
+	{
+		return $this->setBooleanType('IsToBePrinted', $printed);
+	}
+	public function getIsToBePrinted(): bool
+	{
+		return $this->getBooleanType('IsToBePrinted');
+	}
+
+	public function setIsToBeEmailed(bool $emailed): bool
+	{
+		return $this->setBooleanType('IsToBeEmailed', $emailed);
+	}
+	public function getIsToBeEmailed(): bool
+	{
+		return $this->getBooleanType('IsToBeEmailed');
+	}
+
+	/**
+	 * Set as pending
+	 */
+	public function setIsPending(bool $pending): bool
+	{
+		return $this->setBooleanType('IsPending', $pending);
+	}
+
+	public function getIsPending(): bool
+	{
+		return $this->getBooleanType('IsPending');
+	}
+
+	/**
+	 * Get the shipping address as an array (or a specific portion of the address as a string)
+	 *
+	 * @param string $part			A specific portion of the address to get (i.e. "Addr1" or "State")
+	 * @param array $defaults		Default values if a value isn't filled in
+	 * @return array				The address
+	 */
+	public function getShipAddress(?string $part = null, array $defaults = []): array
+	{
+		if (!is_null($part))
+		{
+			return $this->get('ShipAddress ' . $part);
+		}
+
+		return $this->getArray('ShipAddress *', $defaults);
+	}
+
+	/**
+	 * Set the shipping address for the invoice
+	 *
+	 * @param string $addr1			Address line 1
+	 * @param string $addr2			Address line 2
+	 * @param string $addr3			Address line 3
+	 * @param string $addr4			Address line 4
+	 * @param string $addr5			Address line 5
+	 * @param string $city			City
+	 * @param string $state			State
+	 * @param string $province		Province (Canadian editions of QuickBooks only!)
+	 * @param string $postalcode	Postal code
+	 * @param string $country		Country
+	 * @param string $note			Notes
+	 * @return void
+	 */
+	public function setShipAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): void
+	{
+		$this->set('ShipAddress Addr1', $addr1);
+		$this->set('ShipAddress Addr2', $addr2);
+		$this->set('ShipAddress Addr3', $addr3);
+		$this->set('ShipAddress Addr4', $addr4);
+		$this->set('ShipAddress Addr5', $addr5);
+
+		$this->set('ShipAddress City', $city);
+		$this->set('ShipAddress State', $state);
+		$this->set('ShipAddress Province', $province);
+		$this->set('ShipAddress PostalCode', $postalcode);
+		$this->set('ShipAddress Country', $country);
+		$this->set('ShipAddress Note', $note);
+	}
+
+	/**
+	 * Get the billing address
+	 *
+	 * @param string $part			A specific portion of the address to get (i.e. "Addr1" or "State")
+	 * @param array $defaults		Default values if a value isn't filled in
+	 * @return array				The address
+	 */
+	public function getBillAddress(?string $part = null, array $defaults = []): array
+	{
+		if (!is_null($part))
+		{
+			return $this->get('BillAddress ' . $part);
+		}
+
+		return $this->getArray('BillAddress *', $defaults);
+	}
+
+	/**
+	 * Set the billing address for the invoice
+	 *
+	 * @param string $addr1			Address line 1
+	 * @param string $addr2			Address line 2
+	 * @param string $addr3			Address line 3
+	 * @param string $addr4			Address line 4
+	 * @param string $addr5			Address line 5
+	 * @param string $city			City
+	 * @param string $state			State
+	 * @param string $province		Province (Canadian editions of QuickBooks only!)
+	 * @param string $postalcode	Postal code
+	 * @param string $country		Country
+	 * @param string $note			Notes
+	 * @return void
+	 */
+	public function setBillAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): void
+	{
+		$this->set('BillAddress Addr1', $addr1);
+		$this->set('BillAddress Addr2', $addr2);
+		$this->set('BillAddress Addr3', $addr3);
+		$this->set('BillAddress Addr4', $addr4);
+		$this->set('BillAddress Addr5', $addr5);
+
+		$this->set('BillAddress City', $city);
+		$this->set('BillAddress State', $state);
+		$this->set('BillAddress Province', $province);
+		$this->set('BillAddress PostalCode', $postalcode);
+		$this->set('BillAddress Country', $country);
+		$this->set('BillAddress Note', $note);
+	}
+
+	public function asList(string $request)
 	{
 		switch ($request)
 		{
@@ -234,7 +419,7 @@ class Quickbooks_QBXML_Object_CreditMemo extends QuickBooks_QBXML_Object
 		return parent::asList($request);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, $object = null)
 	{
 		if (is_null($object))
 		{
@@ -243,15 +428,15 @@ class Quickbooks_QBXML_Object_CreditMemo extends QuickBooks_QBXML_Object
 
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_CREDITMEMO:
-
+			case PackageInfo::Actions['ADD_CREDITMEMO']:
 				foreach ($object['CreditMemoLineAdd'] as $key => $obj)
 				{
 					$obj->setOverride('CreditMemoLineAdd');
 				}
 				break;
-			case QUICKBOOKS_MOD_CREDITMEMO:
-				foreach ($object['CreditMemoLineAdd'] as $key => $obj)
+
+			case PackageInfo::Actions['MOD_CREDITMEMO']:
+				foreach ($object['CreditMemoLineMod'] as $key => $obj)
 				{
 					$obj->setOverride('CreditMemoLineMod');
 				}
@@ -260,7 +445,8 @@ class Quickbooks_QBXML_Object_CreditMemo extends QuickBooks_QBXML_Object
 		return parent::asXML($root, $parent, $object);
 	}
 
-	public function object() {
-		return QUICKBOOKS_OBJECT_CREDITMEMO;
+	public function object(): string
+	{
+		return PackageInfo::Actions['OBJECT_CREDITMEMO'];
 	}
 }
