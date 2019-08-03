@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Check class for QuickBooks
@@ -10,27 +10,21 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Check;
 
-/**
- * Check base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Check.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Check;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_Check_ApplyCheckToTxn extends QuickBooks_QBXML_Object
+class ApplyCheckToTxn extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_Check_ApplyCheckToTxnAdd object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\Check\ApplyCheckToTxnAdd object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -39,21 +33,16 @@ class QuickBooks_QBXML_Object_Check_ApplyCheckToTxn extends QuickBooks_QBXML_Obj
 
 	/**
 	 * Set the TxnID for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setTxnID($value)
+	public function setTxnID(string $value): bool
 	{
 		return $this->set('TxnID', $value);
 	}
 
 	/**
 	 * Get the TxnID for the Check
-	 *
-	 * @return string
 	 */
-	public function getTxnID()
+	public function getTxnID(): string
 	{
 		return $this->get('TxnID');
 	}
@@ -62,26 +51,21 @@ class QuickBooks_QBXML_Object_Check_ApplyCheckToTxn extends QuickBooks_QBXML_Obj
 
 	/**
 	 * Set the Amount for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setAmount($value)
+	public function setAmount($value): bool
 	{
-		return $this->set('Amount', $value);
+		return $this->setAmountType('Amount', $value);
 	}
 
 	/**
 	 * Get the Amount for the Check
-	 *
-	 * @return string
 	 */
 	public function getAmount()
 	{
-		return $this->get('Amount');
+		return $this->getAmountType('Amount');
 	}
 
-	public function object()
+	public function object(): string
 	{
 		return 'ApplyCheckToTxn';
 	}

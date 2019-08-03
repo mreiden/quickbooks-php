@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks DataExt object container
@@ -10,164 +10,155 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_DataExt extends QuickBooks_QBXML_Object
+class DataExt extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_DataExt object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\DataExt object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the OwnerID
-	 *
-	 * @param string $OwnerID
-	 * @return boolean
 	 */
-	public function setOwnerID($OwnerID)
+	public function setOwnerID(string $OwnerID): bool
 	{
 		return $this->set('OwnerID', $OwnerID);
 	}
 
 	/**
 	 * Get the OwnerID
-	 *
-	 * @return string
 	 */
-	public function getOwnerID()
+	public function getOwnerID(): string
 	{
 		return $this->get('OwnerID');
 	}
 
-	public function setDataExtName($name)
+	public function setDataExtName(string $name): bool
 	{
 		return $this->set('DataExtName', $name);
 	}
 
-	public function getDataExtName()
+	public function getDataExtName(): string
 	{
 		return $this->get('DataExtName');
 	}
 
-	public function setListDataExtType($type)
+	public function setListDataExtType(string $type): bool
 	{
 		return $this->set('ListDataExtType', $type);
 	}
 
-	public function getListDataExtType()
+	public function getListDataExtType(): string
 	{
 		return $this->get('ListDataExtType');
 	}
 
-	public function setListObjListID($ListID)
+	public function setListObjListID(string $ListID): bool
 	{
 		return $this->set('ListObjRef ListID', $ListID);
 	}
 
-	public function getListObjListID()
+	public function getListObjListID(): string
 	{
 		return $this->get('ListObjRef ListID');
 	}
 
-	public function setListObjName($name)
+	public function setListObjName(string $name): bool
 	{
 		return $this->set('ListObjRef FullName', $name);
 	}
 
-	public function getListObjName()
+	public function getListObjName(): string
 	{
 		return $this->get('ListObjRef FullName');
 	}
 
-	public function setListObjApplicationID($value, $type)
+	public function setListObjApplicationID($value, $type): bool
 	{
-		return $this->set('ListObjRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID($type, QUICKBOOKS_LISTID, $value));
+		return $this->set('ListObjRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID($type, PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getListObjApplicationID()
+	public function getListObjApplicationID(): string
 	{
-		return $this->get('ListObjRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('ListObjRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function setTxnDataExtType($type)
+	public function setTxnDataExtType(string $type): bool
 	{
 		return $this->set('TxnDataExtType', $type);
 	}
 
-	public function getTxnDataExtType()
+	public function getTxnDataExtType(): string
 	{
 		return $this->get('TxnDataExtType');
 	}
 
-	public function setTxnID($TxnID)
+	public function setTxnID(string $TxnID): bool
 	{
 		return $this->set('TxnID', $TxnID);
 	}
 
-	public function getTxnID()
+	public function getTxnID(): string
 	{
 		return $this->get('TxnID');
 	}
 
-	public function setTxnApplicationID($value)
+	public function setTxnApplicationID($value): bool
 	{
-		return $this->set(QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_TRANSACTION, QUICKBOOKS_TXNID, $value));
+		return $this->set(PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_DATAEXT'], PackageInfo::QbId['TXNID'], $value));
 	}
 
-	public function getTxnApplicationID()
+	public function getTxnApplicationID(): string
 	{
-		return $this->get(QUICKBOOKS_API_APPLICATIONID);
+		return $this->get(PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function setTxnLineID($value)
+	public function setTxnLineID(string $value): bool
 	{
 		return $this->set('TxnLineID', $value);
 	}
 
-	public function getTxnLineID()
+	public function getTxnLineID(): string
 	{
 		return $this->get('TxnLineID');
 	}
 
-	public function setOtherDataExtType($type)
+	public function setOtherDataExtType(string $type): bool
 	{
 		return $this->set('OtherDataExtType', $type);
 	}
 
-	public function getOtherDataExtType()
+	public function getOtherDataExtType(): string
 	{
 		return $this->get('OtherDataExtType');
 	}
 
-	public function setDataExtValue($value)
+	public function setDataExtValue(string $value): bool
 	{
 		return $this->set('DataExtValue', $value);
 	}
 
-	public function getDataExtValue()
+	public function getDataExtValue(): string
 	{
 		return $this->get('DataExtValue');
 	}
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_DATAEXT;
+		return PackageInfo::Actions['OBJECT_DATAEXT'];
 	}
 }

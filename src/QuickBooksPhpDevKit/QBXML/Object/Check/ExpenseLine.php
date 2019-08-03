@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Check ExpenseLine class for QuickBooks
@@ -10,22 +10,21 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Check;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Check;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
+class ExpenseLine extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_Check_ExpenseLine object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\Check\ExpenseLine object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -34,55 +33,42 @@ class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the AccountRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setAccountListID($ListID)
+	public function setAccountListID(string $ListID): bool
 	{
 		return $this->set('AccountRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the AccountRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getAccountListID()
+	public function getAccountListID(): string
 	{
 		return $this->get('AccountRef ListID');
 	}
 
 	/**
 	 * Set the primary key for the related record within your own application for the Check
-	 *
-	 * @param mixed $value			The primary key within your own application
-	 * @return string
 	 */
-	public function setAccountApplicationID($value)
+	public function setAccountApplicationID($value): bool
 	{
-		return $this->set('AccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('AccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: AccountRef FullName, datatype:
 
 	/**
 	 * Set the AccountRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setAccountName($FullName)
+	public function setAccountName(string $FullName): bool
 	{
 		return $this->set('AccountRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the AccountRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getAccountName()
+	public function getAccountName(): string
 	{
 		return $this->get('AccountRef FullName');
 	}
@@ -91,67 +77,52 @@ class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the Amount for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setAmount($value)
+	public function setAmount($value): bool
 	{
-		return $this->set('Amount', $value);
+		return $this->setAmountType('Amount', $value);
 	}
 
 	/**
 	 * Get the Amount for the Check
-	 *
-	 * @return string
 	 */
-	public function getAmount()
+	public function getAmount(): string
 	{
-		return $this->get('Amount');
+		return $this->getAmountType('Amount');
 	}
 
 	// Path: TaxAmount, datatype:
 
 	/**
 	 * Set the TaxAmount for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setTaxAmount($value)
+	public function setTaxAmount($value): bool
 	{
-		return $this->set('TaxAmount', $value);
+		return $this->setAmountType('TaxAmount', $value);
 	}
 
 	/**
 	 * Get the TaxAmount for the Check
-	 *
-	 * @return string
 	 */
-	public function getTaxAmount()
+	public function getTaxAmount(): string
 	{
-		return $this->get('TaxAmount');
+		return $this->getAmountType('TaxAmount');
 	}
 
 	// Path: Memo, datatype: STRTYPE
 
 	/**
 	 * Set the Memo for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setMemo($value)
+	public function setMemo(string $value): bool
 	{
 		return $this->set('Memo', $value);
 	}
 
 	/**
 	 * Get the Memo for the Check
-	 *
-	 * @return string
 	 */
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
@@ -160,21 +131,16 @@ class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the CustomerRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setCustomerListID($ListID)
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the CustomerRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getCustomerListID()
+	public function getCustomerListID(): string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -185,30 +151,25 @@ class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setCustomerApplicationID($value)
+	public function setCustomerApplicationID($value): bool
 	{
-		return $this->set('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CUSTOMER, QUICKBOOKS_LISTID, $value));
+		return $this->set('CustomerRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CUSTOMER'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: CustomerRef FullName, datatype:
 
 	/**
 	 * Set the CustomerRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setCustomerFullName($FullName)
+	public function setCustomerFullName(string $FullName): bool
 	{
 		return $this->set('CustomerRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the CustomerRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getCustomerFullName()
+	public function getCustomerFullName(): string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -244,28 +205,23 @@ class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
 	 */
 	public function setClassApplicationID($value)
 	{
-		return $this->set('ClassRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CLASS, QUICKBOOKS_LISTID, $value));
+		return $this->set('ClassRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CLASS'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: ClassRef FullName, datatype:
 
 	/**
 	 * Set the ClassRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setClassName($FullName)
+	public function setClassName(string $FullName): bool
 	{
 		return $this->set('ClassRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the ClassRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getClassName()
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -274,55 +230,42 @@ class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the SalesTaxCodeRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the SalesTaxCodeRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
 
 	/**
 	 * Set the primary key for the related record within your own application for the Check
-	 *
-	 * @param mixed $value			The primary key within your own application
-	 * @return string
 	 */
-	public function setSalesTaxCodeApplicationID($value)
+	public function setSalesTaxCodeApplicationID($value): bool
 	{
-		return $this->set('SalesTaxCodeRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESTAXCODE, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_SALESTAXCODE'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: SalesTaxCodeRef FullName, datatype:
 
 	/**
 	 * Set the SalesTaxCodeRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setSalesTaxCodeName($FullName)
+	public function setSalesTaxCodeName(string $FullName): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the SalesTaxCodeRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
@@ -331,26 +274,21 @@ class QuickBooks_QBXML_Object_Check_ExpenseLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the BillableStatus for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setBillableStatus($value)
+	public function setBillableStatus(string $value): bool
 	{
 		return $this->set('BillableStatus', $value);
 	}
 
 	/**
 	 * Get the BillableStatus for the Check
-	 *
-	 * @return string
 	 */
-	public function getBillableStatus()
+	public function getBillableStatus(): ?string
 	{
 		return $this->get('BillableStatus');
 	}
 
-	public function object()
+	public function object(): string
 	{
 		return 'ExpenseLine';
 	}

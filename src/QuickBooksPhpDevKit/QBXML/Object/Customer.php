@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks Customer object container
@@ -10,121 +10,104 @@
  * @subpackage Object
  */
 
-/**
- * Base object class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  * QuickBooks Customer object class
  */
-class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
+class Customer extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks_Object_Customer object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the ListID of this customer record
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID of this customer record
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
 	 * Set the ListID of the parent client
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setParentListID($ListID)
+	public function setParentListID(string $ListID): bool
 	{
 		return $this->set('ParentRef ListID', $ListID);
 	}
 
 	/**
 	 * Set the FullName of the parent client
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setParentName($name)
-	{
-		return $this->set('ParentRef FullName', $name);
-	}
-
-	public function setParentFullName($FullName)
+	public function setParentFullName(string $FullName): bool
 	{
 		return $this->set('ParentRef FullName', $FullName);
+	}
+	public function setParentName(string $name): bool
+	{
+		return $this->setParentFullName($name);
 	}
 
 	/**
 	 * Set the application id of the parent client
 	 *
 	 * @param string $id
-	 * @return boolean
 	 */
-	public function setParentApplicationID($id)
+	public function setParentApplicationID($id): bool
 	{
-		return $this->set('ParentRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CUSTOMER, QUICKBOOKS_LISTID, $id));
+		return $this->set('ParentRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CUSTOMER'], PackageInfo::QbId['LISTID'], $id));
 	}
 
 	/**
 	 * Get the ListID of the parent client (if exists)
-	 *
-	 * @return string
 	 */
-	public function getParentListID()
+	public function getParentListID(): string
 	{
 		return $this->get('ParentRef ListID');
 	}
 
 	/**
 	 * Get the FullName of the parent client (if exists)
-	 *
-	 * @return string
 	 */
-	public function getParentName()
+	public function getParentFullName(): string
 	{
 		return $this->get('ParentRef FullName');
+	}
+	public function getParentName(): string
+	{
+		return $this->getParentFullName();
 	}
 
 	/**
 	 * Get the application id of the parent client
-	 *
-	 * @return string
 	 */
-	public function getParentApplicationID()
+	public function getParentApplicationID(): string
 	{
-		return $this->get('ParentRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('ParentRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function setCurrencyListID($lid)
+	public function setCurrencyListID(string $lid): bool
 	{
 		return $this->set('CurrencyRef ListID', $lid);
 	}
 
-	public function setCurrencyFullName($FullName)
+	public function setCurrencyFullName(string $FullName): bool
 	{
 		return $this->setFullNameType('CurrencyRef FullName', null, null, $FullName);
 	}
@@ -134,40 +117,39 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	/**
 	 * Set the customer type list id
 	 */
-	public function setCustomerTypeListID($lid)
+	public function setCustomerTypeListID(string $lid): bool
 	{
 		return $this->set('CustomerTypeRef ListID', $lid);
 	}
 
-	public function setCustomerTypeFullName($FullName)
+	public function setCustomerTypeFullName(string $FullName): bool
 	{
 		return $this->setFullNameType('CustomerTypeRef FullName', null, null, $FullName);
 	}
 
-	public function setCustomerTypeName($name)
+	public function setCustomerTypeName(string $name): bool
 	{
 		return $this->set('CustomerTypeRef FullName', $name);
 	}
 
-	public function setCustomerTypeApplicationID($value)
+	public function setCustomerTypeApplicationID($value): bool
 	{
-		return $this->set('CustomerTypeRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CUSTOMERTYPE, QUICKBOOKS_LISTID, $value));
+		return $this->set('CustomerTypeRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CUSTOMERTYPE'], PackageInfo::QbId['LISTID'], $value));
 	}
 
+	public function setTermsFullName(string $name): bool
+	{
+		return $this->set('TermsRef FullName', $name);
+	}
 	/**
 	 * @deprecated
 	 */
-	public function setTermsName($name)
+	public function setTermsName(string $name): bool
 	{
-		return $this->set('TermsRef FullName', $name);
+		return $this->setTermsFullName($name);
 	}
 
-	public function setTermsFullName($name)
-	{
-		return $this->set('TermsRef FullName', $name);
-	}
-
-	public function setTermsListID($ListID)
+	public function setTermsListID(string $ListID): bool
 	{
 		return $this->set('TermsRef ListID', $ListID);
 	}
@@ -175,35 +157,45 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	/*
 	public function setTermsApplicationID($value)
 	{
-		return $this->set('TermsRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_TERMS, QUICKBOOKS_LISTID, $value));
+		return $this->set('TermsRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_TERMS'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getTermsApplicationID()
 	{
-		return $this->get('TermsRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('TermsRef ' . PackageInfo::$API_APPLICATIONID);
 	}*/
 
-	public function getTermsName()
+	public function getTermsFullName(): string
 	{
 		return $this->get('TermsRef FullName');
 	}
+	/**
+	 * @deprecated
+	 */
+	public function getTermsName(): string
+	{
+		return $this->getTermsFullName();
+	}
 
-	public function getTermsListID()
+	public function getTermsListID(): string
 	{
 		return $this->get('TermsRef ListID');
 	}
 
-	public function setSalesRepName($name)
+	public function setSalesRepFullName(string $name): bool
 	{
 		return $this->set('SalesRepRef FullName', $name);
 	}
-
-	public function setSalesRepFullName($name)
+	/**
+	 * @deprecated
+	 */
+	public function setSalesRepName(string $name): bool
 	{
-		return $this->set('SalesRepRef FullName', $name);
+		return $this->setSalesRepFullName($name);
 	}
 
-	public function setSalesRepListID($ListID)
+
+	public function setSalesRepListID(string $ListID): bool
 	{
 		return $this->set('SalesRepRef ListID', $ListID);
 	}
@@ -211,20 +203,27 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	/*
 	public function setSalesRepApplicationID($value)
 	{
-		return $this->set('SalesRepRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESREP, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesRepRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_SALESREP'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getSalesRepApplicationID()
 	{
-		return $this->get('SalesRepRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('SalesRepRef ' . PackageInfo::$API_APPLICATIONID);
 	}*/
 
-	public function getSalesRepName()
+	public function getSalesRepFullName(): string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
+	/**
+	 * @deprecated
+	 */
+	public function getSalesRepName(): string
+	{
+		return $this->getSalesRepFullName();
+	}
 
-	public function getSalesRepListID()
+	public function getSalesRepListID(): string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
@@ -240,11 +239,8 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 * CustomerAdd or CustomerMod request will take a very long time to
 	 * process (2+ minutes sometimes). The fix is to simply provide this tag,
 	 * after which requests process very quickly (2 seconds or less).
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setDeliveryMethod($value)
+	public function setDeliveryMethod(string $value): bool
 	{
 		return $this->set('DeliveryMethod', $value);
 	}
@@ -253,10 +249,8 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 * Get the delivery method
 	 *
 	 * @see QUICKBOOKS_CUSTOMER_DELIVERYMETHOD_PRINT, QUICKBOOKS_CUSTOMER_DELIVERYMETHOD_EMAIL, QUICKBOOKS_CUSTOMER_DELIVERYMETHOD_FAX
-	 *
-	 * @return string
 	 */
-	public function getDeliveryMethod()
+	public function getDeliveryMethod(): string
 	{
 		return $this->get('DeliveryMethod');
 	}
@@ -266,11 +260,8 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 *
 	 * NOTE: This will be auto-set to ->getFirstName() ->getLastName() if you
 	 * don't set it explicitly.
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
@@ -279,10 +270,8 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 * Get the name of this customer
 	 *
 	 * @TODO What should the behavior of this be if "Name" is not set...?
-	 *
-	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
@@ -290,144 +279,127 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	/**
 	 * Set the full name of this customer (full name)
 	 *
-	 * NOTE: This will be auto-set to ->getName() if you don't set it
+	 * NOTE: QuickBooks will auto-set this to ->getName() if you don't set it
 	 * explicitly.
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setFullName($name)
+	public function setFullName(string $name): bool
 	{
 		return $this->setFullNameType('FullName', 'Name', 'ParentRef FullName', $name);
 	}
 
 	/**
 	 * Get the name of this customer (full name)
-	 *
-	 * @return string
 	 */
-	public function getFullName()
+	public function getFullName(): string
 	{
 		return $this->getFullNameType('FullName', 'Name', 'ParentRef FullName');
 	}
 
 	/**
 	 * Set the company name of this customer
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setCompanyName($name)
+	public function setCompanyName(string $name): bool
 	{
 		return $this->set('CompanyName', $name);
 	}
 
 	/**
 	 * Get the company name of this customer
-	 *
-	 * @return string
 	 */
-	public function getCompanyName()
+	public function getCompanyName(): string
 	{
 		return $this->get('CompanyName');
 	}
 
 	/**
 	 * Set the first name of this customer
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setFirstName($fname)
+	public function setFirstName(string $fname): bool
 	{
 		return $this->set('FirstName', $fname);
 	}
-
 	/**
 	 * Get the first name of this customer
-	 *
-	 * @return string
 	 */
-	public function getFirstName()
+	public function getFirstName(): string
 	{
 		return $this->get('FirstName');
 	}
 
 	/**
 	 * Set the last name of this customer
-	 *
-	 * @param string $lname
-	 * @return boolean
 	 */
-	public function setLastName($lname)
+	public function setLastName(string $lname): bool
 	{
 		return $this->set('LastName', $lname);
 	}
-
 	/**
 	 * Get the last name of this customer
-	 *
-	 * @return string
 	 */
-	public function getLastName()
+	public function getLastName(): string
 	{
 		return $this->get('LastName');
 	}
 
-	public function setMiddleName($mname)
+	/**
+	 * Set the middle name of this customer
+	 */
+	public function setMiddleName(string $mname): bool
 	{
 		return $this->set('MiddleName', $mname);
 	}
-
-	public function getMiddleName()
+	/**
+	 * Get the middle name of this customer
+	 */
+	public function getMiddleName(): string
 	{
 		return $this->get('MiddleName');
 	}
 
-	public function getShipAddress($part = null, $defaults = array())
+	public function getShipAddress(?string $part = null, array $defaults = []): bool
 	{
 		return $this->_getXYZAddress('Ship', '', $part, $defaults);
 	}
 
-	public function setShipAddress($addr1, $addr2 = '', $addr3 = '', $addr4 = '', $addr5 = '', $city = '', $state = '', $province = '', $postalcode = '', $country = '', $note = '')
+	public function setShipAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): bool
 	{
 		return $this->_setXYZAddress('Ship', '', $addr1, $addr2, $addr3, $addr4, $addr5, $city, $state, $province, $postalcode, $country, $note);
 	}
 
-	public function getBillAddress($part = null, $defaults = array())
+	public function getBillAddress(?string $part = null, array $defaults = [])
 	{
 		return $this->_getXYZAddress('Bill', '', $part, $defaults);
 	}
 
 	public function setBillAddress(
-		$addr1,
-		$addr2 = '',
-		$addr3 = '',
-		$addr4 = '',
-		$addr5 = '',
-		$city = '',
-		$state = '',
-		$province = '',
-		$postalcode = '',
-		$country = '',
-		$note = '')
+		string $addr1,
+		string $addr2 = '',
+		string $addr3 = '',
+		string $addr4 = '',
+		string $addr5 = '',
+		string $city = '',
+		string $state = '',
+		string $province = '',
+		string $postalcode = '',
+		string $country = '',
+		string $note = ''): bool
 	{
 		return $this->_setXYZAddress('Bill', '', $addr1, $addr2, $addr3, $addr4, $addr5, $city, $state, $province, $postalcode, $country, $note);
 	}
 
-	public function getShipAddressBlock($part = null, $defaults = array())
+	public function getShipAddressBlock(?string $part = null, array $defaults = [])
 	{
 		return $this->_getXYZAddress('Ship', 'Block', $part, $defaults);
 	}
 
-	public function getBillAddressBlock($part = null, $defaults = array())
+	public function getBillAddressBlock(?string $part = null, array $defaults = [])
 	{
 		return $this->_getXYZAddress('Bill', 'Block', $part, $defaults);
 	}
 
-	protected function _setXYZAddress($pre, $post, $addr1, $addr2, $addr3, $addr4, $addr5, $city, $state, $province, $postalcode, $country, $note)
+	protected function _setXYZAddress(string $pre, string $post, string $addr1, string $addr2, string $addr3, string $addr4, string $addr5, string $city, string $state, string $province, string $postalcode, string $country, string $note)
 	{
-		$b = FALSE;
+		$b = false;
 		for ($i = 1; $i <= 5; $i++)
 		{
 			$b = $this->set($pre . 'Address' . $post . ' Addr' . $i, ${'addr' . $i});
@@ -443,7 +415,7 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 		return $b;
 	}
 
-	protected function _getXYZAddress($pre, $post, $part = null, $defaults = array())
+	protected function _getXYZAddress(string $pre, string $post, ?string $part = null, array $defaults = [])
 	{
 		if (!is_null($part))
 		{
@@ -454,70 +426,54 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	}
 
 	/**
-	 *
-	 *
-	 * @param string $phone
-	 * @return boolean
+	 * Set the primary phone number for this customer
 	 */
-	public function setPhone($phone)
+	public function setPhone($phone): bool
 	{
 		return $this->set('Phone', $phone);
 	}
-
-	public function getPhone()
+	public function getPhone(): string
 	{
 		return $this->get('Phone');
 	}
 
 	/**
 	 * Set the alternate phone number for this customer
-	 *
-	 * @param string $phone
-	 * @return boolean
 	 */
-	public function setAltPhone($phone)
+	public function setAltPhone($phone): bool
 	{
 		return $this->set('AltPhone', $phone);
 	}
-
-	public function getAltPhone()
+	public function getAltPhone(): string
 	{
 		return $this->get('AltPhone');
 	}
 
 	/**
 	 * Set the fax number for this customer
-	 *
-	 * @param string $fax
-	 * @return boolean
 	 */
-	public function setFax($fax)
+	public function setFax($fax): bool
 	{
 		return $this->set('Fax', $fax);
 	}
-
-	public function getFax()
+	public function getFax(): string
 	{
 		return $this->get('Fax');
 	}
 
 	/**
 	 * Set the e-mail address for this customer
-	 *
-	 * @param string $email
-	 * @return boolean
 	 */
-	public function setEmail($email)
+	public function setEmail($email): bool
 	{
 		return $this->set('Email', $email);
 	}
-
-	public function getEmail()
+	public function getEmail(): string
 	{
 		return $this->get('Email');
 	}
 
-	public function setAccountNumber($num)
+	public function setAccountNumber($num): bool
 	{
 		return $this->set('AccountNumber', $num);
 	}
@@ -529,98 +485,83 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the contact person for this customer
-	 *
-	 * @param string $contact
-	 * @return boolean
 	 */
-	public function setContact($contact)
+	public function setContact(string $contact): bool
 	{
 		return $this->set('Contact', $contact);
 	}
 
 	/**
 	 * Get the name of the contact at this company/customer
-	 *
-	 * @return string
 	 */
-	public function getContact()
+	public function getContact(): string
 	{
 		return $this->get('Contact');
 	}
 
 	/**
 	 * Set the alternate contact for this customer
-	 *
-	 * @param string $contact
-	 * @return boolean
 	 */
-	public function setAltContact($contact)
+	public function setAltContact(string $contact): bool
 	{
 		return $this->set('AltContact', $contact);
 	}
 
 	/**
 	 * Get the name of the alternate contact for this customer/company
-	 *
-	 * @return string
 	 */
-	public function getAltContact()
+	public function getAltContact(): string
 	{
 		return $this->get('AltContact');
 	}
 
 	/**
 	 * Set the salutation for this customer
-	 *
-	 * @param string $salut
-	 * @return boolean
 	 */
-	public function setSalutation($salut)
+	public function setSalutation(string $salut): bool
 	{
 		return $this->set('Salutation', $salut);
 	}
 
 	/**
 	 *
-	 *
-	 * @return string
 	 */
-	public function getSalutation()
+	public function getSalutation(): string
 	{
 		return $this->get('Salutation');
 	}
 
 	public function getCustomerTypeApplicationID()
 	{
-		return $this->get('CustomerTypeRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('CustomerTypeRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getCustomerTypeListID()
+	public function getCustomerTypeListID(): string
 	{
 		return $this->get('CustomerTypeRef ListID');
 	}
 
-	public function getCustomerTypeName()
+	public function getCustomerTypeName(): string
 	{
 		return $this->get('CustomerTypeRef FullName');
 	}
 
-	public function setOpenBalance($balance)
+	public function setOpenBalance($balance): bool
 	{
-		return $this->set('OpenBalance', (float) $balance);
+		return $this->setAmountType('OpenBalance', (float) $balance);
 	}
 
 	public function getOpenBalance()
 	{
-		return $this->get('OpenBalance');
+		return $this->getAmountType('OpenBalance');
 	}
 
-	public function setOpenBalanceDate($date)
+	public function setOpenBalanceDate(string $date): bool
 	{
 		return $this->setDateType('OpenBalanceDate', $date);
 	}
 
-	public function getOpenBalanceDate($format = 'Y-m-d')
+	public function getOpenBalanceDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('OpenBalanceDate', $format);
 	}
@@ -632,12 +573,12 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 */
 	public function getBalance()
 	{
-		return $this->get('Balance');
+		return $this->getAmountType('Balance');
 	}
 
-	public function setBalance($value)
+	public function setBalance($value): bool
 	{
-		return $this->set('Balance', $value);
+		return $this->setAmountType('Balance', (float) $value);
 	}
 
 	/**
@@ -647,40 +588,40 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 */
 	public function getTotalBalance()
 	{
-		return $this->get('TotalBalance');
+		return $this->getAmountType('TotalBalance');
 	}
 
-	public function setTotalBalance($value)
+	public function setTotalBalance($value): bool
 	{
-		return $this->set('TotalBalance', $value);
+		return $this->setAmountType('TotalBalance', (float) $value);
 	}
 
-	public function setSalesTaxCodeName($name)
+	public function setSalesTaxCodeName(string $name): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $name);
 	}
 
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function setSalesTaxCodeApplicationID($value)
+	public function setSalesTaxCodeApplicationID($value): bool
 	{
-		return $this->set('SalesTaxCodeRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESTAXCODE, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_SALESTAXCODE'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getSalesTaxCodeApplicationID()
 	{
-		return $this->get('SalesTaxCodeRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
@@ -696,10 +637,10 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 * @param string $postalcode	The postal code for the credit card
 	 * @return boolean
 	 */
-	public function setCreditCardInfo($cardno, $expmonth, $expyear, $name, $address, $postalcode)
+	public function setCreditCardInfo(string $cardno, int $expmonth, int $expyear, string $name, string $address, string $postalcode): bool
 	{
 		// should probably do better checking here for failed sets.
-		$b = FALSE;
+		$b = false;
 		$b = $this->set('CreditCardInfo CreditCardNumber', $cardno);
 		$b = $this->set('CreditCardInfo ExpirationMonth', $expmonth);
 		$b = $this->set('CreditCardInfo ExpirationYear', $expyear);
@@ -717,7 +658,7 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 	 * @param array $defaults	Defaults for the card data if you want the entire array
 	 * @return mixed			If you specify a part, a string part is returned, otherwise an array of card data
 	 */
-	public function getCreditCardInfo($part = null, $defaults = array())
+	public function getCreditCardInfo(?string $part = null, array $defaults = [])
 	{
 		if (!is_null($part))
 		{
@@ -727,68 +668,91 @@ class QuickBooks_QBXML_Object_Customer extends QuickBooks_QBXML_Object
 		return $this->getArray('CreditCardInfo *', $defaults);
 	}
 
-	public function setNotes($notes)
+	public function setNotes(string $notes): bool
 	{
 		return $this->set('Notes', $notes);
 	}
 
-	public function getNotes()
+	public function getNotes(): string
 	{
 		return $this->get('Notes');
 	}
 
-	public function setPriceLevelName($name)
+	public function setPriceLevelName(string $name): bool
 	{
 		return $this->set('PriceLevelRef FullName', $name);
 	}
 
-	public function setPriceLevelListID($ListID)
+	public function setPriceLevelListID(string $ListID): bool
 	{
 		return $this->set('PriceLevelRef ListID', $ListID);
 	}
 
-	public function setPriceLevelApplicationID($value)
+	public function setPriceLevelApplicationID($value): bool
 	{
-		return $this->set('PriceLevelRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_PRICELEVEL, QUICKBOOKS_LISTID, $value));
+		return $this->set('PriceLevelRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_PRICELEVEL'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getPriceLevelApplicationID()
 	{
-		return $this->get('PriceLevelRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('PriceLevelRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getPriceLevelName()
+	public function getPriceLevelName(): string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
 
-	public function setPreferredDeliveryMethod($value)
+	public function setPreferredDeliveryMethod($value): bool
 	{
 		return $this->set('PreferredDeliveryMethod', $value);
 	}
 
-	public function getPreferredDeliveryMethod()
+	public function getPreferredDeliveryMethod(): string
 	{
 		return $this->get('PreferredDeliveryMethod');
 	}
 
 	/**
 	 * Get the price level list id.
-	 *
-	 * @return string
 	 */
-	public function getPriceLevelListID()
+	public function getPriceLevelListID(): string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
 
 	/**
-	 * Tell what type of object this is
+	 * Set the Class FullName for this customer.
 	 *
-	 * @return string
+	 * NOTE!!!: This is only available in QuickBooks Enterprise (https://quickbooks.intuit.com/learn-support/en-us/reports-and-accounting/setting-up-defaults-for-classes-in-premier-2016/00/241500)
 	 */
-	public function object()
+	public function setClassName(string $name): bool
 	{
-		return QUICKBOOKS_OBJECT_CUSTOMER;
+		return $this->set('ClassRef FullName', $name);
+	}
+	public function getClassName(): string
+	{
+		return $this->get('ClassRef FullName');
+	}
+
+	/**
+	 * Set the Class ListID for this customer.
+	 */
+	public function setClassListID(string $ListID): bool
+	{
+		return $this->set('ClassRef ListID', $ListID);
+	}
+	public function getClassListID()
+	{
+		return $this->get('ClassRef ListID');
+	}
+
+
+	/**
+	 * Tell what type of object this is
+	 */
+	public function object(): string
+	{
+		return PackageInfo::Actions['OBJECT_CUSTOMER'];
 	}
 }

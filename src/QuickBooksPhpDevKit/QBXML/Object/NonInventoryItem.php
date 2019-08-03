@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks NonInventoryItem object container
@@ -18,19 +18,19 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
+class NonInventoryItem extends AbstractQbxmlObject
 {
 	protected $_is_sales_and_purchase;
 
-	public function __construct($arr = array(), $is_sales_and_purchase = false)
+	public function __construct(array $arr = [], bool $is_sales_and_purchase = false)
 	{
 		parent::__construct($arr);
 
@@ -43,88 +43,72 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	}
 
 	/**
-	 * Set the ListID for this item
-	 *
-	 * @param string $ListID
-	 * @return boolean
+	 * Set the ListID for this NonInventoryItem
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
-	 * Get the ListID for this item
-	 *
-	 * @return string
+	 * Get the ListID for this NonInventoryItem
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
-	 * Set the name for this item
-	 *
-	 * @param string $name
-	 * @return boolean
+	 * Set the name for this NonInventoryItem
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
 	/**
-	 * Get the name for this item
-	 *
-	 * @return string
+	 * Get the name for this NonInventoryItem
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
-	public function getUnitOfMeasureSetListID()
+	public function getUnitOfMeasureSetListID(): string
 	{
 		return $this->get('UnitOfMeasureSetRef ListID');
 	}
 
-	public function getUnitOfMeasureSetFullName()
+	public function getUnitOfMeasureSetFullName(): string
 	{
 		return $this->get('UnitOfMeasureSetRef FullName');
 	}
 
 	/**
-	 * Tell (and optionally set) whether or not this item is currently for Sale *and* Purchase
-	 *
-	 * @param boolean $enable
-	 * @return boolean
+	 * Tell (and optionally set) whether or not this NonInventoryItem is currently for Sale *and* Purchase
 	 */
-	public function isSalesAndPurchase($enable = null)
+	public function isSalesAndPurchase(?bool $enable = null): ?bool
 	{
 		$current = $this->_is_sales_and_purchase;
 
 		if (!is_null($enable))
 		{
-			$this->_is_sales_and_purchase = (boolean) $enable;
+			$this->_is_sales_and_purchase = $enable;
 		}
 
 		return $current;
 	}
 
 	/**
-	 * Tell (and optionall set) whether or not this item is currently for Sale *or* Purchase
-	 *
-	 * @param boolean $enable
-	 * @return boolean
+	 * Tell (and optionall set) whether or not this NonInventoryItem is currently for Sale *or* Purchase
 	 */
-	public function isSalesOrPurchase($enable = null)
+	public function isSalesOrPurchase(?bool $enable = null): ?bool
 	{
 		$current = !$this->_is_sales_and_purchase;
 
 		if (!is_null($enable))
 		{
-			$this->_is_sales_and_purchase = ! (boolean) $enable;
+			$this->_is_sales_and_purchase = !$enable;
 		}
 
 		return $current;
@@ -133,36 +117,32 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	// Sales OR Purchase
 
 	/**
-	 * Set the description of this item (Sales OR Purchase)
-	 *
-	 * @param string $descrip
-	 * @return boolean
+	 * Set the description of this NonInventoryItem (Sales OR Purchase)
 	 */
-	public function setDescription($descrip)
+	public function setDescription(string $descrip): bool
 	{
 		return $this->set('SalesOrPurchase Desc', $descrip);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->get('SalesOrPurchase Desc');
 	}
 
 	/**
-	 * Set the price for this item (Sales OR Purchase)
+	 * Set the price for this NonInventoryItem (Sales OR Purchase)
 	 *
 	 * @param string $price
-	 * @return boolean
 	 */
-	public function setPrice($price)
+	public function setPrice($price): bool
 	{
 		$this->remove('SalesOrPurchase PricePercent');
 
-		return $this->set('SalesOrPurchase Price', sprintf('%01.2f', (float) $price));
+		return $this->setAmountType('SalesOrPurchase Price', $price);
 	}
 
 	/**
-	 * Get the price for this item (Sales OR Purchase)
+	 * Get the price for this NonInventoryItem (Sales OR Purchase)
 	 */
 	public function getPrice()
 	{
@@ -170,9 +150,9 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	}
 
 	/**
-	 * Set the price percent for this item (Sales OR Purchase)
+	 * Set the price percent for this NonInventoryItem (Sales OR Purchase)
 	 */
-	public function setPricePercent($percent)
+	public function setPricePercent($percent): bool
 	{
 		$this->remove('SalesOrPurchase Price');
 
@@ -180,7 +160,7 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	}
 
 	/**
-	 * Get the price percent for this item (Sales OR Purchase)
+	 * Get the price percent for this NonInventoryItem (Sales OR Purchase)
 	 */
 	public function getPricePercent()
 	{
@@ -188,12 +168,9 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	}
 
 	/**
-	 * Set the account ListID for this item (Sales OR Purchase)
-	 *
-	 * @param string $ListID
-	 * @return string
+	 * Set the account ListID for this NonInventoryItem (Sales OR Purchase)
 	 */
-	public function setAccountListID($ListID)
+	public function setAccountListID(string $ListID): bool
 	{
 		return $this->set('SalesOrPurchase AccountRef ListID', $ListID);
 	}
@@ -201,7 +178,7 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * (Sales OR Purchase)
 	 */
-	public function setAccountName($name)
+	public function setAccountName(string $name): bool
 	{
 		return $this->set('SalesOrPurchase AccountRef FullName', $name);
 	}
@@ -209,20 +186,20 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * (Sales OR Purchase)
 	 */
-	public function setAccountApplicationID($value)
+	public function setAccountApplicationID($value): bool
 	{
-		return $this->set('SalesOrPurchase AccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesOrPurchase AccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getAccountApplicationID()
 	{
-		return $this->get('SalesOrPurchase AccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('SalesOrPurchase AccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
 	/**
 	 * (Sales OR Purchase)
 	 */
-	public function getAccountListID()
+	public function getAccountListID(): string
 	{
 		return $this->get('SalesOrPurchase AccountRef ListID');
 	}
@@ -230,26 +207,26 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * (Sales OR Purchase)
 	 */
-	public function getAccountName()
+	public function getAccountName(): string
 	{
 		return $this->get('SalesOrPurchase AccountRef FullName');
 	}
 
 	// Sales AND Purchase
 
-	public function setSalesDescription($descrip)
+	public function setSalesDescription(string $descrip): bool
 	{
 		return $this->set('SalesAndPurchase SalesDesc', $descrip);
 	}
 
-	public function getSalesDescription()
+	public function getSalesDescription(): string
 	{
 		return $this->get('SalesAndPurchase SalesDesc');
 	}
 
-	public function setSalesPrice($price)
+	public function setSalesPrice($price): bool
 	{
-		return $this->set('SalesAndPurchase SalesPrice', sprintf('%01.2f', (float) $price));
+		return $this->setAmountType('SalesAndPurchase SalesPrice', $price);
 	}
 
 	public function getSalesPrice()
@@ -257,49 +234,49 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 		return $this->get('SalesAndPurchase SalesPrice');
 	}
 
-	public function setIncomeAccountListID($ListID)
+	public function setIncomeAccountListID(string $ListID): bool
 	{
 		return $this->set('SalesAndPurchase IncomeAccountRef ListID', $ListID);
 	}
 
-	public function getIncomeAccountListID()
+	public function getIncomeAccountListID(): string
 	{
 		return $this->get('SalesAndPurchase IncomeAccountRef ListID');
 	}
 
-	public function setIncomeAccountName($name)
+	public function setIncomeAccountName(string $name): bool
 	{
 		return $this->set('SalesAndPurchase IncomeAccountRef FullName', $name);
 	}
 
-	public function getIncomeAccountName()
+	public function getIncomeAccountName(): string
 	{
 		return $this->get('SalesAndPurchase IncomeAccountRef FullName');
 	}
 
-	public function setIncomeAccountApplicationID($value)
+	public function setIncomeAccountApplicationID($value): bool
 	{
-		return $this->set('SalesAndPurchase IncomeAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesAndPurchase IncomeAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getIncomeAccountApplicationID()
 	{
-		return $this->get('SalesAndPurchase IncomeAccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('SalesAndPurchase IncomeAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function setPurchaseDescription($descrip)
+	public function setPurchaseDescription(string $descrip): bool
 	{
 		return $this->set('SalesAndPurchase PurchaseDesc', $descrip);
 	}
 
-	public function getPurchaseDescription()
+	public function getPurchaseDescription(): bool
 	{
 		return $this->get('SalesAndPurchase PurchaseDesc');
 	}
 
-	public function setPurchaseCost($cost)
+	public function setPurchaseCost($cost): bool
 	{
-		return $this->set('SalesAndPurchase PurchaseCost', sprintf('%01.2f', (float) $cost));
+		return $this->setAmountType('SalesAndPurchase PurchaseCost', $cost);
 	}
 
 	public function getPurchaseCost()
@@ -307,72 +284,70 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 		return $this->get('SalesAndPurchase PurchaseCost');
 	}
 
-	public function setExpenseAccountListID($ListID)
+	public function setExpenseAccountListID(string $ListID): bool
 	{
 		return $this->set('SalesAndPurchase ExpenseAccountRef ListID', $ListID);
 	}
 
-	public function setExpenseAccountName($name)
+	public function setExpenseAccountName(string $name): bool
 	{
 		return $this->set('SalesAndPurchase ExpenseAccountRef FullName', $name);
 	}
 
-	public function setExpenseAccountApplicationID($value)
+	public function setExpenseAccountApplicationID($value): bool
 	{
-		return $this->set('SalesAndPurchase ExpenseAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesAndPurchase ExpenseAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getExpenseAccountApplicationID()
 	{
-		return $this->get('SalesAndPurchase ExpenseAccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('SalesAndPurchase ExpenseAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getExpenseAccountListID()
+	public function getExpenseAccountListID(): string
 	{
 		return $this->get('SalesAndPurchase ExpenseAccountRef ListID');
 	}
 
-	public function getExpenseAccountName()
+	public function getExpenseAccountName(): string
 	{
 		return $this->get('SalesAndPurchase ExpenseAccountRef FullName');
 	}
 
-	public function setPreferredVendorListID($ListID)
+	public function setPreferredVendorListID(string $ListID): bool
 	{
 		return $this->set('SalesAndPurchase PrefVendorRef ListID', $ListID);
 	}
 
-	public function setPreferredVendorName($name)
+	public function setPreferredVendorName(string $name): bool
 	{
 		return $this->set('SalesAndPurchase PrefVendorRef FullName', $name);
 	}
 
-	public function setPreferredVendorApplicationID($value)
+	public function setPreferredVendorApplicationID($value): bool
 	{
-		return $this->set('SalesAndPurchase PrefVendorRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_VENDOR, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesAndPurchase PrefVendorRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_VENDOR'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getPreferredVendorApplicationID()
 	{
-		return $this->get('SalesAndPurchase PrefVendorRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('SalesAndPurchase PrefVendorRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getPreferredVendorListID()
+	public function getPreferredVendorListID(): string
 	{
 		return $this->get('SalesAndPurchase PrefVendorRef ListID');
 	}
 
-	public function getPreferredVendorName()
+	public function getPreferredVendorName(): string
 	{
 		return $this->get('SalesAndPurchase PrefVendorRef FullName');
 	}
 
 	/**
 	 *
-	 *
-	 * @return boolean
 	 */
-	protected function _cleanup()
+	protected function _cleanup(): bool
 	{
 		if ($this->isSalesAndPurchase())
 		{
@@ -395,11 +370,9 @@ class QuickBooks_QBXML_Object_NonInventoryItem extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_NONINVENTORYITEM;
+		return PackageInfo::Actions['OBJECT_NONINVENTORYITEM'];
 	}
 }

@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * Check class for QuickBooks
+ * DepositLine class for QuickBooks
  *
  * @author Keith Palmer Jr. <keith@ConsoliBYTE.com>
  * @license LICENSE.txt
@@ -10,85 +10,81 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Deposit;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_Deposit_DepositLine extends QuickBooks_QBXML_Object
+class DepositLine extends AbstractQbxmlObject
 {
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setPaymentTxnID($TxnID)
+	public function setPaymentTxnID(string $TxnID): bool
 	{
 		return $this->set('PaymentTxnID', $TxnID);
 	}
 
-	public function getPaymentTxnID()
+	public function getPaymentTxnID(): string
 	{
 		return $this->get('PaymentTxnID');
 	}
 
-	public function setPaymentTxnLineID($TxnLineID)
+	public function setPaymentTxnLineID(string $TxnLineID): bool
 	{
 		return $this->set('PaymentTxnLineID', $TxnLineID);
 	}
 
-	public function getPaymentTxnLineID()
+	public function getPaymentTxnLineID(): string
 	{
 		return $this->get('PaymentTxnLineID');
 	}
 
-	public function setOverrideMemo($value)
+	public function setOverrideMemo(string $value): bool
 	{
 		return $this->set('OverrideMemo', $value);
 	}
 
 	/**
-	 * Get the Memo for the Check
-	 *
-	 * @return string
+	 * Get the Override Memo for the DepositLine
 	 */
-	public function getOverrideMemo()
+	public function getOverrideMemo(): string
 	{
 		return $this->get('OverrideMemo');
 	}
 
-	public function setOverrideCheckNumber($value)
+	public function setOverrideCheckNumber($value): bool
 	{
 		return $this->set('OverrideCheckNumber', $value);
 	}
 
 	/**
-	 * Get the Memo for the Check
-	 *
-	 * @return string
+	 * Get the Override Check Number for the DepositLine
 	 */
-	public function getOverrideCheckNumber()
+	public function getOverrideCheckNumber(): string
 	{
 		return $this->get('OverrideCheckNumber');
 	}
 
 
 	/**
-	 * Set the Amount for the Check
+	 * Set the Amount for the DepositLine
 	 *
 	 * @param string $value
 	 * @return boolean
 	 */
-	public function setAmount($value)
+	public function setAmount($value): bool
 	{
 		return $this->set('Amount', $value);
 	}
 
 	/**
-	 * Get the Amount for the Check
+	 * Get the Amount for the DepositLine
 	 *
 	 * @return string
 	 */
@@ -97,17 +93,15 @@ class QuickBooks_QBXML_Object_Deposit_DepositLine extends QuickBooks_QBXML_Objec
 		return $this->get('Amount');
 	}
 
-	public function setMemo($value)
+	public function setMemo(string $value): bool
 	{
 		return $this->set('Memo', $value);
 	}
 
 	/**
-	 * Get the Memo for the Check
-	 *
-	 * @return string
+	 * Get the Memo for the DepositLine
 	 */
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
@@ -116,61 +110,50 @@ class QuickBooks_QBXML_Object_Deposit_DepositLine extends QuickBooks_QBXML_Objec
 	// Path: ClassRef ListID, datatype:
 
 	/**
-	 * Set the ClassRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
+	 * Set the ClassRef ListID for the DepositLine
 	 */
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
 	/**
-	 * Get the ClassRef ListID for the Check
-	 *
-	 * @return string
+	 * Get the ClassRef ListID for the DepositLine
 	 */
-	public function getClassListID()
+	public function getClassListID(): string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
 	/**
-	 * Set the primary key for the related record within your own application for the Check
+	 * Set the primary key for the related record within your own application for the DepositLine
 	 *
 	 * @param mixed $value			The primary key within your own application
-	 * @return string
 	 */
-	public function setClassApplicationID($value)
+	public function setClassApplicationID($value): bool
 	{
-		return $this->set('ClassRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CLASS, QUICKBOOKS_LISTID, $value));
+		return $this->set('ClassRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CLASS'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: ClassRef FullName, datatype:
 
 	/**
-	 * Set the ClassRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
+	 * Set the ClassRef FullName for the DepositLine
 	 */
-	public function setClassFullName($FullName)
+	public function setClassFullName(string $FullName): bool
 	{
 		return $this->set('ClassRef FullName', $FullName);
 	}
 
 	/**
-	 * Get the ClassRef FullName for the Check
-	 *
-	 * @return string
+	 * Get the ClassRef FullName for the DepositLine
 	 */
-	public function getClassFullName()
+	public function getClassFullName(): string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		if (is_null($object))
 		{
@@ -179,11 +162,11 @@ class QuickBooks_QBXML_Object_Deposit_DepositLine extends QuickBooks_QBXML_Objec
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_DEPOSIT:
+			case PackageInfo::Actions['ADD_DEPOSIT']:
 				$root = 'DepositLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_DEPOSIT:
+			case PackageInfo::Actions['MOD_DEPOSIT']:
 				$root = 'DepositLineMod';
 				$parent = null;
 				break;
@@ -192,7 +175,7 @@ class QuickBooks_QBXML_Object_Deposit_DepositLine extends QuickBooks_QBXML_Objec
 		return parent::asXML($root, $parent, $object);
 	}
 
-	public function object()
+	public function object(): string
 	{
 		return 'DepositLine';
 	}

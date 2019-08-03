@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks Invoice object container
@@ -10,95 +10,64 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice\DiscountLine;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice\InvoiceLine;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice\ShippingLine;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice\SalesTaxLine;
 
 /**
- * Used for some InvoiceLine conversions
+ * QBXML\Object\Invoice class definition
  */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Generic.php');
-
-/**
- * Invoice lines for Invoices
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Invoice/InvoiceLine.php');
-
-/**
- * Sales Receipt discount line item
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Invoice/DiscountLine.php');
-
-/**
- * Sales Receipt shipping line item
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Invoice/ShippingLine.php');
-
-/**
- * Sales Receipt sales tax line item
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Invoice/SalesTaxLine.php');
-
-/**
- * QuickBooks Invoice class definition
- */
-class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
+class Invoice extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks Invoice object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setTxnID()}
+	 * Alias of {@link Invoice::setTxnID()}
 	 */
-	public function setTransactionID($TxnID)
+	public function setTransactionID(string $TxnID): bool
 	{
 		return $this->setTxnID($TxnID);
 	}
 
 	/**
 	 * Set the transaction ID of the Invoice object
-	 *
-	 * @param string $TxnID
-	 * @return boolean
 	 */
-	public function setTxnID($TxnID)
+	public function setTxnID(string $TxnID): bool
 	{
 		return $this->set('TxnID', $TxnID);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getTxnID()}
+	 * Alias of {@link Invoice::getTxnID()}
 	 */
-	public function getTransactionID()
+	public function getTransactionID(): string
 	{
 		return $this->getTxnID();
 	}
 
 	/**
 	 * Get the transaction ID for this invoice
-	 *
-	 * @return string
 	 */
-	public function getTxnID()
+	public function getTxnID(): string
 	{
 		return $this->get('TxnID');
 	}
 
 	/**
 	 * Set the customer ListID
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setCustomerListID($ListID)
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID' , $ListID);
 	}
@@ -109,18 +78,15 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 * @param mixed $value
 	 * @return boolean
 	 */
-	public function setCustomerApplicationID($value)
+	public function setCustomerApplicationID($value): bool
 	{
-		return $this->set('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CUSTOMER, QUICKBOOKS_LISTID, $value));
+		return $this->set('CustomerRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CUSTOMER'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	/**
 	 * Set the customer name
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setCustomerFullName($name)
+	public function setCustomerFullName(string $name): bool
 	{
 		return $this->set('CustomerRef FullName', $name);
 	}
@@ -128,17 +94,15 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function setCustomerName($name)
+	public function setCustomerName(string $name): bool
 	{
-		return $this->set('CustomerRef FullName', $name);
+		return $this->setCustomerFullName($name);
 	}
 
 	/**
 	 * Get the customer ListID
-	 *
-	 * @return string
 	 */
-	public function getCustomerListID()
+	public function getCustomerListID(): string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -150,15 +114,13 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 */
 	public function getCustomerApplicationID()
 	{
-		return $this->extractApplicationID($this->get('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('CustomerRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	/**
 	 * Get the customer name
-	 *
-	 * @return string
 	 */
-	public function getCustomerFullName()
+	public function getCustomerFullName(): string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -166,21 +128,11 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getCustomerName()
+	public function getCustomerName(): string
 	{
-		return $this->get('CustomerRef FullName');
+		return $this->getCustomerFullName();
 	}
 
-	/**
-	 * Set the class ListID for this invoice
-	 *
-	 * @param string $ListID
-	 * @return boolean
-	 */
-	public function setClassListID($ListID)
-	{
-		return $this->set('ClassRef ListID', $ListID);
-	}
 
 	/**
 	 * Set the class application ID
@@ -188,21 +140,27 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 * @param mixed $value
 	 * @return boolean
 	 */
-	public function setClassApplicationID($value)
+	public function setClassApplicationID($value): bool
 	{
-		return $this->set('ClassRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CLASS, QUICKBOOKS_LISTID, $value));
+		return $this->set('ClassRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CLASS'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function setClassName($name)
+	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef FullName', $name);
 	}
-
-	public function getClassName()
+	public function getClassName(): string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
+	/**
+	 * Set the class ListID for this invoice
+	 */
+	public function setClassListID(string $ListID): bool
+	{
+		return $this->set('ClassRef ListID', $ListID);
+	}
 	public function getClassListID()
 	{
 		return $this->get('ClassRef ListID');
@@ -211,30 +169,30 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	/*
 	public function getClassApplicationID()
 	{
-		return $this->extractApplicationID($this->get('ClassRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('ClassRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	public function setARAccountApplicationID($value)
 	{
-		return $this->set('ARAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('ARAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}*/
 
-	public function setARAccountListID($ListID)
+	public function setARAccountListID(string $ListID): bool
 	{
 		return $this->set('ARAccountRef ListID', $ListID);
 	}
 
-	public function setARAccountName($name)
+	public function setARAccountName(string $name): bool
 	{
 		return $this->set('ARAccountRef FullName', $name);
 	}
 
-	public function getARAccountListID()
+	public function getARAccountListID(): string
 	{
 		return $this->get('ARAccountRef ListID');
 	}
 
-	public function getARAccountName()
+	public function getARAccountName(): string
 	{
 		return $this->get('ARAccountRef FullName');
 	}
@@ -246,30 +204,30 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 */
 	public function getARAccountApplicationID()
 	{
-		return $this->extractApplicationID($this->get('ARAccountRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('ARAccountRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	public function setTemplateApplicationID($value)
 	{
-		return $this->set('TemplateRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_TEMPLATE, QUICKBOOKS_LISTID, $value));
+		return $this->set('TemplateRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_TEMPLATE'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function setTemplateName($name)
+	public function setTemplateName(string $name): bool
 	{
 		return $this->set('TemplateRef FullName', $name);
 	}
 
-	public function setTemplateListID($ListID)
+	public function setTemplateListID(string $ListID): bool
 	{
 		return $this->set('TemplateRef ListID', $ListID);
 	}
 
-	public function getTemplateName()
+	public function getTemplateName(): string
 	{
 		return $this->get('TemplateRef FullName');
 	}
 
-	public function getTemplateListID()
+	public function getTemplateListID(): string
 	{
 		return $this->get('TemplateRef ListID');
 	}
@@ -281,93 +239,82 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 */
 	public function getTemplateApplicationID()
 	{
-		return $this->extractApplicationID($this->get('TemplateRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('TemplateRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	/**
 	 * Set the transaction date
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
-	public function setTxnDate($date)
+	public function setTxnDate($date): bool
 	{
 		return $this->setDateType('TxnDate', $date);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setTxnDate()}
+	 * Alias of {@link Invoice::setTxnDate()}
 	 */
-	public function setTransactionDate($date)
+	public function setTransactionDate($date): bool
 	{
 		return $this->setTxnDate($date);
 	}
 
 	/**
 	 * Get the transaction date
-	 *
-	 * @param string $format	The format you want the date in (as for {@link http://www.php.net/date})
-	 * @return string
 	 */
-	public function getTxnDate($format = 'Y-m-d')
+	public function getTxnDate(string $format = 'Y-m-d'): string
 	{
 		//return date($format, strtotime($this->get('TxnDate')));
 		return $this->getDateType('TxnDate', $format);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getTxnDate()}
+	 * Alias of {@link Invoice::getTxnDate()}
 	 */
-	public function getTransactionDate()
+	public function getTransactionDate(): string
 	{
 		return $this->getTxnDate($format);
 	}
 
 	/**
 	 * Set the reference number
-	 *
-	 * @param string $str
-	 * @return boolean
 	 */
-	public function setRefNumber($str)
+	public function setRefNumber($str): bool
 	{
-		return $this->set('RefNumber', $str);
+		return $this->set('RefNumber', (string) $str);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setRefNumber()}
+	 * Alias of {@link Invoice::setRefNumber()}
 	 */
-	public function setReferenceNumber($str)
+	public function setReferenceNumber($str): bool
 	{
 		return $this->setRefNumber($str);
 	}
 
 	/**
 	 * Get the reference number
-	 *
-	 * @return string
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): string
 	{
 		return $this->get('RefNumber');
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getRefNumber()}
+	 * Alias of {@link Invoice::getRefNumber()}
 	 */
-	public function getReferenceNumber()
+	public function getReferenceNumber(): string
 	{
 		return $this->getRefNumber();
 	}
 
 	/**
-	 * Get an shipping address as an array (or a specific portion of the address as a string)
+	 * Get the shipping address as an array (or a specific portion of the address as a string)
 	 *
 	 * @param string $part			A specific portion of the address to get (i.e. "Addr1" or "State")
 	 * @param array $defaults		Default values if a value isn't filled in
 	 * @return array				The address
 	 */
-	public function getShipAddress($part = null, $defaults = array())
+	public function getShipAddress(?string $part = null, array $defaults = []): array
 	{
 		if (!is_null($part))
 		{
@@ -393,12 +340,13 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 * @param string $note			Notes
 	 * @return void
 	 */
-	public function setShipAddress($addr1, $addr2 = '', $addr3 = '', $addr4 = '', $addr5 = '', $city = '', $state = '', $province = '', $postalcode = '', $country = '', $note = '')
+	public function setShipAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): void
 	{
-		for ($i = 1; $i <= 5; $i++)
-		{
-			$this->set('ShipAddress Addr' . $i, ${'addr' . $i});
-		}
+		$this->set('ShipAddress Addr1', $addr1);
+		$this->set('ShipAddress Addr2', $addr2);
+		$this->set('ShipAddress Addr3', $addr3);
+		$this->set('ShipAddress Addr4', $addr4);
+		$this->set('ShipAddress Addr5', $addr5);
 
 		$this->set('ShipAddress City', $city);
 		$this->set('ShipAddress State', $state);
@@ -415,7 +363,7 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 * @param array $defaults		Default values if a value isn't filled in
 	 * @return array				The address
 	 */
-	public function getBillAddress($part = null, $defaults = array())
+	public function getBillAddress(?string $part = null, array $defaults = []): array
 	{
 		if (!is_null($part))
 		{
@@ -441,12 +389,13 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 * @param string $note			Notes
 	 * @return void
 	 */
-	public function setBillAddress($addr1, $addr2 = '', $addr3 = '', $addr4 = '', $addr5 = '', $city = '', $state = '', $province = '', $postalcode = '', $country = '', $note = '')
+	public function setBillAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): void
 	{
-		for ($i = 1; $i <= 5; $i++)
-		{
-			$this->set('BillAddress Addr' . $i, ${'addr' . $i});
-		}
+		$this->set('BillAddress Addr1', $addr1);
+		$this->set('BillAddress Addr2', $addr2);
+		$this->set('BillAddress Addr3', $addr3);
+		$this->set('BillAddress Addr4', $addr4);
+		$this->set('BillAddress Addr5', $addr5);
 
 		$this->set('BillAddress City', $city);
 		$this->set('BillAddress State', $state);
@@ -457,52 +406,64 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	}
 
 	/**
-	 * Set an invoice as pending
-	 *
-	 * @param boolean $pending
-	 * @return boolean
+	 * Set an invoice as pending (e.g. back-orders, unpaid orders, estimates)
 	 */
-	public function setIsPending($pending)
+	public function setIsPending(bool $pending): bool
 	{
 		return $this->setBooleanType('IsPending', $pending);
 	}
 
-	public function getIsPending()
+	public function getIsPending(): bool
 	{
 		return $this->getBooleanType('IsPending');
 	}
 
-	public function setPONumber($num)
+	public function setPONumber($num): bool
 	{
-		return $this->set('PONumber', $num);
+		return $this->set('PONumber', (string) $num);
 	}
 
-	public function getPONumber()
+	public function getPONumber(): string
 	{
 		return $this->get('PONumber');
 	}
 
-	public function setTermsListID($ListID)
+	public function setTermsListID(string $ListID): bool
 	{
 		return $this->set('TermsRef ListID', $ListID);
 	}
 
-	public function setTermsApplicationID($value)
+	public function setTermsApplicationID($value): bool
 	{
-		return $this->set('TermsRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_TERMS, QUICKBOOKS_LISTID, $value));
+		return $this->set('TermsRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_TERMS'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function setTermsName($name)
+	public function setTermsFullName(string $name): bool
 	{
 		return $this->set('TermsRef FullName', $name);
 	}
+	/**
+	 * @deprecated
+	 */
+	public function setTermsName(string $name): bool
+	{
+		return $this->setTermsFullName($name);
+	}
 
-	public function getTermsName()
+	public function getTermsFullName(): string
 	{
 		return $this->get('TermsRef FullName');
 	}
+	/**
+	 * @deprecated
+	 */
+	public function getTermsName(): string
+	{
+		return $this->getTermsFullName();
+	}
 
-	public function getTermsListID()
+
+	public function getTermsListID(): string
 	{
 		return $this->get('TermsRef ListID');
 	}
@@ -514,90 +475,72 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 */
 	public function getTermsApplicationID()
 	{
-		return $this->extractApplicationID($this->get('TermsRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('TermsRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	/**
 	 * Set the due date for the invoice
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
-	public function setDueDate($date)
+	public function setDueDate($date): bool
 	{
-		//return $this->set('DueDate', date('Y-m-d', strtotime($date)));
 		return $this->setDateType('DueDate', $date);
 	}
 
 	/**
 	 * Get the due date for the invoice
-	 *
-	 * @param string $format	The format to return the date in (as for {@link http://www.php.net/date})
-	 * @return string
 	 */
-	public function getDueDate($format = 'Y-m-d')
+	public function getDueDate(string $format = 'Y-m-d'): string
 	{
-		//return date($format, strtotime($this->get('DueDate')));
 		return $this->getDateType('DueDate', $format);
 	}
 
-	public function setSalesRepName($name)
+	public function setSalesRepName(string $name): bool
 	{
 		return $this->set('SalesRepRef FullName', $name);
 	}
 
-	public function setSalesRepListID($ListID)
+	public function setSalesRepListID(string $ListID): bool
 	{
 		return $this->set('SalesRepRef ListID', $ListID);
 	}
 
-	public function setSalesRepApplicationID($value)
+	public function setSalesRepApplicationID($value): bool
 	{
-		return $this->set('SalesRepRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_EMPLOYEE, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesRepRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_EMPLOYEE'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getSalesRepName()
+	public function getSalesRepName(): string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
 
-	public function getSalesRepListID()
+	public function getSalesRepListID(): string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
 
 	public function getSalesRepApplicationID()
 	{
-		return $this->extractApplicationID($this->get('SalesRepRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('SalesRepRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
-	public function getFOB()
+	public function getFOB(): string
 	{
 		return $this->get('FOB');
 	}
 
-	public function setFOB($fob)
+	public function setFOB($fob): bool
 	{
 		return $this->set('FOB', $fob);
 	}
 
-	public function setShipDate($date)
+	public function setShipDate($date): bool
 	{
-		//return $this->set('ShipDate', date('Y-m-d', strtotime($date)));
 		return $this->setDateType('ShipDate', $date);
 	}
 
-	public function getShipDate($format = 'Y-m-d')
+	public function getShipDate(string $format = 'Y-m-d'): string
 	{
-		/*
-		if ($this->exists('ShipDate'))
-		{
-			return date($format, strtotime($this->get('ShipDate')));
-		}
-
-		return null;
-		*/
-
 		return $this->getDateType('ShipDate', $format);
 	}
 
@@ -605,29 +548,28 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 * Set the application ID for the shipping method
 	 *
 	 * @param mixed $value		The shipping method primary key from your application
-	 * @return 					boolean
 	 */
-	public function setShipMethodApplicationID($value)
+	public function setShipMethodApplicationID($value): bool
 	{
-		return $this->set('ShipMethodRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SHIPMETHOD, QUICKBOOKS_LISTID, $value));
+		return $this->set('ShipMethodRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_SHIPMETHOD'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function setShipMethodName($name)
+	public function setShipMethodName(string $name): bool
 	{
 		return $this->set('ShipMethodRef FullName', $name);
 	}
 
-	public function setShipMethodListID($ListID)
+	public function setShipMethodListID(string $ListID): bool
 	{
 		return $this->set('ShipMethodRef ListID', $ListID);
 	}
 
-	public function getShipMethodName()
+	public function getShipMethodName(): string
 	{
 		return $this->get('ShipMethodRef FullName');
 	}
 
-	public function getShipMethodListID()
+	public function getShipMethodListID(): string
 	{
 		return $this->get('ShipMethodRef ListID');
 	}
@@ -639,36 +581,35 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 */
 	public function getShipMethodApplicationID()
 	{
-		return $this->extractApplicationID($this->get('ShipMethodRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('ShipMethodRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 	/**
 	 * Set the application ID for the payment method
 	 *
 	 * @param mixed $value		The payment method primary key from your application
-	 * @return 					boolean
 	 */
-	public function setPaymentMethodApplicationID($value)
+	public function setPaymentMethodApplicationID($value): bool
 	{
-		return $this->set('PaymentMethodRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_PAYMENTMETHOD, QUICKBOOKS_LISTID, $value));
+		return $this->set('PaymentMethodRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_PAYMENTMETHOD'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function setPaymentMethodName($name)
+	public function setPaymentMethodName(string $name): bool
 	{
 		return $this->set('PaymentMethodRef FullName', $name);
 	}
 
-	public function setPaymentMethodListID($ListID)
+	public function setPaymentMethodListID(string $ListID): bool
 	{
 		return $this->set('PaymentMethodRef ListID', $ListID);
 	}
 
-	public function getPaymentMethodName()
+	public function getPaymentMethodName(): string
 	{
 		return $this->get('PaymentMethodRef FullName');
 	}
 
-	public function getPaymentMethodListID()
+	public function getPaymentMethodListID(): string
 	{
 		return $this->get('PaymentMethodRef ListID');
 	}
@@ -680,107 +621,128 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	 */
 	public function getPaymentMethodApplicationID()
 	{
-		return $this->extractApplicationID($this->get('PaymentMethodRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('PaymentMethodRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
-	public function setSalesTaxItemListID($ListID)
+	public function setSalesTaxItemListID(string $ListID): bool
 	{
 		return $this->set('ItemSalesTaxRef ListID', $ListID);
 	}
 
-	public function setSalesTaxItemApplicationID($value)
+	public function setSalesTaxItemApplicationID($value): bool
 	{
-		return $this->set('ItemSalesTaxRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESTAXITEM, QUICKBOOKS_LISTID, $value));
+		return $this->set('ItemSalesTaxRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_SALESTAXITEM'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getSalesTaxItemApplicationID()
 	{
-		return $this->get('ItemSalesTaxRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('ItemSalesTaxRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
+	public function setSalesTaxItemFullName(string $name): bool
+	{
+		return $this->set('ItemSalesTaxRef FullName', $name);
+	}
 	/**
 	 * @deprecated
 	 */
-	public function setSalesTaxItemName($name)
+	public function setSalesTaxItemName(string $name): bool
 	{
-		return $this->set('ItemSalesTaxRef FullName', $name);
+		return $this->setSalesTaxItemFullName($name);
 	}
 
-	public function setSalesTaxItemFullName($name)
-	{
-		return $this->set('ItemSalesTaxRef FullName', $name);
-	}
-
-	public function getSalesTaxItemName()
+	public function getSalesTaxItemFullName(): string
 	{
 		return $this->get('ItemSalesTaxRef FullName');
 	}
+	/**
+	 * @deprecated
+	 */
+	public function getSalesTaxItemName(): string
+	{
+		return $this->getSalesTaxItemFullName();
+	}
 
-	public function getSalesTaxItemListID()
+	public function getSalesTaxItemListID(): string
 	{
 		return $this->get('ItemSalesTaxRef ListID');
 	}
 
-	public function setMemo($memo)
+	public function setMemo(string $memo): bool
 	{
 		return $this->set('Memo', $memo);
 	}
-
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
 
-	public function setIsToBePrinted($printed)
+	public function setIsToBePrinted(bool $printed): bool
 	{
 		return $this->setBooleanType('IsToBePrinted', $printed);
 	}
-
-	public function getIsToBePrinted()
+	public function getIsToBePrinted(): bool
 	{
 		return $this->getBooleanType('IsToBePrinted');
 	}
 
-	public function setIsToBeEmailed($emailed)
+	public function setIsToBeEmailed(bool $emailed): bool
 	{
 		return $this->setBooleanType('IsToBeEmailed', $emailed);
 	}
-
-	public function getIsToBeEmailed()
+	public function getIsToBeEmailed(): bool
 	{
 		return $this->getBooleanType('IsToBeEmailed');
 	}
 
-	public function setCustomerSalesTaxCodeListID()
+	/**
+	 * Set the tax code ListID for the customer
+	 */
+	public function setCustomerSalesTaxCodeListID(string $name): bool
 	{
-
+		return $this->set('CustomerSalesTaxCodeRef ListID', $name);
+	}
+	/**
+	 * Get the tax code ListID for the customer
+	 */
+	public function getCustomerSalesTaxCodeListID(): string
+	{
+		return $this->get('CustomerSalesTaxCodeRef ListID');
 	}
 
-	public function setCustomerSalesTaxCodeName()
+	/**
+	 * Set the tax code FullName for the customer
+	 */
+	public function setCustomerSalesTaxCodeFullName(string $name): bool
 	{
-
+		return $this->set('CustomerSalesTaxCodeRef FullName', $name);
+	}
+	/**
+	 * Get the tax code FullName for the customer
+	 */
+	public function getCustomerSalesTaxCodeFullName(): string
+	{
+		return $this->get('CustomerSalesTaxCodeRef FullName');
 	}
 
-	public function getCustomerSalesTaxCodeListID()
-	{
 
-	}
-
-	public function getCustomerSalesTaxCodeName()
-	{
-
-	}
-
-	public function setLinkToTxnID($TxnID)
+	public function setLinkToTxnID(string $TxnID): bool
 	{
 		return $this->set('LinkToTxnID', $TxnID);
 	}
-
-	public function getLinkToTxnID()
+	public function getLinkToTxnID(): string
 	{
 		return $this->get('LinkToTxnID');
 	}
 
+	public function setIncludeLinkedTxns(bool $includeLinkedTxns): bool
+	{
+		return $this->setBooleanType('IncludeLinkedTxns', $includeLinkedTxns);
+	}
+	public function getIncludeLinkedTxns(): bool
+	{
+		return $this->getBooleanType('IncludeLinkedTxns');
+	}
 	/*
 	public function getInvoiceLines()
 	{
@@ -800,19 +762,10 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	}
 	*/
 
-	/*
-	public function setInvoiceLine($i,
-	{
-
-	}
-	*/
-
 	/**
 	 *
-	 *
-	 * @param
 	 */
-	public function addInvoiceLine($obj)
+	public function addInvoiceLine(InvoiceLine $obj): bool
 	{
 		return $this->addListItem('InvoiceLine', $obj);
 
@@ -839,45 +792,36 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	}
 	*/
 
-	public function getInvoiceLine($i)
+	public function getInvoiceLine(int $i)
 	{
 		return $this->getListItem('InvoiceLine', $i);
 	}
 
-	public function listInvoiceLines()
+	public function listInvoiceLines(): array
 	{
 		return $this->getList('InvoiceLine');
 	}
 
 	/**
 	 * Add a discount line (only supported by Online Edition as of 8.0)
-	 *
-	 * @param QuickBooks_Object_Invoice_DiscountLine
-	 * @return boolean
 	 */
-	public function addDiscountLine($obj)
+	public function addDiscountLine(DiscountLine $obj): bool
 	{
 		return $this->addListItem('DiscountLine', $obj);
 	}
 
 	/**
 	 * Add a sales tax line (only supported by Online Edition as of 8.0)
-	 *
-	 * @param QuickBooks_Object_Invoice_SalesTaxLine
-	 * @return boolean
 	 */
-	public function addSalesTaxLine($obj)
+	public function addSalesTaxLine(SalesTaxLine $obj): bool
 	{
 		return $this->addListItem('SalesTaxLine', $obj);
 	}
 
 	/**
 	 * Add a shipping line (only supported by Online Edition as of 8.0)
-	 *
-	 * @param QuickBooks_Object_Invoice_ShippingLine
-	 * @return boolean
 	 */
-	public function addShippingLine($obj)
+	public function addShippingLine(ShippingLine $obj): bool
 	{
 		return $this->addListItem('ShippingLine', $obj);
 	}
@@ -885,37 +829,36 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 	/**
 	 *
 	 */
-	public function setOther($other)
+	public function setOther(string $other): bool
 	{
 		return $this->set('Other', $other);
 	}
 
-	public function getOther()
+	public function getOther(): string
 	{
 		return $this->get('Other');
 	}
 
-	public function getBalanceRemaining()
+	public function getBalanceRemaining(): string
 	{
 		return $this->getAmountType('BalanceRemaining');
 	}
 
-	public function setBalanceRemaining($amount)
+	public function setBalanceRemaining(float $amount): bool
 	{
-		return $this->setAmountType('BalanceRemaining', $amount);
+		return $this->setAmountType('BalanceRemaining', floatval($amount));
 	}
 
-	public function getAppliedAmount()
+	public function getAppliedAmount(): string
 	{
 		return $this->getAmountType('AppliedAmount');
 	}
 
-	public function asList($request)
+	public function asList(string $request)
 	{
 		switch ($request)
 		{
 			case 'InvoiceAddRq':
-
 				if (isset($this->_object['InvoiceLine']))
 				{
 					$this->_object['InvoiceLineAdd'] = $this->_object['InvoiceLine'];
@@ -935,22 +878,20 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 				{
 					$this->_object['DiscountLineAdd'] = $this->_object['DiscountLine'];
 				}
-
 				break;
-			case 'InvoiceModRq':
 
+			case 'InvoiceModRq':
 				if (isset($this->_object['InvoiceLine']))
 				{
 					$this->_object['InvoiceLineMod'] = $this->_object['InvoiceLine'];
 				}
-
 				break;
 		}
 
 		return parent::asList($request);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		//print('INVOICE got called asXML: ' . $root . ', ' . $parent . "\n");
 		//exit;
@@ -962,7 +903,7 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_INVOICE:
+			case PackageInfo::Actions['ADD_INVOICE']:
 
 				//if (isset($this->_object['InvoiceLine']))
 				//{
@@ -1001,9 +942,9 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 						$obj->setOverride('SalesTaxLineAdd');
 					}
 				}
-
 				break;
-			case QUICKBOOKS_MOD_INVOICE:
+
+			case PackageInfo::Actions['MOD_INVOICE']:
 
 				/*
 				if (isset($object['InvoiceLine']))
@@ -1019,7 +960,6 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 						$obj->setOverride('InvoiceLineMod');
 					}
 				}
-
 				break;
 		}
 
@@ -1030,11 +970,9 @@ class QuickBooks_QBXML_Object_Invoice extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_INVOICE;
+		return PackageInfo::Actions['OBJECT_INVOICE'];
 	}
 }

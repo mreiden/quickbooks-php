@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks StandardTerms object container
@@ -10,176 +10,173 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  * QuickBooks StandardTerms container
  */
-class QuickBooks_QBXML_Object_StandardTerms extends QuickBooks_QBXML_Object
+class StandardTerms extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks_Object_StandardTerms object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the ListID of the termspwd
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID of the terms
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
 	 * Set the name of the terms
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
 	/**
 	 * Get the name of these terms
-	 *
-	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
 	/**
-	 * Set this as active or not
-	 *
-	 * @param boolean $value
-	 * @return boolean
+	 * Set this StandardTerms as active or not
 	 */
-	public function setIsActive($value)
+	public function setIsActive(bool $IsActive): bool
 	{
-		return $this->set('IsActive', (boolean) $value);
+		return $this->setBooleanType('IsActive', $IsActive);
 	}
 
 	/**
-	 * Tell whether or not this class object is active
-	 *
-	 * @return boolean
+	 * Gets whether or not this StandardTerms is active
 	 */
-	public function getIsActive()
+	public function getIsActive(): bool
 	{
-		return $this->get('IsActive');
+		return $this->getBooleanType('IsActive');
 	}
 
 	/**
 	 * Get the number of days until payment is due
-	 *
-	 * @return integer
 	 */
-	public function getStdDueDays()
+	public function getStdDueDays(): int
 	{
 		return $this->get('StdDueDays');
 	}
 
 	/**
-	 * Alias of QuickBooks_Object_StandardTerms::getStdDueDays()
+	 * Alias of QBXML\Object\StandardTerms::getStdDueDays()
 	 */
-	public function getStandardDueDays()
+	public function getStandardDueDays(): int
 	{
 		return $this->getStdDueDays();
 	}
 
 	/**
 	 * Set the number of days until payment is due
-	 *
-	 * @param integer $days
-	 * @return boolean
 	 */
-	public function setStdDueDays($days)
+	public function setStdDueDays(int $days): bool
 	{
-		return $this->set('StdDueDays', (int) $days);
+		return $this->set('StdDueDays', $days);
 	}
 
 	/**
-	 * Alias of QuickBooks_Object_StandardTerms::setStdDueDays()
+	 * Alias of QBXML\Object\StandardTerms::setStdDueDays()
 	 */
-	public function setStandardDueDays($days)
+	public function setStandardDueDays(int $days): bool
 	{
 		return $this->setStdDueDays($days);
 	}
 
 	/**
-	 *
+	 * Gets the number of days the discount percentage is applicable
 	 */
-	public function getStdDiscountDays()
+	public function getStdDiscountDays(): int
 	{
 		return $this->get('StdDiscountDays');
 	}
 
-	public function getStandardDiscountDays()
+	/**
+	 * Alias of QBXML\Object\StandardTerms::getStdDiscountDays()
+	 */
+	public function getStandardDiscountDays(): int
 	{
 		return $this->getStdDiscountDays();
 	}
 
-	public function setStdDiscountDays($days)
+	/**
+	 * Set the number of days the discount percentage is applicable
+	 */
+	public function setStdDiscountDays(int $days): bool
 	{
-		return $this->set('StdDiscountDays', (int) $days);
+		return $this->set('StdDiscountDays', $days);
 	}
 
-	public function setStandardDiscountDays($days)
+	/**
+	 * Alias of QBXML\Object\StandardTerms::setStdDiscountDays()
+	 */
+	public function setStandardDiscountDays(int $days): bool
 	{
 		return $this->setStdDiscountDays($days);
 	}
 
-	public function getDiscountPct()
+	/**
+	 * Gets the discount percentage
+	 */
+	public function getDiscountPct(): float
 	{
 		return $this->get('DiscountPct');
 	}
 
-	public function getDiscountPercent()
+	/**
+	 * Alias of QBXML\Object\StandardTerms::getDiscountPct()
+	 */
+	public function getDiscountPercent(): float
 	{
 		return $this->getDiscountPct();
 	}
 
-	public function setDiscountPercent($percent)
+	/**
+	 * Sets the discount percentage
+	 */
+	public function setDiscountPct(float $percent): bool
+	{
+		return $this->set('DiscountPct', $percent);
+	}
+
+	/**
+	 * Alias of QBXML\Object\StandardTerms::setDiscountPct()
+	 */
+	public function setDiscountPercent(float $percent): bool
 	{
 		return $this->setDiscountPct($percent);
 	}
 
-	public function setDiscountPct($percent)
-	{
-		return $this->set('DiscountPct', (float) $percent);
-	}
-
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_STANDARDTERMS;
+		return PackageInfo::Actions['OBJECT_STANDARDTERMS'];
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks ItemLine object container
@@ -12,52 +12,54 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
- * Quickbooks ItemLine definition
+ * Quickbooks ItemReceipt ItemLine definition
  */
-class QuickBooks_QBXML_Object_ItemReceipt_ItemLine extends QuickBooks_QBXML_Object
+class ItemLine extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks ReceiptItem ItemLine object
 	 *
 	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function getItemListID()
+	public function getItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
 
-	public function setItemListID($ListID)
+	public function setItemListID(string $ListID): bool
 	{
 		return $this->set('ItemRef ListID', $ListID);
 	}
 
-	public function getItemName()
+	public function getItemName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
 
-	public function setItemName($Name)
+	public function setItemName(string $Name): bool
 	{
 		return $this->set('ItemRef FullName', $Name);
 	}
 
-	public function getDescription()
+	public function getDescription(): ?string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setDescription($Desc)
+	public function setDescription(string $Desc): bool
 	{
 		return $this->set('Desc', $Desc);
 	}
@@ -67,147 +69,147 @@ class QuickBooks_QBXML_Object_ItemReceipt_ItemLine extends QuickBooks_QBXML_Obje
 		return $this->get('Quantity');
 	}
 
-	public function setQuantity($Quantity)
+	public function setQuantity($Quantity): bool
 	{
 		return $this->set('Quantity', (float) $Quantity);
 	}
 
-	public function getUnitOfMeasure()
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
 
-	public function setUnitOfMeasure($UnitOfMeasure)
+	public function setUnitOfMeasure(string $UnitOfMeasure): bool
 	{
 		return $this->set('UnitOfMeasure', $UnitOfMeasure);
 	}
 
 	public function getCost()
 	{
-		return $this->get('Cost');
+		return $this->getAmountType('Cost');
 	}
 
-	public function setCost($Cost)
+	public function setCost($Cost): bool
 	{
-		return $this->set('Cost', $Cost);
+		return $this->setAmountType('Cost', $Cost);
 	}
 
 	public function getAmount()
 	{
-		return $this->get('Amount');
+		return $this->getAmountType('Amount');
 	}
 
-	public function setAmount($Amount)
+	public function setAmount($Amount): bool
 	{
-		return $this->set('Amount', $Amount);
+		return $this->setAmountType('Amount', $Amount);
 	}
 
 	public function getTaxAmount()
 	{
-		return $this->get('TaxAmount');
+		return $this->getAmountType('TaxAmount');
 	}
 
-	public function setTaxAmount($TaxAmount)
+	public function setTaxAmount($TaxAmount): bool
 	{
-		return $this->set('TaxAmount', $TaxAmount);
+		return $this->setAmountType('TaxAmount', $TaxAmount);
 	}
 
-	public function getCustomerListID()
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
 
-	public function setCustomerListID($ListID)
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID', $ListID);
 	}
 
-	public function getCustomerName()
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
 
-	public function setCustomerName($Name)
+	public function setCustomerName(string $Name): bool
 	{
 		return $this->set('CustomerRef FullName', $Name);
 	}
 
-	public function getClassListID()
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
-	public function getClassName()
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function setClassName($Name)
+	public function setClassName(string $Name): bool
 	{
 		return $this->set('ClassRef FullName', $Name);
 	}
 
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
 
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function setSalesTaxCodeName($Name)
+	public function setSalesTaxCodeName(stromg $Name): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $Name);
 	}
 
-	public function getBillableStatus()
+	public function getBillableStatus(): ?string
 	{
 		return $this->get('BillableStatus');
 	}
 
-	public function setBillableStatus($BillableStatus)
+	public function setBillableStatus(string $BillableStatus): bool
 	{
 		return $this->set('BillableStatus', $BillableStatus);
 	}
 
-	public function getOverrideItemAccountListID()
+	public function getOverrideItemAccountListID(): ?string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
 
-	public function setOverrideItemAccountListID($ListID)
+	public function setOverrideItemAccountListID(string $ListID): bool
 	{
 		return $this->set('OverrideItemAccountRef ListID', $ListID);
 	}
 
-	public function getOverrideItemAccountName()
+	public function getOverrideItemAccountName(): ?string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
 
-	public function setOverrideItemAccountName($Name)
+	public function setOverrideItemAccountName(string $Name): bool
 	{
 		return $this->set('OverrideItemAccountRef FullName', $Name);
 	}
 
-	public function getLinkToTxnID()
+	public function getLinkToTxnID(): ?string
 	{
 		return $this->getLinkToTxn('LinkToTxn TxnID');
 	}
 
-	public function setLinkToTxnID($TxnID)
+	public function setLinkToTxnID(string $TxnID): bool
 	{
 		return $this->set('LinkToTxn TxnID', $TxnID);
 	}
@@ -222,7 +224,7 @@ class QuickBooks_QBXML_Object_ItemReceipt_ItemLine extends QuickBooks_QBXML_Obje
 		return $this->set('LinkToTxn TxnLineID', $TxnLineID);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null): Node
 	{
 		if (is_null($object))
 		{
@@ -231,14 +233,14 @@ class QuickBooks_QBXML_Object_ItemReceipt_ItemLine extends QuickBooks_QBXML_Obje
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_ITEMRECEIPT:
+			case PackageInfo::Actions['ADD_ITEMRECEIPT']:
 				$root = 'ItemLineAdd';
 				$parent = null;
 				break;
 // Currently unimplemented
 /*
-			case QUICKBOOKS_QUERY_INVENTORYADJUSTMENT:
-				$root = 'ExpenseLineQuery';
+			case PackageInfo::Actions['ADD_ITEMRECEIPT']:
+				$root = 'ItemLineMod';
 				break;
 */
 		}
@@ -248,11 +250,9 @@ class QuickBooks_QBXML_Object_ItemReceipt_ItemLine extends QuickBooks_QBXML_Obje
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return "ItemLine";
+		return 'ItemLine';
 	}
 }

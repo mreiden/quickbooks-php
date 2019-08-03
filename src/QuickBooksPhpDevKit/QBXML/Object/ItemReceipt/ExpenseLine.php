@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks ExpenseLine object container
@@ -12,42 +12,42 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
- * Quickbooks ExpenseLine definition
+ * Quickbooks ItemReceipt ExpenseLine definition
  */
-class QuickBooks_QBXML_Object_ItemReceipt_ExpenseLine extends QuickBooks_QBXML_Object
+class ExpenseLine extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks ReceiptItem ExpenseLine object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function getAccountListID()
+	public function getAccountListID(): ?string
 	{
 		return $this->get('AccountRef ListID');
 	}
 
-	public function setAccountListID($ListID)
+	public function setAccountListID(string $ListID): bool
 	{
 		return $this->set('AccountRef ListID', $ListID);
 	}
 
-	public function getAccountName()
+	public function getAccountName(): ?string
 	{
 		return $this->get('AccountRef FullName');
 	}
 
-	public function setAccountName($name)
+	public function setAccountName(string $name): bool
 	{
 		return $this->set('AccountRef FullName', $name);
 	}
@@ -57,7 +57,7 @@ class QuickBooks_QBXML_Object_ItemReceipt_ExpenseLine extends QuickBooks_QBXML_O
 		return $this->get('Amount');
 	}
 
-	public function setAmount($amount)
+	public function setAmount($amount): bool
 	{
 		return $this->set('Amount', $amount);
 	}
@@ -67,52 +67,52 @@ class QuickBooks_QBXML_Object_ItemReceipt_ExpenseLine extends QuickBooks_QBXML_O
 		return $this->get('Memo');
 	}
 
-	public function setMemo($memo)
+	public function setMemo(string $memo): bool
 	{
 		return $this->set('Memo', $memo);
 	}
 
-	public function getCustomerListID()
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
 
-	public function setCustomerListID($ListID)
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID', $ListID);
 	}
 
-	public function getCustomerName()
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
 
-	public function setCustomerName($name)
+	public function setCustomerName(string $name): ?string
 	{
 		return $this->set('CustomerRef FullName', $name);
 	}
 
-	public function getClassListID()
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
-	public function getClassName()
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function setClassName($name)
+	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function getBillableStatus()
+	public function getBillableStatus(): ?string
 	{
 		return $this->get('BillableStatus');
 	}
@@ -120,12 +120,12 @@ class QuickBooks_QBXML_Object_ItemReceipt_ExpenseLine extends QuickBooks_QBXML_O
 	/*
 	 * @param billable must be one of: Billable, NotBillable, HasBeenBilled
 	 */
-	public function setBillableStatus($billable)
+	public function setBillableStatus(string $billable): bool
 	{
 		return $this->set('BillableStatus', $billable);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, $object = null): Node
 	{
 		if (is_null($object))
 		{
@@ -134,14 +134,14 @@ class QuickBooks_QBXML_Object_ItemReceipt_ExpenseLine extends QuickBooks_QBXML_O
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_ITEMRECEIPT:
+			case PackageInfo::Actions['ADD_ITEMRECEIPT']:
 				$root = 'ExpenseLineAdd';
 				$parent = null;
 				break;
 // Currently unimplemented
 /*
-			case QUICKBOOKS_QUERY_INVENTORYADJUSTMENT:
-				$root = 'ExpenseLineQuery';
+			case PackageInfo::Actions['MOD_ITEMRECEIPT']:
+				$root = 'ExpenseLineMod';
 				break;
 */
 		}
@@ -151,10 +151,8 @@ class QuickBooks_QBXML_Object_ItemReceipt_ExpenseLine extends QuickBooks_QBXML_O
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return "ExpenseLine";
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks ServiceItem object container
@@ -15,109 +15,99 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_DiscountItem extends QuickBooks_QBXML_Object
+class DiscountItem extends AbstractQbxmlObject
 {
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
-	 * Set the ListID for this item
-	 *
-	 * @param string $ListID
-	 * @return boolean
+	 * Set the ListID for this DiscountItem
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
-	 * Get the ListID for this item
-	 *
-	 * @return string
+	 * Get the ListID for this DiscountItem
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
-	 * Set the name for this item
-	 *
-	 * @param string $name
-	 * @return boolean
+	 * Set the name for this DiscountItem
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
 	/**
-	 * Get the name for this item
-	 *
-	 * @return string
+	 * Get the name for this DiscountItem
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
 	public function setParentApplicationID($value)
 	{
-		return $this->set('ParentRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_DISCOUNTITEM, QUICKBOOKS_LISTID, $value));
+		return $this->set('ParentRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_DISCOUNTITEM'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getParentApplicationID()
 	{
-		return $this->get('ParentRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('ParentRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function setParentListID($ListID)
+	public function setParentListID(string $ListID): bool
 	{
 		return $this->set('ParentRef ListID', $ListID);
 	}
 
-	public function getParentListID()
+	public function getParentListID(): string
 	{
 		return $this->get('ParentRef ListID');
 	}
 
-	public function setParentName($name)
+	public function setParentName(string $name): bool
 	{
 		return $this->set('ParentRef FullName', $name);
 	}
 
-	public function getParentName()
+	public function getParentName(): string
 	{
 		return $this->get('ParentRef FullName');
 	}
 
-	public function setDescription($desc)
+	public function setDescription(string $desc): bool
 	{
 		return $this->set('ItemDesc', $desc);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->get('ItemDesc');
 	}
 
-	public function setSalesTaxCodeName($name)
+	public function setSalesTaxCodeName(string $name): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $name);
 	}
 
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
@@ -128,9 +118,9 @@ class QuickBooks_QBXML_Object_DiscountItem extends QuickBooks_QBXML_Object
 	 * @param float $rate
 	 * @return boolean
 	 */
-	public function setDiscountRate($rate)
+	public function setDiscountRate($rate): bool
 	{
-		return $this->set('DiscountRate', (float) $rate);
+		return $this->set('DiscountRate', floatval($rate));
 	}
 
 	/**
@@ -147,9 +137,9 @@ class QuickBooks_QBXML_Object_DiscountItem extends QuickBooks_QBXML_Object
 	 * @param float $percent
 	 * @return boolean
 	 */
-	public function setDiscountRatePercent($percent)
+	public function setDiscountRatePercent($percent): bool
 	{
-		return $this->set('DiscountRatePercent', (float) $percent);
+		return $this->set('DiscountRatePercent', floatval($percent));
 	}
 
 	public function getDiscountRatePercent()
@@ -157,43 +147,41 @@ class QuickBooks_QBXML_Object_DiscountItem extends QuickBooks_QBXML_Object
 		return $this->get('DiscountRatePercent');
 	}
 
-	public function setAccountApplicationID($value)
+	public function setAccountApplicationID($value): bool
 	{
-		return $this->set('AccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('AccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_DiscountItem'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getAccountApplicationID()
 	{
-		return $this->get('AccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('AccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function setAccountListID($ListID)
+	public function setAccountListID(string $ListID): bool
 	{
 		return $this->set('AccountRef ListID', $ListID);
 	}
 
-	public function getAccountListID()
+	public function getAccountListID(): string
 	{
 		return $this->get('AccountRef ListID');
 	}
 
-	public function setAccountName($name)
+	public function setAccountName(string $name): bool
 	{
 		return $this->set('AccountRef FullName', $name);
 	}
 
-	public function getAccountName()
+	public function getAccountName(): string
 	{
 		return $this->get('AccountRef FullName');
 	}
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_DISCOUNTITEM;
+		return PackageInfo::Actions['OBJECT_DISCOUNTITEM'];
 	}
 }

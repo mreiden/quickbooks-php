@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * QuickBooks ShipMethod object container
+ * QuickBooks PaymentMethod object container
  *
  * @author Keith Palmer <keith@consolibyte.com>
  * @license LICENSE.txt
@@ -10,101 +10,84 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_PaymentMethod extends QuickBooks_QBXML_Object
+class PaymentMethod extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks_Object_PaymentMethod object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the ListID
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
 	 * Set the name
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
 	/**
 	 * Get the name
-	 *
-	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
 	/**
 	 * Set this as active or not
-	 *
-	 * @param boolean $value
-	 * @return boolean
 	 */
-	public function setIsActive($value)
+	public function setIsActive(bool $value): bool
 	{
 		return $this->setBooleanType('IsActive', $value);
 	}
 
 	/**
 	 * Tell whether or not this is active
-	 *
-	 * @return boolean
 	 */
-	public function getIsActive()
+	public function getIsActive(): bool
 	{
 		return $this->getBooleanType('IsActive');
 	}
 
+	/* // This is a PaymentMethodType
 	public function getPaymentMethodType()
 	{
 		return $this->get('PaymentMethodType');
 	}
+	*/
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_PAYMENTMETHOD;
+		return PackageInfo::Actions['OBJECT_PAYMENTMETHOD'];
 	}
 }

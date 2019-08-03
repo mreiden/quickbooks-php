@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks Employee object container
@@ -10,180 +10,163 @@
  * @subpackage Object
  */
 
-/**
- * Base object class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
- * QuickBooks object class
+ * QBXML\Object\Employee class
  */
-class QuickBooks_QBXML_Object_Employee extends QuickBooks_QBXML_Object
+class Employee extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_Customer object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\Employee object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
-	 * Set the ListID of this customer record
-	 *
-	 * @param string $ListID
-	 * @return boolean
+	 * Set the ListID of this Employee record
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
-	 * Get the ListID of this customer record
-	 *
-	 * @return string
+	 * Get the ListID of this Employee record
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
-  /**
-   * Get the name of this customer
-   *
-   * @return string
-   */
-  public function getName()
-  {
-    if (!$this->exists('Name'))
-    {
-      if (!is_null($this->getFirstName()) || !is_null($this->getLastName())) {
-        $this->setNameAsFirstLast();
-      }
-    }
+	/**
+	* Get the name of this Employee
+	*/
+	public function getName(): string
+	{
+		if (!$this->exists('Name'))
+		{
+			if (!is_null($this->getFirstName()) || !is_null($this->getLastName()))
+			{
+				$this->setNameAsFirstLast();
+			}
+		}
 
-    return $this->get('Name');
-  }
+		return $this->get('Name');
+	}
 
-  public function setName($name)
-  {
-    return $this->set('Name', $name);
-  }
-
-  /**
-   * Set the full name of this customer (full name)
-   *
-   * NOTE: This will be auto-set to ->getName() if you don't set it
-   * explicitly.
-   *
-   * @param string $name
-   * @return boolean
-   */
-  public function setFullName($name)
-  {
-    if (is_null($name)) {
-      $name = $this->getName();
-    }
-
-    $this->set('FullName', $name);
-  }
-
-  /**
-   * Get the name of this customer (full name)
-   *
-   * @return string
-   */
-  public function getFullName()
-  {
-    if (!$this->exists('FullName'))
-    {
-      $this->setFullName($this->get('Name'));
-    }
-
-    return $this->get('FullName');
-  }
-
-
-  /**
-   * Sets the name as first and last.
-   *
-   * @return boolean
-   */
-  public function setNameAsFirstLast() {
-    $first = $this->getFirstName();
-    $last = $this->getLastName();
-    if (is_null($first)) { $first = ''; }
-    if (is_null($last)) { $last = ''; }
-
-    return $this->set('Name', $first .' '. $last);
-  }
+	public function setName(string $name): bool
+	{
+		return $this->set('Name', $name);
+	}
 
 	/**
-	 * Set the first name of this customer
+	 * Set the full name of this Employee (full name)
 	 *
-	 * @param string $name
-	 * @return boolean
+	 * NOTE: This will be auto-set to ->getName() if you don't set it
+	 * explicitly.
 	 */
-	public function setFirstName($fname)
+	public function setFullName(string $name): bool
+	{
+		if (is_null($name))
+		{
+			$name = $this->getName();
+		}
+
+		return $this->set('FullName', $name);
+	}
+
+	/**
+	 * Get the name of this Employee (full name)
+	 */
+	public function getFullName(): string
+	{
+		if (!$this->exists('FullName'))
+		{
+			$this->setFullName($this->get('Name'));
+		}
+
+		return $this->get('FullName');
+	}
+
+
+	/**
+	 * Sets the name as first and last.
+	 */
+	public function setNameAsFirstLast(): bool
+	{
+		$first = $this->getFirstName();
+		$last = $this->getLastName();
+		if (is_null($first))
+		{
+			$first = '';
+		}
+		if (is_null($last))
+		{
+			$last = '';
+		}
+
+		return $this->set('Name', $first .' '. $last);
+	}
+
+	/**
+	 * Set the first name of this Employee
+	 */
+	public function setFirstName(string $fname): bool
 	{
 		return $this->set('FirstName', $fname);
 	}
 
 	/**
-	 * Get the first name of this customer
-	 *
-	 * @return string
+	 * Get the first name of this Employee
 	 */
-	public function getFirstName()
+	public function getFirstName(): string
 	{
 		return $this->get('FirstName');
 	}
 
 	/**
-	 * Set the last name of this customer
-	 *
-	 * @param string $lname
-	 * @return boolean
+	 * Set the last name of this Employee
 	 */
-	public function setLastName($lname)
+	public function setLastName(string $lname): bool
 	{
 		return $this->set('LastName', $lname);
 	}
 
 	/**
-	 * Get the last name of this customer
-	 *
-	 * @return string
+	 * Get the last name of this Employee
 	 */
-	public function getLastName()
+	public function getLastName(): string
 	{
 		return $this->get('LastName');
 	}
 
-	public function setMiddleName($mname)
+	public function setMiddleName(string $mname): bool
 	{
 		return $this->set('MiddleName', $mname);
 	}
 
-	public function getMiddleName()
+	public function getMiddleName(): string
 	{
 		return $this->get('MiddleName');
 	}
 
-	public function getEmployeeAddress($part = null, $defaults = array())
+	public function getEmployeeAddress(?string $part = null, array $defaults = [])
 	{
 		return $this->_getXYZAddress('Employee', '', $part, $defaults);
 	}
 
-	public function setEmployeeAddress($addr1, $addr2 = '', $addr3 = '', $addr4 = '', $addr5 = '', $city = '', $state = '', $province = '', $postalcode = '', $country = '', $note = '')
+	public function setEmployeeAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = '')
 	{
 		return $this->_setXYZAddress('Employee', '', $addr1, $addr2, $addr3, $addr4, $addr5, $city, $state, $province, $postalcode, $country, $note);
 	}
 
-	protected function _setXYZAddress($pre, $post, $addr1, $addr2, $addr3, $addr4, $addr5, $city, $state, $province, $postalcode, $country, $note)
+	protected function _setXYZAddress(string $pre, string $post, string $addr1, string $addr2, string $addr3, string $addr4, string $addr5, string $city, string $state, string $province, string $postalcode, string $country, string $note)
 	{
 		for ($i = 1; $i <= 5; $i++)
 		{
@@ -196,9 +179,11 @@ class QuickBooks_QBXML_Object_Employee extends QuickBooks_QBXML_Object
 		$this->set($pre . 'Address' . $post . ' PostalCode', $postalcode);
 		$this->set($pre . 'Address' . $post . ' Country', $country);
 		$this->set($pre . 'Address' . $post . ' Note', $note);
+
+		return true;
 	}
 
-	protected function _getXYZAddress($pre, $post, $part = null, $defaults = array())
+	protected function _getXYZAddress(string $pre, string $post, ?string $part = null, array $defaults = [])
 	{
 		if (!is_null($part))
 		{
@@ -210,146 +195,127 @@ class QuickBooks_QBXML_Object_Employee extends QuickBooks_QBXML_Object
 
 	/**
 	 *
-	 *
-	 * @param string $phone
-	 * @return boolean
 	 */
-	public function setPhone($phone)
+	public function setPhone(string $phone): bool
 	{
 		return $this->set('Phone', $phone);
 	}
 
-	public function getPhone()
+	public function getPhone(): string
 	{
 		return $this->get('Phone');
 	}
 
 	/**
-	 * Set the alternate phone number for this customer
-	 *
-	 * @param string $phone
-	 * @return boolean
+	 * Set the alternate phone number for this Employee
 	 */
-	public function setAltPhone($phone)
+	public function setAltPhone(string $phone): bool
 	{
 		return $this->set('AltPhone', $phone);
 	}
 
-	public function getAltPhone()
+	public function getAltPhone(): string
 	{
 		return $this->get('AltPhone');
 	}
 
 	/**
-	 * Set the fax number for this customer
-	 *
-	 * @param string $fax
-	 * @return boolean
+	 * Set the fax number for this Employee
 	 */
-	public function setFax($fax)
+	public function setFax(string $fax): bool
 	{
 		return $this->set('Fax', $fax);
 	}
 
-	public function getFax()
+	public function getFax(): string
 	{
 		return $this->get('Fax');
 	}
 
 	/**
-	 * Set the e-mail address for this customer
-	 *
-	 * @param string $email
-	 * @return boolean
+	 * Set the e-mail address for this Employee
 	 */
-	public function setEmail($email)
+	public function setEmail(string $email): bool
 	{
 		return $this->set('Email', $email);
 	}
 
-	public function getEmail()
+	public function getEmail(): string
 	{
 		return $this->get('Email');
 	}
 
 	/**
-	 * Set the salutation for this customer
-	 *
-	 * @param string $salut
-	 * @return boolean
+	 * Set the salutation for this Employee
 	 */
-	public function setSalutation($salut)
+	public function setSalutation(string $salut): bool
 	{
 		return $this->set('Salutation', $salut);
 	}
 
 	/**
 	 *
-	 *
-	 * @return string
 	 */
-	public function getSalutation()
+	public function getSalutation(): string
 	{
 		return $this->get('Salutation');
 	}
 
-	public function setNotes($notes)
+	public function setNotes(string $notes): bool
 	{
 		return $this->set('Notes', $notes);
 	}
 
-	public function getNotes()
+	public function getNotes(): string
 	{
 		return $this->get('Notes');
 	}
 
-	public function setMobile($mobile)
+	public function setMobile(string $mobile): bool
 	{
 		return $this->set('Mobile', $mobile);
 	}
 
-	public function getMobile()
+	public function getMobile(): string
 	{
 		return $this->get('Mobile');
 	}
 
-	public function setPager($pager)
+	public function setPager(string $pager): bool
 	{
 		return $this->set('Pager', $pager);
 	}
 
-	public function getPager()
+	public function getPager(): string
 	{
 		return $this->get('Pager');
 	}
 
-	public function setGender($gender)
+	public function setGender(string $gender): bool
 	{
 		return $this->set('Gender', $gender);
 	}
 
-	public function getGender()
+	public function getGender(): string
 	{
 		return $this->get('Gender');
 	}
 
-	public function setBirthDate($date)
+	public function setBirthDate($date): bool
 	{
 		return $this->setDateType('BirthDate', $date);
 	}
 
-	public function getBirthDate($format = 'Y-m-d')
+	public function getBirthDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('BirthDate', $format);
 	}
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_EMPLOYEE;
+		return PackageInfo::Actions['OBJECT_EMPLOYEE'];
 	}
 }

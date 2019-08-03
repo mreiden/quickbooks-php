@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks Unit of Measure Set object container
@@ -10,45 +10,33 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
 
-/**
- *
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/UnitOfMeasureSet/DefaultUnit.php');
-
-/**
- *
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/UnitOfMeasureSet/RelatedUnit.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet\DefaultUnit;
+use QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet\RelatedUnit;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_UnitOfMeasureSet extends QuickBooks_QBXML_Object
+class UnitOfMeasureSet extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks_Object_Class object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 
 		// These things occur because it's a repeatable element who name doesn't do the *Add, *Mod, *Ret thing, trash these
-		$unsets = array(
+		$unsets = [
 			'RelatedUnit Name',
 			'RelatedUnit Abbreviation',
 			'RelatedUnit ConversionRatio',
 			'DefaultUnit UnitUsedFor',
 			'DefaultUnit Unit',
-			);
+		];
 
 		foreach ($unsets as $unset)
 		{
@@ -61,63 +49,48 @@ class QuickBooks_QBXML_Object_UnitOfMeasureSet extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the ListID of the Class
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID of the Class
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
 	 * Set the name of the class
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
 	/**
 	 * Get the name of the class
-	 *
-	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
 	/**
 	 * Set this Class active or not
-	 *
-	 * @param boolean $value
-	 * @return boolean
 	 */
-	public function setIsActive($value)
+	public function setIsActive(bool $value): bool
 	{
 		return $this->setBooleanType('IsActive', $value);
 	}
 
 	/**
 	 * Tell whether or not this class object is active
-	 *
-	 * @return boolean
 	 */
-	public function getIsActive()
+	public function getIsActive(): bool
 	{
 		return $this->getBooleanType('IsActive');
 	}
@@ -127,64 +100,64 @@ class QuickBooks_QBXML_Object_UnitOfMeasureSet extends QuickBooks_QBXML_Object
 	 *
 	 *
 	 */
-	public function setUnitOfMeasureType($type)
+	public function setUnitOfMeasureType(string $type): bool
 	{
 		return $this->set('UnitOfMeasureType', $type);
 	}
 
-	public function getUnitOfMeasureType()
+	public function getUnitOfMeasureType(): string
 	{
 		return $this->get('UnitOfMeasureType');
 	}
 
-	public function setBaseUnitName($name)
+	public function setBaseUnitName(string $name): bool
 	{
 		return $this->set('BaseUnit Name', $name);
 	}
 
-	public function getBaseUnitName()
+	public function getBaseUnitName(): string
 	{
 		return $this->get('BaseUnit Name');
 	}
 
-	public function setBaseUnitAbbreviation($abbr)
+	public function setBaseUnitAbbreviation(string $abbr): bool
 	{
 		return $this->set('BaseUnit Abbreviation', $abbr);
 	}
 
-	public function getBaseUnitAbbreviation()
+	public function getBaseUnitAbbreviation(): string
 	{
 		return $this->get('BaseUnit Abbreviation');
 	}
 
 
-	public function addRelatedUnit($obj)
+	public function addRelatedUnit(RelatedUnit $obj): bool
 	{
 		return $this->addListItem('RelatedUnit', $obj);
 	}
 
-	public function getRelatedUnit($i)
+	public function getRelatedUnit(int $i)
 	{
 		return $this->getListItem('RelatedUnit', $i);
 	}
 
-	public function listRelatedUnits()
+	public function listRelatedUnits(): array
 	{
 		return $this->getList('RelatedUnit');
 	}
 
 
-	public function addDefaultUnit($obj)
+	public function addDefaultUnit(DefaultUnit $obj): bool
 	{
 		return $this->addListItem('DefaultUnit', $obj);
 	}
 
-	public function getDefaultUnit($i)
+	public function getDefaultUnit(int $i): DefaultUnit
 	{
 		return $this->getListItem('DefaultUnit', $i);
 	}
 
-	public function listDefaultUnits()
+	public function listDefaultUnits(): array
 	{
 		return $this->getList('DefaultUnit');
 	}
@@ -192,11 +165,9 @@ class QuickBooks_QBXML_Object_UnitOfMeasureSet extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_UNITOFMEASURESET;
+		return PackageInfo::Actions['OBJECT_UNITOFMEASURESET'];
 	}
 }

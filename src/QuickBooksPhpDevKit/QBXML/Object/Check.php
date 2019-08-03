@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Check class for QuickBooks
@@ -10,42 +10,24 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Check\ExpenseLine;
+use QuickBooksPhpDevKit\QBXML\Check\ItemLine;
+use QuickBooksPhpDevKit\QBXML\Check\ItemGroupLine;
+use QuickBooksPhpDevKit\QBXML\Check\ApplyCheckToTxn;
 
 /**
  *
  */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Check/ExpenseLine.php');
-
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Check/ItemLine.php');
-
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Check/ItemGroupLine.php');
-
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Check/ApplyCheckToTxn.php');
-
-/**
- *
- */
-class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
+class Check extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_Check object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\Check object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -54,21 +36,16 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the AccountRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setAccountListID($ListID)
+	public function setAccountListID(string $ListID): bool
 	{
 		return $this->set('AccountRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the AccountRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getAccountListID()
+	public function getAccountListID(): string
 	{
 		return $this->get('AccountRef ListID');
 	}
@@ -79,35 +56,30 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setAccountApplicationID($value)
+	public function setAccountApplicationID($value): bool
 	{
-		return $this->set('AccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('AccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getAccountApplicationID()
+	public function getAccountApplicationID(): string
 	{
-		return $this->get('AccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('AccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
 	// Path: AccountRef FullName, datatype:
 
 	/**
 	 * Set the AccountRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setAccountName($FullName)
+	public function setAccountName(string $FullName): bool
 	{
 		return $this->set('AccountRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the AccountRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getAccountName()
+	public function getAccountName(): string
 	{
 		return $this->get('AccountRef FullName');
 	}
@@ -116,21 +88,16 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the PayeeEntityRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setPayeeEntityListID($ListID)
+	public function setPayeeEntityListID(string $ListID): bool
 	{
 		return $this->set('PayeeEntityRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the PayeeEntityRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getPayeeEntityListID()
+	public function getPayeeEntityListID(): string
 	{
 		return $this->get('PayeeEntityRef ListID');
 	}
@@ -139,37 +106,31 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 	 * Set the primary key for the related record within your own application for the Check
 	 *
 	 * @param mixed $value			The primary key within your own application
-	 * @return string
 	 */
-	public function setPayeeEntityApplicationID($value)
+	public function setPayeeEntityApplicationID($value): bool
 	{
-		return $this->set('PayeeEntityRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_PAYEEENTITY, QUICKBOOKS_LISTID, $value));
+		return $this->set('PayeeEntityRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_PAYEEENTITY'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getPayeeEntityApplicationID()
+	public function getPayeeEntityApplicationID(): string
 	{
-		return $this->get('PayeeEntityRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('PayeeEntityRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
 	// Path: PayeeEntityRef FullName, datatype:
 
 	/**
 	 * Set the PayeeEntityRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setPayeeEntityFullName($FullName)
+	public function setPayeeEntityFullName(string $FullName): bool
 	{
 		return $this->set('PayeeEntityRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the PayeeEntityRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getPayeeEntityFullName()
+	public function getPayeeEntityFullName(): string
 	{
 		return $this->get('PayeeEntityRef FullName');
 	}
@@ -178,21 +139,16 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the RefNumber for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setRefNumber($value)
+	public function setRefNumber(string $value): bool
 	{
 		return $this->set('RefNumber', $value);
 	}
 
 	/**
 	 * Get the RefNumber for the Check
-	 *
-	 * @return string
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): string
 	{
 		return $this->get('RefNumber');
 	}
@@ -201,60 +157,49 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the TxnDate for the Check
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
-	public function setTxnDate($date)
+	public function setTxnDate($date): bool
 	{
 		return $this->setDateType('TxnDate', $date);
 	}
 
 	/**
 	 * Get the TxnDate for the Check
-	 *
-	 * @param ? $format = null
-	 * @return string
 	 */
-	public function getTxnDate($format = null)
+	public function getTxnDate(?string $format = null): string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
 
 	/**
-	 * @see QuickBooks_Object_Check::setTxnDate()
+	 * @see QBXML\Object\Check::setTxnDate()
 	 */
-	public function setTransactionDate($date)
+	public function setTransactionDate($date): bool
 	{
 		return $this->setTxnDate($date);
 	}
 
 	/**
-	 * @see QuickBooks_Object_Check::getTxnDate()
+	 * @see QBXML\Object\Check::getTxnDate()
 	 */
-	public function getTransactionDate($format = null)
+	public function getTransactionDate(?string $format = null): string
 	{
-		return $this->getTxnDate($format = null);
+		return $this->getTxnDate($format);
 	}
 	// Path: Memo, datatype: STRTYPE
 
 	/**
 	 * Set the Memo for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setMemo($value)
+	public function setMemo(string $value): bool
 	{
 		return $this->set('Memo', $value);
 	}
 
 	/**
 	 * Get the Memo for the Check
-	 *
-	 * @return string
 	 */
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
@@ -263,21 +208,16 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the IsToBePrinted for the Check
-	 *
-	 * @param boolean $bool
-	 * @return boolean
 	 */
-	public function setIsToBePrinted($bool)
+	public function setIsToBePrinted(bool $bool): bool
 	{
 		return $this->setBooleanType('IsToBePrinted', $bool);
 	}
 
 	/**
 	 * Get the IsToBePrinted for the Check
-	 *
-	 * @return boolean
 	 */
-	public function getIsToBePrinted()
+	public function getIsToBePrinted(): bool
 	{
 		return $this->getBooleanType('IsToBePrinted');
 	}
@@ -286,21 +226,16 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the IsTaxIncluded for the Check
-	 *
-	 * @param boolean $bool
-	 * @return boolean
 	 */
-	public function setIsTaxIncluded($bool)
+	public function setIsTaxIncluded(bool $bool): bool
 	{
 		return $this->setBooleanType('IsTaxIncluded', $bool);
 	}
 
 	/**
 	 * Get the IsTaxIncluded for the Check
-	 *
-	 * @return boolean
 	 */
-	public function getIsTaxIncluded()
+	public function getIsTaxIncluded(): bool
 	{
 		return $this->getBooleanType('IsTaxIncluded');
 	}
@@ -309,21 +244,16 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the SalesTaxCodeRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the SalesTaxCodeRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
@@ -334,65 +264,60 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setSalesTaxCodeApplicationID($value)
+	public function setSalesTaxCodeApplicationID($value): bool
 	{
-		return $this->set('SalesTaxCodeRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESTAXCODE, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESTAXCODE, PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getSalesTaxCodeApplicationID()
+	public function getSalesTaxCodeApplicationID(): string
 	{
-		return $this->get('SalesTaxCodeRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
 	// Path: SalesTaxCodeRef FullName, datatype:
 
 	/**
 	 * Set the SalesTaxCodeRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setSalesTaxCodeName($FullName)
+	public function setSalesTaxCodeName(string $FullName): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the SalesTaxCodeRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function addItemLine($obj)
+	public function addItemLine(ItemLine $obj): bool
 	{
 		return $this->addListItem('ItemLine', $obj);
 	}
 
-	public function addItemGroupLine($obj)
+	public function addItemGroupLine(ItemGroupLine $obj): bool
 	{
 		return $this->addListItem('ItemGroupLine', $obj);
 	}
 
-	public function addExpenseLine($obj)
+	public function addExpenseLine(ExpenseLine $obj): bool
 	{
 		return $this->addListItem('ExpenseLine', $obj);
 	}
 
-	public function addAddCheckToTxn($obj)
+	public function addAddCheckToTxn(ApplyCheckToTxn $obj): bool
 	{
 		return $this->addListItem('AddCheckToTxn', $obj);
 	}
 
-	public function setAddress($addr1, $addr2 = '', $addr3 = '', $addr4 = '', $addr5 = '', $city = '', $state = '', $postalcode = '', $country = '', $note = '')
+	public function setAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $postalcode = '', string $country = '', string $note = ''): bool
 	{
 		return $this->_setAddress('', $addr1, $addr2, $addr3, $addr4, $addr5, $city, $state, $postalcode, $country, $note);
 	}
 
-	protected function _setAddress($post, $addr1, $addr2, $addr3, $addr4, $addr5, $city, $state, $postalcode, $country, $note)
+	protected function _setAddress(string $post, string $addr1, string $addr2, string $addr3, string $addr4, string $addr5, string $city, string $state, string $postalcode, string $country, string $note): bool
 	{
 		for ($i = 1; $i <= 5; $i++)
 		{
@@ -404,13 +329,14 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 		$this->set('Address' . $post . ' PostalCode', $postalcode);
 		$this->set('Address' . $post . ' Country', $country);
 		$this->set('Address' . $post . ' Note', $note);
+
+		return true;
 	}
-	public function asList($request)
+	public function asList(string $request)
 	{
 		switch ($request)
 		{
 			case 'CheckAddRq':
-
 				if (isset($this->_object['ItemLine']))
 				{
 					$this->_object['ItemLineAdd'] = $this->_object['ItemLine'];
@@ -430,18 +356,16 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 				{
 					$this->_object['AddCheckToTxnAdd'] = $this->_object['AddCheckToTxn'];
 				}
-
 				break;
+
 			case 'CheckModRq':
-
-
 				break;
 		}
 
 		return parent::asList($request);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		if (is_null($object))
 		{
@@ -450,8 +374,7 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_CHECK:
-
+			case PackageInfo::Actions['ADD_CHECK']:
 				if (!empty($object['ItemLineAdd']))
 				{
 					foreach ($object['ItemLineAdd'] as $key => $obj)
@@ -483,9 +406,9 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 						$obj->setOverride('ApplyCheckToTxnAdd');
 					}
 				}
-
 				break;
-			case QUICKBOOKS_MOD_CHECK:
+
+			case PackageInfo::Actions['MOD_CHECK']:
 				if (isset($object['ItemLine']))
 				{
 					$object['ItemLineMod'] = $object['ItemLine'];
@@ -498,11 +421,9 @@ class QuickBooks_QBXML_Object_Check extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_CHECK;
+		return PackageInfo::Actions['OBJECT_CHECK'];
 	}
 }

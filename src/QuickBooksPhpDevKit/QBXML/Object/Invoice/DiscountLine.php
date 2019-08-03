@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -10,35 +10,29 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Invoice;
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Invoice.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice;
 
 /**
  *
  *
  */
-class QuickBooks_QBXML_Object_Invoice_DiscountLine extends QuickBooks_QBXML_Object
+class DiscountLine extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks SalesReceipt SalesReceiptLine object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setAmount($amount)
+	public function setAmount($amount): bool
 	{
-		$amount = (float) $amount;
+		$amount = floatval($amount);
 
 		// Discount amounts are always negative in QuickBooks
 		if ($amount > 0)
@@ -49,25 +43,26 @@ class QuickBooks_QBXML_Object_Invoice_DiscountLine extends QuickBooks_QBXML_Obje
 		return $this->setAmountType('Amount', $amount);
 	}
 
-	public function setAccountListID($ListID)
+	public function setAccountListID(string $ListID): bool
 	{
 		return $this->set('AccountRef ListID', $ListID);
 	}
 
-	public function setAccountName($name)
+	public function setAccountName(string $name): bool
 	{
 		return $this->set('AccountRef FullName', $name);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_INVOICE:
+			case PackageInfo::Actions['ADD_INVOICE']:
 				$root = 'DiscountLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_INVOICE:
+
+			case PackageInfo::Actions['MOD_INVOICE']:
 				$root = 'DiscountLineMod';
 				$parent = null;
 				break;
@@ -78,10 +73,8 @@ class QuickBooks_QBXML_Object_Invoice_DiscountLine extends QuickBooks_QBXML_Obje
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'DiscountLine';
 	}

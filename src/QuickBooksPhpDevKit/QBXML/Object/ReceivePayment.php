@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks ReceivePayment object container
@@ -10,75 +10,61 @@
  * @subpackage Object
  */
 
-/**
- * Base object class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
 
-/**
- * Dependency class (applied payment)
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/ReceivePayment/AppliedToTxn.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\ReceivePayment\AppliedToTxn;
 
 /**
  * QuickBooks ReceivePayment object
  */
-class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
+class ReceivePayment extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_ReceivePayment object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\ReceivePayment object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
-	 * Set the TxnID of the Class
-	 *
-	 * @param string $TxnID
-	 * @return boolean
+	 * Set the TxnID of the ReceivePayment
 	 */
-	public function setTxnID($TxnID)
+	public function setTxnID(string $TxnID): bool
 	{
 		return $this->set('TxnID', $TxnID);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_ReceivePayment::setTxnID()}
+	 * Alias of {@link QBXML\Object\ReceivePayment::setTxnID()}
 	 */
-	public function setTransactionID($TxnID)
+	public function setTransactionID(string $TxnID): bool
 	{
 		return $this->setTxnID($TxnID);
 	}
 
 	/**
-	 * Get the ListID of the Class
-	 *
-	 * @return string
+	 * Get the ListID of the ReceivePayment
 	 */
-	public function getTxnID()
+	public function getTxnID(): string
 	{
 		return $this->get('TxnID');
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_ReceivePayment::getTxnID()}
+	 * Alias of {@link QBXML\Object\ReceivePayment::getTxnID()}
 	 */
-	public function getTransactionID()
+	public function getTransactionID(): string
 	{
 		return $this->getTxnID();
 	}
 
 	/**
 	 * Set the customer ListID
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setCustomerListID($ListID)
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID' , $ListID);
 	}
@@ -89,36 +75,34 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	 * @param mixed $value
 	 * @return boolean
 	 */
-	public function setCustomerApplicationID($value)
+	public function setCustomerApplicationID($value): bool
 	{
-		return $this->set('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CUSTOMER, QUICKBOOKS_LISTID, $value));
+		return $this->set('CustomerRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CUSTOMER'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 
 	public function getCustomerApplicationID()
 	{
-		return $this->get('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('CustomerRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public function setCustomerName($name)
+	public function setCustomerName(string $name): bool
 	{
-		return $this->set('CustomerRef FullName', $name);
+		return $this->setCustomerFullName($name);
 	}
 
-	public function setCustomerFullName($name)
+	public function setCustomerFullName(string $name): bool
 	{
 		return $this->set('CustomerRef FullName', $name);
 	}
 
 	/**
 	 * Get the customer ListID
-	 *
-	 * @return string
 	 */
-	public function getCustomerListID()
+	public function getCustomerListID(): string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -126,41 +110,36 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getCustomerName()
+	public function getCustomerName(): string
 	{
-		return $this->get('CustomerRef FullName');
+		return $this->getCustomerFullName();
 	}
 
-	public function getCustomerFullName()
+	public function getCustomerFullName(): string
 	{
 		return $this->get('CustomerRef FullName');
 	}
 
 	/**
 	 * Set the transaction date
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
-	public function setTxnDate($date)
+	public function setTxnDate($date): bool
 	{
 		return $this->setDateType('TxnDate', $date);
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::setTxnDate()}
+	 * Alias of {@link QBXML\Object\ReceivePayment::setTxnDate()}
 	 */
-	public function setTransactionDate($date)
+	public function setTransactionDate($date): bool
 	{
 		return $this->setTxnDate($date);
 	}
 
 	/**
 	 * Get the transaction date
-	 *
-	 * @return string
 	 */
-	public function getTxnDate($format = 'Y-m-d')
+	public function getTxnDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('TxnDate');
 	}
@@ -169,29 +148,24 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the reference number
-	 *
-	 * @param string $str
-	 * @return boolean
 	 */
-	public function setRefNumber($str)
+	public function setRefNumber($str): bool
 	{
-		return $this->set('RefNumber', $str);
+		return $this->set('RefNumber', (string) $str);
 	}
 
 	/**
 	 * Get the reference number
-	 *
-	 * @return string
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_ReceivePayment::addAppliedToTxn()}
+	 * Alias of {@link QBXML\Object\ReceivePayment::addAppliedToTxn()}
 	 */
-	public function addAppliedToTransaction($obj)
+	public function addAppliedToTransaction(AppliedToTxn $obj): bool
 	{
 		return $this->addAppliedToTxn($obj);
 	}
@@ -200,14 +174,14 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	 *
 	 *
 	 */
-	public function addAppliedToTxn($obj)
+	public function addAppliedToTxn(AppliedToTxn $obj): bool
 	{
 		/*
 		$lines = $this->get('AppliedToTxn');
 
 		if (!is_array($lines))
 		{
-			$lines = array();
+			$lines = [];
 		}
 
 		//
@@ -218,7 +192,7 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 		return $this->addListItem('AppliedToTxn', $obj);
 	}
 
-	public function getAppliedToTxn($i)
+	public function getAppliedToTxn(int $i): AppliedToTxn
 	{
 		return $this->getListItem('AppliedToTxn', $i);
 	}
@@ -229,35 +203,30 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	}
 
 	/**
-	 * Alias of {@link QuickBooks_Object_Invoice::getTxnDate()}
+	 * Alias of {@link QBXML\Object\ReceivePayment::getTxnDate()}
 	 */
-	public function getTransactionDate($format = 'Y-m-d')
+	public function getTransactionDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
 
 	/**
 	 * Set the total amount of the received payment
-	 *
-	 * @param float $amount
-	 * @return boolean
 	 */
-	public function setTotalAmount($amount)
+	public function setTotalAmount($amount): bool
 	{
 		return $this->setAmountType('TotalAmount', $amount);
 	}
 
 	/**
 	 * Get the total amount of the received payment
-	 *
-	 * @return float
 	 */
 	public function getTotalAmount()
 	{
 		return $this->getAmountType('TotalAmount');
 	}
 
-	public function setARAccountListID($ListID)
+	public function setARAccountListID(string $ListID): bool
 	{
 		return $this->set('ARAccountRef ListID', $ListID);
 	}
@@ -265,27 +234,27 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function setARAccountName($name)
+	public function setARAccountName(string $name): bool
+	{
+		return $this->setARAccountFullName($name);
+	}
+
+	public function setARAccountFullName(string $name): bool
 	{
 		return $this->set('ARAccountRef FullName', $name);
 	}
 
-	public function setARAccountFullName($name)
+	public function setARAccountApplicationID($value): bool
 	{
-		return $this->set('ARAccountRef FullName', $name);
-	}
-
-	public function setARAccountApplicationID($value)
-	{
-		return $this->set('ARAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('ARAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['QUICKBOOKS_OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getARAccountApplicationID()
 	{
-		return $this->get('ARAccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('ARAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getARAccountListID()
+	public function getARAccountListID(): string
 	{
 		return $this->get('ARAccountRef ListID');
 	}
@@ -293,17 +262,17 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getARAccountName()
+	public function getARAccountName(): string
+	{
+		return $this->getARAccountFullName();
+	}
+
+	public function getARAccountFullName(): string
 	{
 		return $this->get('ARAccountRef FullName');
 	}
 
-	public function getARAccountFullName()
-	{
-		return $this->get('ARAccountRef FullName');
-	}
-
-	public function setPaymentMethodListID($ListID)
+	public function setPaymentMethodListID(string $ListID): string
 	{
 		return $this->set('PaymentMethodRef ListID', $ListID);
 	}
@@ -311,27 +280,27 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function setPaymentMethodName($name)
+	public function setPaymentMethodName(string $name): bool
+	{
+		return $this->setPaymentMethodFullName($name);
+	}
+
+	public function setPaymentMethodFullName(string $name): bool
 	{
 		return $this->set('PaymentMethodRef FullName', $name);
 	}
 
-	public function setPaymentMethodFullName($name)
+	public function setPaymentMethodApplicationID($value): bool
 	{
-		return $this->set('PaymentMethodRef FullName', $name);
-	}
-
-	public function setPaymentMethodApplicationID($value)
-	{
-		return $this->set('PaymentMethodRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_PAYMENTMETHOD, QUICKBOOKS_LISTID, $value));
+		return $this->set('PaymentMethodRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_PAYMENTMETHOD'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getPaymentMethodApplicationID()
 	{
-		return $this->get('PaymentMethodRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('PaymentMethodRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getPaymentMethodListID()
+	public function getPaymentMethodListID(): string
 	{
 		return $this->get('PaymentMethodRef ListID');
 	}
@@ -339,17 +308,17 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getPaymentMethodName()
+	public function getPaymentMethodName(): string
+	{
+		return $this->getPaymentMethodFullName();
+	}
+
+	public function getPaymentMethodFullName(): string
 	{
 		return $this->get('PaymentMethodRef FullName');
 	}
 
-	public function getPaymentMethodFullName()
-	{
-		return $this->get('PaymentMethodRef FullName');
-	}
-
-	public function setDepositToAccountListID($ListID)
+	public function setDepositToAccountListID(string $ListID): bool
 	{
 		return $this->set('DepositToAccountRef ListID', $ListID);
 	}
@@ -357,27 +326,27 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function setDepositToAccountName($name)
+	public function setDepositToAccountName(string $name): bool
+	{
+		return $this->setDepositToAccountFullName($name);
+	}
+
+	public function setDepositToAccountFullName(string $name): bool
 	{
 		return $this->set('DepositToAccountRef FullName', $name);
 	}
 
-	public function setDepositToAccountFullName($name)
+	public function setDepositToAccountApplicationID($value): bool
 	{
-		return $this->set('DepositToAccountRef FullName', $name);
-	}
-
-	public function setDepositToAccountApplicationID($value)
-	{
-		return $this->set('DepositToAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('DepositToAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getDepositToAccountApplicationID()
 	{
-		return $this->get('DepositToAccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('DepositToAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getDepositToAccountListID()
+	public function getDepositToAccountListID(): string
 	{
 		return $this->get('DepositToAccountRef ListID');
 	}
@@ -385,80 +354,65 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getDepositToAccountName()
+	public function getDepositToAccountName(): string
+	{
+		return $this->getDepositToAccountFullName();
+	}
+
+	public function getDepositToAccountFullName(): string
 	{
 		return $this->get('DepositToAccountRef FullName');
 	}
 
-	public function getDepositToAccountFullName()
-	{
-		return $this->get('DepositToAccountRef FullName');
-	}
-
-	public function setMemo($memo)
+	public function setMemo(string $memo): bool
 	{
 		return $this->set('Memo', $memo);
 	}
 
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
 
 	/**
 	 * Set whether or not this transaction is an auto-apply transaction
-	 *
-	 * @param boolean $isautoapply
-	 * @return boolean
 	 */
-	public function setIsAutoApply($isautoapply)
+	public function setIsAutoApply(bool $isautoapply): bool
 	{
-		if ($isautoapply and strtolower($isautoapply) != 'false')
-		{
-			return $this->set('IsAutoApply', 'true');
-		}
-		else
-		{
-			return $this->set('IsAutoApply', 'false');
-		}
+		return $this->setBooleanType('IsAutoApply', $isautoapply);
 	}
 
 	/**
 	 * Get whether or not this transaction is an auto-apply transaction
-	 *
-	 * @return boolean
 	 */
-	public function getIsAutoApply()
+	public function getIsAutoApply(): bool
 	{
-		return $this->get('IsAutoApply') != 'false';
+		return $this->getBooleanType('IsAutoApply');
 	}
 
-	public function asList($request)
+	public function asList(string$request)
 	{
 		switch ($request)
 		{
 			case 'ReceivePaymentAddRq':
-
 				if (isset($this->_object['AppliedToTxn']))
 				{
 					$this->_object['AppliedToTxnAdd'] = $this->_object['AppliedToTxn'];
 				}
-
 				break;
-			case 'ReceivePaymentModRq':
 
+			case 'ReceivePaymentModRq':
 				if (isset($this->_object['AppliedToTxn']))
 				{
 					$this->_object['AppliedToTxnMod'] = $this->_object['AppliedToTxn'];
 				}
-
 				break;
 		}
 
 		return parent::asList($request);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		if (is_null($object))
 		{
@@ -467,8 +421,7 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_RECEIVEPAYMENT:
-
+			case PackageInfo::Actions['ADD_RECEIVEPAYMENT']:
 				if ($this->exists('AppliedToTxnAdd'))
 				{
 					foreach ($object['AppliedToTxnAdd'] as $key => $obj)
@@ -476,10 +429,9 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 						$obj->setOverride('AppliedToTxnAdd');
 					}
 				}
-
 				break;
-			case QUICKBOOKS_MOD_RECEIVEPAYMENT:
 
+			case PackageInfo::Actions['MOD_RECEIVEPAYMENT']:
 				if ($this->exists('AppliedToTxnMod'))
 				{
 					foreach ($object['AppliedToTxnMod'] as $key => $obj)
@@ -496,11 +448,9 @@ class QuickBooks_QBXML_Object_ReceivePayment extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_RECEIVEPAYMENT;
+		return PackageInfo::Actions['OBJECT_RECEIVEPAYMENT'];
 	}
 }

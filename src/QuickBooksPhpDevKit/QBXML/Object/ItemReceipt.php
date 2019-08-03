@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * QuickBooks ReceiptItem object container
+ * QuickBooks ItemReceipt object container
  *
  * @todo Add and verify the Mod schema
  * @todo Documentation
@@ -14,35 +14,23 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ExpenseLine;
+use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ItemGroupLine;
+use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ItemLine;
 
 /**
- * Expense lines for ReceiptItems
+ * Quickbooks ItemReceipt definition
  */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/ItemReceipt/ExpenseLine.php');
-/**
- * ItemLine lines for ReceiptItems
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/ItemReceipt/ItemLine.php');
-/**
- * ItemGroup lines for ReceiptItems
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/ItemReceipt/ItemGroupLine.php');
-
-/**
- * Quickbooks ReceiptItem definition
- */
-class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
+class ItemReceipt extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks ReceiptItem object
-	 *
-	 * @param array $arr
+	 * Create a new QuickBooks ItemReceipt object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -50,18 +38,15 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets the Vendor ListID
 	 */
-	public function getVendorListID()
+	public function getVendorListID(): string
 	{
 		return $this->get('VendorRef ListID');
 	}
 
 	/**
 	 * Set the Vendor ListID
-	 *
-	 * @param string ListID
-	 * @return boolean
 	 */
-	public function setVendorListID($value)
+	public function setVendorListID(string $value): bool
 	{
 		return $this->set('VendorRef ListID', $value);
 	}
@@ -69,56 +54,47 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets the Vendor Name
 	 */
-	public function getVendorName()
+	public function getVendorName(): string
 	{
 		return $this->get('VendorRef FullName');
 	}
 
 	/**
 	 * Set the Vendor Name
-	 *
-	 * @param string name
-	 * @return boolean
 	 */
-	public function setVendorName($value)
+	public function setVendorName(string $value): bool
 	{
 		return $this->set('VendorRef FullName', $value);
 	}
 
 	/**
-	 * Gets the Account ListID
+	 * Gets the Accounts Payable Account ListID
 	 */
-	public function getAPAccountListID()
+	public function getAPAccountListID(): string
 	{
 		return $this->get('APAccountRef ListID');
 	}
 
 	/**
-	 * Set the Account ListID
-	 *
-	 * @param string ListID
-	 * @return boolean
+	 * Set the Accounts Payable Account ListID
 	 */
-	public function setAPAccountListID($value)
+	public function setAPAccountListID(string $value): bool
 	{
 		return $this->set('APAccountRef ListID', $value);
 	}
 
 	/**
-	 * Gets the Account Name
+	 * Gets the Accounts Payable Account Name
 	 */
-	public function getAPAccountName()
+	public function getAPAccountName(): string
 	{
 		return $this->get('APAccountRef FullName');
 	}
 
 	/**
-	 * Set the account Name
-	 *
-	 * @param string name
-	 * @return boolean
+	 * Set the Accounts Payable Account Name
 	 */
-	public function setAPAccountName($value)
+	public function setAPAccountName(string $value): bool
 	{
 		return $this->set('APAccountRef FullName', $value);
 	}
@@ -126,36 +102,31 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets the transaction date
 	 */
-	public function getTxnDate()
+	public function getTxnDate(?string $format='Y-m-d'): string
 	{
-		return $this->get('TxnDate');
+		return $this->getDateType('TxnDate');
 	}
 
 	/**
 	 * Set the transaction date
-	 *
-	 * @param string
-	 * @return boolean
 	 */
-	public function setTxnDate($value)
+	public function setTxnDate($value): bool
 	{
-		return $this->set('TxnDate', $value);
+		return $this->setDateType('TxnDate', $value);
 	}
 
 	/**
 	 * Gets the RefNumber
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): string
 	{
 		return $this->get('RefNumber');
 	}
 
 	/**
 	 * Set the RefNumber
-	 *
-	 * @return boolean
 	 */
-	public function setRefNumber($value)
+	public function setRefNumber(string $value): bool
 	{
 		return $this->set('RefNumber', $value);
 	}
@@ -163,18 +134,15 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets the Memo
 	 */
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
 
 	/**
 	 * Set the Memo
-	 *
-	 * @param string
-	 * @return boolean
 	 */
-	public function setMemo($value)
+	public function setMemo(string $value): bool
 	{
 		return $this->set('Memo', $value);
 	}
@@ -205,31 +173,30 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets the LinkToTxnID
 	 */
-	public function getLinkToTxnIDList()
+	public function getLinkToTxnIDList(): array
 	{
 		return $this->get('LinkToTxnIDList');
 	}
 
 	/**
 	 * Sets the LinksToTxnID
-	 * @param string $TxnID
 	 */
-	public function setLinkToTxnIDList($TxnIDs)
+	public function setLinkToTxnIDList(array $TxnIDs)
 	{
 		return $this->set('LinkToTxnIDList', $TxnIDs);
 	}
 
-	public function addItemLine($obj)
+	public function addItemLine(ItemLine $obj): bool
 	{
 		return $this->addListItem('ItemLine', $obj);
 	}
 
-	public function addItemGroupLine($obj)
+	public function addItemGroupLine(ItemGroupLine $obj): bool
 	{
 		return $this->addListItem('ItemGroupLine', $obj);
 	}
 
-	public function addExpenseLine($obj)
+	public function addExpenseLine(ExpenseLine $obj): bool
 	{
 		return $this->addListItem('ExpenseLine', $obj);
 	}
@@ -239,7 +206,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	 *
 	 * @param $i a number between 0 and added Lines-1
 	 */
-	public function getExpenseLine($i)
+	public function getExpenseLine(int $i): ExpenseLine
 	{
 		return $this->getListItem('ExpenseLine', $i);
 	}
@@ -247,7 +214,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets a list of all Expense Lines
 	 */
-	public function getExpenseLines()
+	public function getExpenseLines(): array
 	{
 		return $this->getList('ExpenseLine');
 	}
@@ -257,7 +224,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	 *
 	 * @param $i a number between 0 and added Lines-1
 	 */
-	public function getItemLine($i)
+	public function getItemLine(int $i): ItemLine
 	{
 		return $this->getListItem('ItemLine', $i);
 	}
@@ -265,7 +232,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets a list of all Item Lines
 	 */
-	public function getItemLines()
+	public function getItemLines(): array
 	{
 		return $this->getList('ItemLine');
 	}
@@ -275,7 +242,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	 *
 	 * @param $i a number between 0 and added Lines-1
 	 */
-	public function getItemGroupLine($i)
+	public function getItemGroupLine(int $i): ItemGroupLine
 	{
 		return $this->getListItem('ItemGroupLine', $i);
 	}
@@ -283,16 +250,16 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 	/**
 	 * Gets a list of all ItemGroup Lines
 	 */
-	public function getItemGroupLines()
+	public function getItemGroupLines(): array
 	{
 		return $this->getList('ItemGroupLine');
 	}
 
-	public function asList($request)
+	public function asList(string $request)
 	{
 		switch ($request)
 		{
-			case QUICKBOOKS_ADD_ITEMRECEIPT . 'Rq':
+			case PackageInfo::Actions['ADD_ITEMRECEIPT'] . 'Rq':
 				if (isset($this->_object['ItemLine']))
 				{
 					$this->_object['ItemLineAdd'] = $this->_object['ItemLine'];
@@ -307,7 +274,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 				}
 				break;
 
-			case QUICKBOOKS_MOD_RECEIPTITEM . 'Rq':
+			case PackageInfo::Actions['MOD_ITEMRECEIPT'] . 'Rq':
 				if (isset($this->_object['ItemLine']))
 				{
 					$this->_object['ItemLineMod'] = $this->_object['ItemLine'];
@@ -322,7 +289,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 				}
 				break;
 
-			case QUICKBOOKS_QUERY_RECEIPTITEM . 'Rq':
+			case PackageInfo::Actions['QUERY_ITEMRECEIPT'] . 'Rq':
 				if (isset($this->_object['ItemLine']))
 				{
 					$this->_object['ItemLineQuery'] = $this->_object['ItemLine'];
@@ -341,7 +308,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 		return parent::asList($request);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		if (is_null($object))
 		{
@@ -350,7 +317,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_ITEMRECEIPT:
+			case PackageInfo::Actions['ADD_ITEMRECEIPT']:
 				if (isset($object['ItemLineAdd']))
 				{
 					foreach ($object['ItemLineAdd'] as $key => $obj)
@@ -373,9 +340,10 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 					}
 				}
 				break;
+
 			// For possible future use...
 			/*
-			case QUICKBOOKS_QUERY_RECEIPTITEM:
+			case PackageInfo::Actions['QUERY_ITEMRECEIPT']:
 				if (isset($this->_object['ItemLineAdd']))
 				{
 					foreach ($this->_object['ItemLineQuery'] as $key => $obj)
@@ -399,7 +367,7 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 				}
 				break;
 			*/
-			case QUICKBOOKS_MOD_RECEIPTITEM:
+			case PackageInfo::Actions['MOD_ITEMRECEIPT']:
 				if (isset($object['ItemLineAdd']))
 				{
 					foreach ($object['ItemLineMod'] as $key => $obj)
@@ -429,11 +397,9 @@ class QuickBooks_QBXML_Object_ItemReceipt extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_RECEIPTITEM;
+		return PackageInfo::Actions['OBJECT_ITEMRECEIPT'];
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -9,70 +9,64 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\SalesOrder;
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/SalesOrder.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\SalesOrder;
 
 /**
  *
  *
  */
-class QuickBooks_QBXML_Object_SalesOrder_SalesOrderLine extends QuickBooks_QBXML_Object
+class SalesOrderLine extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks Invoice InvoiceLine object
-	 *
-	 * @param array $arr
+	 * Create a new QuickBooks SalesOrder SalesOrderLine object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setItemListID($ListID)
+	public function setItemListID(string $ListID): bool
 	{
 		return $this->set('ItemRef ListID', $ListID);
 	}
 
-	public function setItemApplicationID($value)
+	public function setItemApplicationID($value): bool
 	{
-		return $this->set('ItemRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ITEM, QUICKBOOKS_LISTID, $value));
+		return $this->set('ItemRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ITEM'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function setItemName($name)
+	public function setItemName(string $name): bool
 	{
 		return $this->set('ItemRef FullName', $name);
 	}
 
-	public function getItemListID()
+	public function getItemListID(): string
 	{
 		return $this->get('ItemRef ListID');
 	}
 
-	public function getItemName()
+	public function getItemName(): string
 	{
 		return $this->get('ItemRef FullName');
 	}
 
-	public function setDescription($descrip)
+	public function setDescription(string $descrip): bool
 	{
 		return $this->set('Desc', $descrip);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setQuantity($quan)
+	public function setQuantity($quantity): bool
 	{
-		return $this->set('Quantity', (float) $quan);
+		return $this->set('Quantity', (float) $quantity);
 	}
 
 	public function getQuantity()
@@ -80,17 +74,17 @@ class QuickBooks_QBXML_Object_SalesOrder_SalesOrderLine extends QuickBooks_QBXML
 		return $this->get('Quantity');
 	}
 
-	public function setUnitOfMeasure($unit)
+	public function setUnitOfMeasure(string $unit): bool
 	{
 		return $this->set('UnitOfMeasure', $unit);
 	}
 
-	public function getUnitOfMeasure()
+	public function getUnitOfMeasure(): string
 	{
 		return $this->get('UnitOfMeasure');
 	}
 
-	public function setRate($rate)
+	public function setRate($rate): bool
 	{
 		return $this->set('Rate', (float) $rate);
 	}
@@ -100,7 +94,7 @@ class QuickBooks_QBXML_Object_SalesOrder_SalesOrderLine extends QuickBooks_QBXML
 		return $this->get('Rate');
 	}
 
-	public function setRatePercent($percent)
+	public function setRatePercent($percent): bool
 	{
 		return $this->set('RatePercent', (float) $percent);
 	}
@@ -109,158 +103,159 @@ class QuickBooks_QBXML_Object_SalesOrder_SalesOrderLine extends QuickBooks_QBXML
 	{
 		return $this->get('RatePercent');
 	}
-
-	public function setPriceLevelApplicationID($value)
+	/*
+	public function setPriceLevelApplicationID($value): bool
 	{
 
 	}
+	*/
 
-	public function setPriceLevelName($name)
+	public function setPriceLevelName(string $name): bool
 	{
 		return $this->set('PriceLevelRef FullName', $name);
 	}
 
-	public function setPriceLevelListID($ListID)
+	public function setPriceLevelListID(string $ListID): bool
 	{
 		return $this->set('PriceLevelRef ListID', $ListID);
 	}
 
-	public function getPriceLevelName()
+	public function getPriceLevelName(): string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
 
-	public function getPriceLevelListID()
+	public function getPriceLevelListID(): string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
 
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
-	public function setClassApplicationID($value)
+	/*
+	public function setClassApplicationID($value): bool
 	{
 
 	}
+	*/
 
-	public function setClassName($name)
+	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef Name', $name);
 	}
 
-	public function getClassListID()
+	public function getClassListID(): string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName()
+	public function getClassName(): string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function setAmount($amount)
+	public function setAmount($amount): bool
 	{
 		return $this->setAmountType('Amount', $amount);
 	}
 
-	public function setServiceDate($date)
+	public function setServiceDate($date): bool
 	{
 		return $this->setDateType('ServiceDate', $date);
 	}
 
-	public function getServiceDate($format = 'Y-m-d')
+	public function getServiceDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('ServiceDate', $format);
 	}
 
-	public function setSalesTaxCodeName($name)
+	public function setSalesTaxCodeName(string $name): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $name);
 	}
 
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
 
-	public function setTaxable()
+	public function setTaxable(): bool
 	{
-		return $this->set('SalesTaxCodeRef FullName', QUICKBOOKS_TAXABLE);
+		return $this->set('SalesTaxCodeRef FullName', PackageInfo::TaxCode['TAXABLE']);
 	}
 
-	public function setNonTaxable()
+	public function setNonTaxable(): bool
 	{
-		return $this->set('SalesTaxCodeRef FullName', QUICKBOOKS_NONTAXABLE);
+		return $this->set('SalesTaxCodeRef FullName', PackageInfo::TaxCode['NONTAXABLE']);
 	}
 
-	public function getTaxable()
+	public function getTaxable(): bool
 	{
-		return $this->get('SalesTaxCodeRef FullName') == QUICKBOOKS_TAXABLE;
+		return $this->get('SalesTaxCodeRef FullName') === PackageInfo::TaxCode['TAXABLE'];
 	}
 
-	public function setOverrideItemAccountName($name)
+	public function setOverrideItemAccountName(string $name): bool
 	{
 		return $this->set('OverrideItemAccountRef FullName', $name);
 	}
 
-	public function setOverrideItemAccountListID($ListID)
+	public function setOverrideItemAccountListID(string $ListID): bool
 	{
 		return $this->set('OverrideItemAccountRef ListID', $ListID);
 	}
-
+/*
 	public function setOverrideItemAccountApplicationID($value)
 	{
 
 	}
-
-	public function getOverrideItemAccountListID()
+*/
+	public function getOverrideItemAccountListID(): string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
 
-	public function getOverrideItemAccountName()
+	public function getOverrideItemAccountName(): string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
 
-	public function setOther1($value)
+	public function setOther1(string $value): bool
 	{
 		return $this->set('Other1', $value);
 	}
 
-	public function getOther1()
+	public function getOther1(): string
 	{
 		return $this->get('Other1');
 	}
 
-	public function setOther2($value)
+	public function setOther2(string $value): bool
 	{
 		return $this->set('Other2', $value);
 	}
 
-	public function getOther2()
+	public function getOther2(): string
 	{
 		return $this->get('Other2');
 	}
 
 	/**
 	 *
-	 *
-	 * @return boolean
 	 */
-	protected function _cleanup()
+	protected function _cleanup(): bool
 	{
 		if ($this->exists('Amount'))
 		{
@@ -270,17 +265,18 @@ class QuickBooks_QBXML_Object_SalesOrder_SalesOrderLine extends QuickBooks_QBXML
 		return true;
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		$this->_cleanup();
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_SALESORDER:
+			case PackageInfo::Actions['ADD_SALESORDER']:
 				$root = 'SalesOrderLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_SALESORDER:
+
+			case PackageInfo::Actions['MOD_SALESORDER']:
 				$root = 'SalesOrderLineMod';
 				$parent = null;
 				break;
@@ -291,10 +287,8 @@ class QuickBooks_QBXML_Object_SalesOrder_SalesOrderLine extends QuickBooks_QBXML
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'SalesOrderLine';
 	}

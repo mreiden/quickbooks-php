@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * JournalEntry class for QuickBooks
  *
@@ -9,32 +9,22 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\JournalEntry\JournalCreditLine;
+use QuickBooksPhpDevKit\QBXML\Object\JournalEntry\JournalDebitLine;
 
 /**
  *
  */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/JournalEntry/JournalCreditLine.php');
-
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/JournalEntry/JournalDebitLine.php');
-
-/**
- *
- */
-class QuickBooks_QBXML_Object_JournalEntry extends QuickBooks_QBXML_Object
+class JournalEntry extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_JournalEntry object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\JournalEntry object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -43,38 +33,32 @@ class QuickBooks_QBXML_Object_JournalEntry extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the TxnDate for the JournalEntry
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
-	public function setTxnDate($date)
+	public function setTxnDate($date): bool
 	{
 		return $this->setDateType('TxnDate', $date);
 	}
 
 	/**
 	 * Get the TxnDate for the JournalEntry
-	 *
-	 * @param ? $format = null
-	 * @return string
 	 */
-	public function getTxnDate($format = null)
+	public function getTxnDate(?string $format = null): string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
 
 	/**
-	 * @see QuickBooks_Object_JournalEntry::setTxnDate()
+	 * @see QBXML\Object\JournalEntry::setTxnDate()
 	 */
-	public function setTransactionDate($date)
+	public function setTransactionDate($date): bool
 	{
 		return $this->setTxnDate($date);
 	}
 
 	/**
-	 * @see QuickBooks_Object_JournalEntry::getTxnDate()
+	 * @see QBXML\Object\JournalEntry::getTxnDate()
 	 */
-	public function getTransactionDate($format = null)
+	public function getTransactionDate(?string $format = null): string
 	{
 		$this->getTxnDate($format = null);
 	}
@@ -82,21 +66,16 @@ class QuickBooks_QBXML_Object_JournalEntry extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the RefNumber for the JournalEntry
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setRefNumber($value)
+	public function setRefNumber(string $value): bool
 	{
 		return $this->set('RefNumber', $value);
 	}
 
 	/**
 	 * Get the RefNumber for the JournalEntry
-	 *
-	 * @return string
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): string
 	{
 		return $this->get('RefNumber');
 	}
@@ -105,21 +84,16 @@ class QuickBooks_QBXML_Object_JournalEntry extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the Memo for the JournalEntry
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setMemo($value)
+	public function setMemo(string $value): bool
 	{
 		return $this->set('Memo', $value);
 	}
 
 	/**
 	 * Get the Memo for the JournalEntry
-	 *
-	 * @return string
 	 */
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
@@ -128,52 +102,51 @@ class QuickBooks_QBXML_Object_JournalEntry extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the IsAdjustment for the JournalEntry
-	 *
-	 * @param boolean $bool
-	 * @return boolean
 	 */
-	public function setIsAdjustment($bool)
+	public function setIsAdjustment(bool $bool): bool
 	{
 		return $this->setBooleanType('IsAdjustment', $bool);
 	}
 
 	/**
 	 * Get the IsAdjustment for the JournalEntry
-	 *
-	 * @return boolean
 	 */
-	public function getIsAdjustment()
+	public function getIsAdjustment(): bool
 	{
 		return $this->getBooleanType('IsAdjustment');
 	}
 
-	public function addDebitLine($obj)
+	public function addDebitLine(JournalDebitLine $obj): bool
 	{
 		return $this->addListItem('JournalDebitLine', $obj);
 	}
 
-	public function addJournalDebitLine($obj)
+	/**
+	 * @see QBXML\Object\JournalEntry::addDebitLine()
+	 */
+	public function addJournalDebitLine(JournalDebitLine $obj): bool
 	{
 		return $this->addDebitLine($obj);
 	}
 
-	public function addCreditLine($obj)
+	public function addCreditLine(JournalCreditLine $obj): bool
 	{
 		return $this->addListItem('JournalCreditLine', $obj);
 	}
 
-	public function addJournalCreditLine($obj)
+	/**
+	 * @see QBXML\Object\JournalEntry::addCreditLine()
+	 */
+	public function addJournalCreditLine(JournalCreditLine $obj): bool
 	{
 		return $this->addCreditLine($obj);
 	}
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_JOURNALENTRY;
+		return PackageInfo::Actions['OBJECT_JOURNALENTRY'];
 	}
 }

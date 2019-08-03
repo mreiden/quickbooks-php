@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks InventoryItem object container
@@ -13,88 +13,73 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
+class InventoryItem extends AbstractQbxmlObject
 {
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the ListID for this item
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID for this item
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
 	 * Set the name for this item
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
 	/**
 	 * Get the name for this item
-	 *
-	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
-	public function setFullName($fullname)
+	public function setFullName(string $fullname): bool
 	{
 		return $this->setFullNameType('FullName', 'Name', 'ParentRef FullName', $fullname);
 	}
 
-	public function getFullName()
+	public function getFullName(): string
 	{
 		return $this->getFullNameType('FullName', 'Name', 'ParentRef FullName');
 	}
 
 	/**
 	 * Set the QuantityOnHand for this item
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setQuantityOnHand($quantity)
+	public function setQuantityOnHand($quantity): bool
 	{
 		return $this->set('QuantityOnHand', (int) $quantity);
 	}
 
 	/**
 	 * Get the QuantityOnHand for this item
-	 *
-	 * @return boolean
 	 */
 	public function getQuantityOnHand()
 	{
@@ -103,29 +88,23 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the description of this item
-	 *
-	 * @param string $descrip
-	 * @return boolean
 	 */
-	public function setSalesDescription($descrip)
+	public function setSalesDescription(string $descrip): bool
 	{
 		return $this->set('SalesDesc', $descrip);
 	}
 
-	public function getSalesDescription()
+	public function getSalesDescription(): string
 	{
 		return $this->get('SalesDesc');
 	}
 
 	/**
 	 * Set the price for this item
-	 *
-	 * @param string $price
-	 * @return boolean
 	 */
-	public function setSalesPrice($price)
+	public function setSalesPrice($price): bool
 	{
-		return $this->set('SalesPrice', sprintf('%01.2f', (float) $price));
+		return $this->setAmountType('SalesPrice', $price);
 	}
 
 	/**
@@ -133,16 +112,13 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 	 */
 	public function getSalesPrice()
 	{
-		return $this->get('SalesPrice');
+		return $this->getAmountType('SalesPrice');
 	}
 
 	/**
 	 * Set the account ListID for this item
-	 *
-	 * @param string $ListID
-	 * @return string
 	 */
-	public function setIncomeAccountListID($ListID)
+	public function setIncomeAccountListID(string $ListID): bool
 	{
 		return $this->set('IncomeAccountRef ListID', $ListID);
 	}
@@ -151,12 +127,12 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 	 * (Sales OR Purchase)
 	 * @deprecated
 	 */
-	public function setIncomeAccountName($name)
+	public function setIncomeAccountName(string $name): bool
 	{
 		return $this->set('IncomeAccountRef FullName', $name);
 	}
 
-	public function setIncomeAccountFullName($FullName)
+	public function setIncomeAccountFullName(string $FullName): bool
 	{
 		return $this->setFullNameType('IncomeAccountRef FullName', null, null, $FullName);
 	}
@@ -164,20 +140,20 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * (Sales OR Purchase)
 	 */
-	public function setIncomeAccountApplicationID($value)
+	public function setIncomeAccountApplicationID($value): bool
 	{
-		return $this->set('IncomeAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('IncomeAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getIncomeAccountApplicationID()
 	{
-		return $this->get('IncomeAccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('IncomeAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
 	/**
 	 *
 	 */
-	public function getIncomeAccountListID()
+	public function getIncomeAccountListID(): string
 	{
 		return $this->get('IncomeAccountRef ListID');
 	}
@@ -185,17 +161,17 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getIncomeAccountName()
+	public function getIncomeAccountName(): string
+	{
+		return $this->getIncomeAccountFullName();
+	}
+
+	public function getIncomeAccountFullName(): string
 	{
 		return $this->get('IncomeAccountRef FullName');
 	}
 
-	public function getIncomeAccountFullName()
-	{
-		return $this->get('IncomeAccountRef FullName');
-	}
-
-	public function setAssetAccountName($name)
+	public function setAssetAccountName(string $name): bool
 	{
 		return $this->set('AssetAccountRef FullName', $name);
 	}
@@ -203,57 +179,57 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getAssetAccountName()
+	public function getAssetAccountName(): string
+	{
+		return $this->getAssetAccountFullName();
+	}
+
+	public function getAssetAccountFullName(): string
 	{
 		return $this->get('AssetAccountRef FullName');
 	}
 
-	public function getAssetAccountFullName()
-	{
-		return $this->get('AssetAccountRef FullName');
-	}
-
-	public function setAssetAccountListID($ListID)
+	public function setAssetAccountListID(string $ListID): bool
 	{
 		return $this->set('AssetAccountRef ListID', $ListID);
 	}
 
-	public function getAssetAccountListID()
+	public function getAssetAccountListID(): string
 	{
 		return $this->get('AssetAccountRef ListID');
 	}
 
-	public function setAssetAccountApplicationID($value)
+	public function setAssetAccountApplicationID($value): bool
 	{
-		return $this->set('AssetAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('AssetAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getAssetAccountApplicationID()
 	{
-		return $this->get('AssetAccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('AssetAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function setPurchaseDescription($desc)
+	public function setPurchaseDescription(string $desc): bool
 	{
 		return $this->set('PurchaseDesc', $desc);
 	}
 
-	public function getPurchaseDescription()
+	public function getPurchaseDescription(): string
 	{
 		return $this->get('PurchaseDesc');
 	}
 
-	public function setPurchaseCost($cost)
+	public function setPurchaseCost($cost): bool
 	{
-		return $this->set('PurchaseCost', sprintf('%01.2f', (float) $cost));
+		return $this->setAmountType('PurchaseCost', $cost);
 	}
 
 	public function getPurchaseCost()
 	{
-		return $this->get('PurchaseCost');
+		return $this->getAmountType('PurchaseCost');
 	}
 
-	public function setCOGSAccountListID($ListID)
+	public function setCOGSAccountListID(string $ListID): bool
 	{
 		return $this->set('COGSAccountRef ListID', $ListID);
 	}
@@ -261,27 +237,27 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function setCOGSAccountName($name)
+	public function setCOGSAccountName(string $name): bool
 	{
-		return $this->set('COGSAccountRef FullName', $name);
+		return $this->setCOGSAccountFullName($name);
 	}
 
-	public function setCOGSAccountFullName($FullName)
+	public function setCOGSAccountFullName(string $FullName): bool
 	{
 		return $this->setFullNameType('COGSAccountRef FullName', null, null, $FullName);
 	}
 
-	public function setCOGSAccountApplicationID($value)
+	public function setCOGSAccountApplicationID($value): bool
 	{
-		return $this->set('COGSAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('COGSAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getCOGSAccountApplicationID()
 	{
-		return $this->get('COGSAccountRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('COGSAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getCOGSAccountListID()
+	public function getCOGSAccountListID(): string
 	{
 		return $this->get('COGSAccountRef ListID');
 	}
@@ -289,63 +265,61 @@ class QuickBooks_QBXML_Object_InventoryItem extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function getCOGSAccountName()
+	public function getCOGSAccountName(): string
+	{
+		return $this->getCOGSAccountFullName();
+	}
+
+	public function getCOGSAccountFullName(): string
 	{
 		return $this->get('COGSAccountRef FullName');
 	}
 
-	public function getCOGSAccountFullName()
-	{
-		return $this->get('COGSAccountRef FullName');
-	}
-
-	public function setPreferredVendorListID($ListID)
+	public function setPreferredVendorListID(string $ListID): bool
 	{
 		return $this->set('PrefVendorRef ListID', $ListID);
 	}
 
-	public function setPreferredVendorName($name)
+	public function setPreferredVendorName(string $name): bool
 	{
 		return $this->set('PrefVendorRef FullName', $name);
 	}
 
-	public function setPreferredVendorApplicationID($value)
+	public function setPreferredVendorApplicationID($value): bool
 	{
-		return $this->set('PrefVendorRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_VENDOR, QUICKBOOKS_LISTID, $value));
+		return $this->set('PrefVendorRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_VENDOR'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getPreferredVendorApplicationID()
 	{
-		return $this->get('PrefVendorRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('PrefVendorRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getPreferredVendorListID()
+	public function getPreferredVendorListID(): string
 	{
 		return $this->get('PrefVendorRef ListID');
 	}
 
-	public function getPreferredVendorName()
+	public function getPreferredVendorName(): string
 	{
 		return $this->get('PrefVendorRef FullName');
 	}
 
-	public function getUnitOfMeasureSetListID()
+	public function getUnitOfMeasureSetListID(): string
 	{
 		return $this->get('UnitOfMeasureSetRef ListID');
 	}
 
-	public function getUnitOfMeasureSetFullName()
+	public function getUnitOfMeasureSetFullName(): string
 	{
 		return $this->get('UnitOfMeasureSetRef FullName');
 	}
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_INVENTORYITEM;
+		return PackageInfo::Actions['OBJECT_INVENTORYITEM'];
 	}
 }

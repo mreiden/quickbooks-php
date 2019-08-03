@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks ServiceItem object container
@@ -10,22 +10,18 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\SalesTaxGroupItem\ItemSalesTaxRef;
 
 /**
  *
  */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/SalesTaxGroupItem/ItemSalesTaxRef.php');
-
-/**
- *
- */
-class QuickBooks_QBXML_Object_SalesTaxGroupItem extends QuickBooks_QBXML_Object
+class SalesTaxGroupItem extends AbstractQbxmlObject
 {
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 
@@ -43,98 +39,86 @@ class QuickBooks_QBXML_Object_SalesTaxGroupItem extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the ListID for this item
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID for this item
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
 	 * Set the name for this item
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
-	public function getIsActive()
+	public function getIsActive(): bool
 	{
 		return $this->getBooleanType('IsActive', true);
 	}
 
-	public function setIsActive($IsActive)
+	public function setIsActive(?bool $IsActive): bool
 	{
 		return $this->setBooleanType('IsActive', $IsActive);
 	}
 
 	/**
 	 * Get the name for this item
-	 *
-	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
-	public function setItemDesc($desc)
+	public function setItemDesc(string $desc): bool
 	{
 		return $this->set('ItemDesc', $desc);
 	}
 
-	public function getItemDesc($desc)
-	{
-		return $this->get('ItemDesc', $desc);
-	}
-
-	public function setDescription($desc)
-	{
-		return $this->set('ItemDesc', $desc);
-	}
-
-	public function getDescription()
+	public function getItemDesc(): string
 	{
 		return $this->get('ItemDesc');
 	}
 
-	public function addItemSalesTaxRef($obj)
+	public function setDescription(string $desc): bool
+	{
+		return $this->set('ItemDesc', $desc);
+	}
+
+	public function getDescription(): string
+	{
+		return $this->get('ItemDesc');
+	}
+
+	public function addItemSalesTaxRef(ItemSalesTaxRef $obj): bool
 	{
 		return $this->addListItem('ItemSalesTaxRef', $obj);
 	}
 
-	public function getItemSalesTaxRef($i)
+	public function getItemSalesTaxRef(int $i): ItemSalesTaxRef
 	{
 		return $this->getListItem('ItemSalesTaxRef', $i);
 	}
 
-	public function listItemSalesTaxRefs()
+	public function listItemSalesTaxRefs(): array
 	{
 		return $this->getList('ItemSalesTaxRef');
 	}
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_SALESTAXGROUPITEM;
+		return PackageInfo::Actions['OBJECT_SALESTAXGROUPITEM'];
 	}
 }

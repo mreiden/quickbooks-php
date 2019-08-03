@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -9,56 +9,51 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\BillPaymentCheck;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\BillPaymentCheck;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/BillPaymentCheck.php');
-
-/**
- *
  *
  */
-class QuickBooks_QBXML_Object_BillPaymentCheck_AppliedToTxn extends QuickBooks_QBXML_Object
+class AppliedToTxn extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks ReceivePayment AppliedToTxn object
-	 *
-	 * @param array $arr
+	 * Create a new QuickBooks BillPaymentCheck AppliedToTxn object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setTxnID($TxnID)
+	public function setTxnID(string $TxnID): bool
 	{
 		return $this->set('TxnID', $TxnID);
 	}
 
-	public function setTransactionID($TxnID)
+	public function setTransactionID(string $TxnID): bool
 	{
 		return $this->setTxnID($TxnID);
 	}
 
-	public function getTxnID()
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
 
-	public function getTransactionID()
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
 
-	public function setTxnApplicationID($value)
+	public function setTxnApplicationID($value): bool
 	{
-		return $this->set(QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_BILL, QUICKBOOKS_TXNID, $value));
-		//return $this->set('NullRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_INVOICE, QUICKBOOKS_TXNID, $value));
+		return $this->set(PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_BILL'], PackageInfo::QbId['TXNID'], $value));
+		//return $this->set('NullRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_INVOICE'], PackageInfo::QbId['TXNID'], $value));
 	}
 
 	public function getTxnApplicationID()
@@ -71,12 +66,12 @@ class QuickBooks_QBXML_Object_BillPaymentCheck_AppliedToTxn extends QuickBooks_Q
 		return $this->getAmountType('PaymentAmount');
 	}
 
-	public function setPaymentAmount($amount)
+	public function setPaymentAmount($amount): bool
 	{
 		return $this->setAmountType('PaymentAmount', $amount);
 	}
 
-	public function setDiscountAmount($amount)
+	public function setDiscountAmount($amount): bool
 	{
 		return $this->setAmountType('DiscountAmount', $amount);
 	}
@@ -86,7 +81,7 @@ class QuickBooks_QBXML_Object_BillPaymentCheck_AppliedToTxn extends QuickBooks_Q
 		return $this->getDiscountAmount('DiscountAmount');
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null): Node
 	{
 		$this->_cleanup();
 
@@ -97,11 +92,12 @@ class QuickBooks_QBXML_Object_BillPaymentCheck_AppliedToTxn extends QuickBooks_Q
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_BILLPAYMENTCHECK:
+			case PackageInfo::Actions['ADD_BILLPAYMENTCHECK']:
 				$root = 'AppliedToTxnAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_BILLPAYMENTCHECK:
+
+			case PackageInfo::Actions['MOD_BILLPAYMENTCHECK']:
 				$root = 'AppliedToTxnMod';
 				$parent = null;
 				break;
@@ -112,10 +108,8 @@ class QuickBooks_QBXML_Object_BillPaymentCheck_AppliedToTxn extends QuickBooks_Q
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'AppliedToTxn';
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks ItemGroupLine object container
@@ -12,42 +12,42 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
- * Quickbooks ItemGroupLine definition
+ * Quickbooks ItemReceipt ItemGroupLine definition
  */
-class QuickBooks_QBXML_Object_ItemReceipt_ItemGroupLine extends QuickBooks_QBXML_Object
+class ItemGroupLine extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks ReceiptItem ItemGroupLine object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function getItemGroupListID()
+	public function getItemGroupListID(): ?string
 	{
 		return $this->get('ItemGroupRef ListID');
 	}
 
-	public function setItemGroupListID($ListID)
+	public function setItemGroupListID(string $ListID): bool
 	{
 		return $this->set('ItemGroupRef ListID', $ListID);
 	}
 
-	public function getItemGroupName()
+	public function getItemGroupName(): ?string
 	{
 		return $this->get('ItemGroupRef FullName');
 	}
 
-	public function setItemGroupName($Name)
+	public function setItemGroupName(string $Name): bool
 	{
 		return $this->set('ItemGroupRef FullName', $Name);
 	}
@@ -62,17 +62,17 @@ class QuickBooks_QBXML_Object_ItemReceipt_ItemGroupLine extends QuickBooks_QBXML
 		return $this->set('Quantity', (float) $Quantity);
 	}
 
-	public function getUnitOfMeasure()
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
 
-	public function setUnitOfMeasure($UnitOfMeasure)
+	public function setUnitOfMeasure(string $UnitOfMeasure): bool
 	{
 		return $this->set('UnitOfMeasure', $UnitOfMeasure);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null): Node
 	{
 		if (is_null($object))
 		{
@@ -81,14 +81,14 @@ class QuickBooks_QBXML_Object_ItemReceipt_ItemGroupLine extends QuickBooks_QBXML
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_ITEMRECEIPT:
+			case PackageInfo::Actions['ADD_ITEMRECEIPT']:
 				$root = 'ItemGroupLineAdd';
 				$parent = null;
 				break;
 // Currently unimplemented
 /*
-			case QUICKBOOKS_QUERY_INVENTORYADJUSTMENT:
-				$root = 'ExpenseLineQuery';
+			case PackageInfo::Actions['MOD_ITEMRECEIPT']:
+				$root = 'ItemGroupLineMod';
 				break;
 */
 		}
@@ -98,11 +98,9 @@ class QuickBooks_QBXML_Object_ItemReceipt_ItemGroupLine extends QuickBooks_QBXML
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return "ItemGroupLine";
+		return 'ItemGroupLine';
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * QuickBooks SalesRep object container
  *
@@ -9,93 +9,93 @@
  * @subpackage Object
  */
 
-/**
- * Base object class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  * QuickBooks Customer object class
  */
-class QuickBooks_QBXML_Object_SalesRep extends QuickBooks_QBXML_Object
+class SalesRep extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_SalesRep object
-	 *
-	 * @param array $arr
+	 * Create a new SalesRep object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the initials of this sales rep
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setInitial($value)
+	public function setInitial(string $value): bool
 	{
 		return $this->set('Initial', $value);
 	}
 
 	/**
 	 * Get the initials of this sales rep
-	 *
-	 * @return string
 	 */
-	public function getInitial()
+	public function getInitial(): string
 	{
 		return $this->get('Initial');
 	}
 
 	/**
 	 * Set this sales rep active or not
-	 *
-	 * @param boolean $value
-	 * @return boolean
 	 */
-	public function setIsActive($value)
+	public function setIsActive(?bool $value): bool
 	{
-		return $this->set('IsActive', (boolean) $value);
+		return $this->setBooleanType('IsActive', $value);
 	}
 
 	/**
 	 * Get whether or not this sales rep is active
-	 *
-	 * @return boolean
 	 */
-	public function getIsActive()
+	public function getIsActive(): bool
 	{
 		return $this->getBooleanType('IsActive');
 	}
 
 	/**
-	 * @param string $lid
-	 * @return boolean
+	 *
 	 */
-	public function setSalesRepEntityListID($lid)
+	public function setSalesRepEntityListID(string $ListID): bool
 	{
 		return $this->set('SalesRepEntityRef ListID', $lid);
 	}
 
 	/**
-	 * @param string $name
-	 * @return boolean
+	 *
 	 */
-	public function setSalesRepEntityName($name)
+	public function getSalesRepEntityListID(): string
+	{
+		return $this->get('SalesRepEntityRef ListID');
+	}
+
+	/**
+	 *
+	 */
+	public function setSalesRepEntityName(string $name): bool
 	{
 		return $this->set('SalesRepEntityRef FullName', $name);
 	}
 
 	/**
-	 * Tell what type of object this is
 	 *
-	 * @return string
 	 */
-	public function object()
+	public function getSalesRepEntityName(): string
 	{
-		return QUICKBOOKS_OBJECT_SALESREP;
+		return $this->get('SalesRepEntityRef FullName');
+	}
+
+	/**
+	 * Tell what type of object this is
+	 */
+	public function object(): string
+	{
+		return PackageInfo::Actions['OBJECT_SALESREP'];
 	}
 }

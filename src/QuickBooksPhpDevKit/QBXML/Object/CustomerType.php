@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks CustomerType object container
@@ -10,43 +10,36 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_CustomerType extends QuickBooks_QBXML_Object
+class CustomerType extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_Class object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\CustomerType object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the ListID of the Class
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID of the Class
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
@@ -54,12 +47,12 @@ class QuickBooks_QBXML_Object_CustomerType extends QuickBooks_QBXML_Object
 	/**
 	 *
 	 */
-	public function setParentListID($ListID)
+	public function setParentListID(string $ListID): bool
 	{
 		return $this->set('ParentRef ListID', $ListID);
 	}
 
-	public function getParentListID()
+	public function getParentListID(): string
 	{
 		return $this->get('ParentRef ListID');
 	}
@@ -67,56 +60,51 @@ class QuickBooks_QBXML_Object_CustomerType extends QuickBooks_QBXML_Object
 	/**
 	 * @deprecated
 	 */
-	public function setParentName($name)
+	public function setParentName(string $name): bool
 	{
-		return $this->set('ParentRef FullName', $name);
+		return $this->setParentFullName($name);
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public function getParentName()
+	public function getParentName(): string
 	{
-		return $this->get('ParentRef FullName');
+		return $this->getParentFullName();
 	}
 
-	public function setParentFullName($name)
+	public function setParentFullName(string $name): bool
 	{
 		return $this->set('ParentRef FullName', $name);
 	}
 
-	public function getParentFullName()
+	public function getParentFullName(): string
 	{
 		return $this->get('ParentRef FullName');
 	}
 
-	public function setParentApplicationID($value)
+	public function setParentApplicationID($value): bool
 	{
-		return $this->set('ParentRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID($this->object(), QUICKBOOKS_LISTID, $value));
+		return $this->set('ParentRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID($this->object(), PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getParentApplicationID()
+	public function getParentApplicationID(): string
 	{
-		return $this->get('ParentRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('ParentRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
 	/**
-	 * Set the name of the class
-	 *
-	 * @param string $name
-	 * @return boolean
+	 * Set the name of the CustomerType
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
 	/**
-	 * Get the name of the class
-	 *
-	 * @return string
+	 * Get the name of the CustomerType
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
@@ -124,44 +112,39 @@ class QuickBooks_QBXML_Object_CustomerType extends QuickBooks_QBXML_Object
 	/**
 	 *
 	 */
-	public function getFullName()
+	public function getFullName(): string
 	{
 		return $this->get('FullName');
 	}
 
-	public function setFullName($name)
+	public function setFullName(string $name): bool
 	{
 		return $this->set('FullName', $name);
 	}
 
 	/**
-	 * Set this Class active or not
-	 *
-	 * @param boolean $value
-	 * @return boolean
+	 * Set this CustomerType active or not
 	 */
-	public function setIsActive($value)
+	public function setIsActive(bool $value): bool
 	{
 		return $this->setBooleanType('IsActive', $value);
 	}
 
 	/**
-	 * Tell whether or not this class object is active
+	 * Tell whether or not this CustomerType is active
 	 *
 	 * @return boolean
 	 */
-	public function getIsActive()
+	public function getIsActive(): bool
 	{
 		return $this->getBooleanType('IsActive');
 	}
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_CUSTOMERTYPE;
+		return PackageInfo::Actions['OBJECT_CUSTOMERTYPE'];
 	}
 }

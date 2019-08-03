@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks InventoryAdjustment object container
@@ -12,87 +12,87 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\InventoryAdjustment;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\InventoryAdjustment;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * Quickbooks InventoryAdjustmentLine definition
  */
-class QuickBooks_QBXML_Object_InventoryAdjustment_InventoryAdjustmentLine extends QuickBooks_QBXML_Object
+class InventoryAdjustmentLine extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks InventoryAdjustment object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function getLineItemListID($ListID)
+	public function getLineItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
 
-	public function setLineItemListID($ListID)
+	public function setLineItemListID(string $ListID): bool
 	{
 		return $this->set('ItemRef ListID', $ListID);
 	}
 
-	public function getLineItemName($name)
+	public function getLineItemName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
 
-	public function setLineItemName($name)
+	public function setLineItemName(string $name): bool
 	{
 		return $this->set('ItemRef FullName', $name);
 	}
 
-	public function getLineQuantityNew($value)
+	public function getLineQuantityNew()
 	{
 		return $this->get('QuantityAdjustment NewQuantity');
 	}
 
-	public function setLineQuantityNew($value)
+	public function setLineQuantityNew($value): bool
 	{
 		return $this->set('QuantityAdjustment NewQuantity', $value);
 	}
 
-	public function getLineQuantityDifference($value)
+	public function getLineQuantityDifference()
 	{
 		return $this->get('QuantityAdjustment QuantityDifference');
 	}
 
-	public function setLineQuantityDifference($value)
+	public function setLineQuantityDifference($value): bool
 	{
 		return $this->set('QuantityAdjustment QuantityDifference', $value);
 	}
 
-	public function getLineValueQuantity($value)
+	public function getLineValueQuantity()
 	{
 		return $this->get('ValueAdjustment NewQuantity');
 	}
 
-	public function setLineValueQuantity($value)
+	public function setLineValueQuantity($value): bool
 	{
 		return $this->set('ValueAdjustment NewQuantity', $value);
 	}
 
-	public function getLineValueNew($value)
+	public function getLineValueNew()
 	{
 		return $this->get('ValueAdjustment NewValue');
 	}
 
-	public function setLineValueNew($value)
+	public function setLineValueNew($value): bool
 	{
 		return $this->set('ValueAdjustment NewValue', $value);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, $object = null): Node
 	{
 		if (is_null($object))
 		{
@@ -101,13 +101,13 @@ class QuickBooks_QBXML_Object_InventoryAdjustment_InventoryAdjustmentLine extend
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_INVENTORYADJUSTMENT:
+			case PackageInfo::Actions['ADD_INVENTORYADJUSTMENT']:
 				$root = 'InventoryAdjustmentLineAdd';
 				$parent = null;
 				break;
 // Currently unimplemented
 /*
-			case QUICKBOOKS_QUERY_INVENTORYADJUSTMENT:
+			case PackageInfo::Actions['QUERY_INVENTORYADJUSTMENT']:
 				$root = 'InventoryAdjustmentLineQuery';
 				break;
 */
@@ -118,11 +118,9 @@ class QuickBooks_QBXML_Object_InventoryAdjustment_InventoryAdjustmentLine extend
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return "InventoryAdjustmentLine";
+		return 'InventoryAdjustmentLine';
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks Customer object container
@@ -12,31 +12,30 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_Generic extends QuickBooks_QBXML_Object
+class Generic extends AbstractQbxmlObject
 {
 	protected $_override;
 
-	public function __construct($arr = array(), $override = '')
+	public function __construct(array $arr = [], string $override = '')
 	{
-		$this->_override = $override;
+		$this->setOverride($override);
 
 		parent::__construct($arr);
 	}
 
-	public function getOverride()
+	public function getOverride(): string
 	{
 		return $this->_override;
 	}
 
-	public function setOverride($override)
+	public function setOverride(string $override): bool
 	{
 		$this->_override = $override;
 
@@ -45,10 +44,8 @@ class QuickBooks_QBXML_Object_Generic extends QuickBooks_QBXML_Object
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return $this->getOverride();
 	}

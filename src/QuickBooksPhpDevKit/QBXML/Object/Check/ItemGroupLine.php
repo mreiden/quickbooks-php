@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Check class for QuickBooks
@@ -10,22 +10,21 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Check;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Check;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_Check_ItemGroupLine extends QuickBooks_QBXML_Object
+class ItemGroupLine extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new QuickBooks_Object_Check_ItemGroupLine object
-	 *
-	 * @param array $arr
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -34,21 +33,16 @@ class QuickBooks_QBXML_Object_Check_ItemGroupLine extends QuickBooks_QBXML_Objec
 
 	/**
 	 * Set the ItemGroupRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setItemGroupListID($ListID)
+	public function setItemGroupListID(string $ListID): bool
 	{
 		return $this->set('ItemGroupRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the ItemGroupRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getItemGroupListID()
+	public function getItemGroupListID(): ?string
 	{
 		return $this->get('ItemGroupRef ListID');
 	}
@@ -59,30 +53,25 @@ class QuickBooks_QBXML_Object_Check_ItemGroupLine extends QuickBooks_QBXML_Objec
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setItemGroupApplicationID($value)
+	public function setItemGroupApplicationID($value): bool
 	{
-		return $this->set('ItemGroupRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ITEMGROUP, QUICKBOOKS_LISTID, $value));
+		return $this->set('ItemGroupRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ITEMGROUP'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: ItemGroupRef FullName, datatype:
 
 	/**
 	 * Set the ItemGroupRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setItemGroupName($FullName)
+	public function setItemGroupName(string $FullName): bool
 	{
 		return $this->set('ItemGroupRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the ItemGroupRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getItemGroupName()
+	public function getItemGroupName(): ?string
 	{
 		return $this->get('ItemGroupRef FullName');
 	}
@@ -91,37 +80,32 @@ class QuickBooks_QBXML_Object_Check_ItemGroupLine extends QuickBooks_QBXML_Objec
 
 	/**
 	 * Set the Desc for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setDesc($value)
+	public function setDesc(string $value): bool
 	{
 		return $this->set('Desc', $value);
 	}
 
 	/**
 	 * Get the Desc for the Check
-	 *
-	 * @return string
 	 */
-	public function getDesc()
+	public function getDesc(): ?string
 	{
 		return $this->get('Desc');
 	}
 
 	/**
-	 * @see QuickBooks_Object_Check_ItemGroupLineAdd::setDesc()
+	 * @see self::setDesc()
 	 */
-	public function setDescription($value)
+	public function setDescription(string $value): bool
 	{
 		$this->setDesc($value);
 	}
 
 	/**
-	 * @see QuickBooks_Object_Check_ItemGroupLineAdd::getDesc()
+	 * @see self::getDesc()
 	 */
-	public function getDescription()
+	public function getDescription(): ?string
 	{
 		$this->getDesc();
 	}
@@ -129,19 +113,14 @@ class QuickBooks_QBXML_Object_Check_ItemGroupLine extends QuickBooks_QBXML_Objec
 
 	/**
 	 * Set the Quantity for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setQuantity($value)
+	public function setQuantity($value): bool
 	{
 		return $this->set('Quantity', (float) $value);
 	}
 
 	/**
 	 * Get the Quantity for the Check
-	 *
-	 * @return string
 	 */
 	public function getQuantity()
 	{
@@ -152,26 +131,21 @@ class QuickBooks_QBXML_Object_Check_ItemGroupLine extends QuickBooks_QBXML_Objec
 
 	/**
 	 * Set the UnitOfMeasure for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setUnitOfMeasure($value)
+	public function setUnitOfMeasure(string $value): bool
 	{
 		return $this->set('UnitOfMeasure', $value);
 	}
 
 	/**
 	 * Get the UnitOfMeasure for the Check
-	 *
-	 * @return string
 	 */
-	public function getUnitOfMeasure()
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
 
-	public function object()
+	public function object(): string
 	{
 		return 'ItemGroupLine';
 	}

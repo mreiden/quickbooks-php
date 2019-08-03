@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -9,53 +9,47 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Estimate;
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/Estimate.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\Estimate;
 
 /**
  *
  *
  */
-class QuickBooks_QBXML_Object_Estimate_EstimateLine extends QuickBooks_QBXML_Object
+class EstimateLine extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks Invoice InvoiceLine object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\EstimateLine object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setItemListID($ListID)
+	public function setItemListID(string $ListID): bool
 	{
 		return $this->set('ItemRef ListID', $ListID);
 	}
 
-	public function setItemApplicationID($value)
+	public function setItemApplicationID($value): bool
 	{
-		return $this->set('ItemRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ITEM, QUICKBOOKS_LISTID, $value));
+		return $this->set('ItemRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ITEM'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function setItemName($name)
+	public function setItemName(string $name): bool
 	{
 		return $this->set('ItemRef FullName', $name);
 	}
 
-	public function getItemListID()
+	public function getItemListID(): string
 	{
 		return $this->get('ItemRef ListID');
 	}
 
-	public function getItemName()
+	public function getItemName(): string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -67,226 +61,224 @@ class QuickBooks_QBXML_Object_Estimate_EstimateLine extends QuickBooks_QBXML_Obj
 	 */
 	public function getItemApplicationID()
 	{
-		return $this->extractApplicationID($this->get('ItemRef ' . QUICKBOOKS_API_APPLICATIONID));
+		return $this->extractApplicationID($this->get('ItemRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
 
-	public function setDescription($descrip)
+	public function setDescription(string $descrip): bool
 	{
 		return $this->set('Desc', $descrip);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setQuantity($quan)
+	public function setQuantity($quantity): bool
 	{
-		return $this->set('Quantity', (float) $quan);
+		return $this->set('Quantity', floatval($quantity));
 	}
 
-	public function getQuantity()
+	public function getQuantity(): float
 	{
 		return $this->get('Quantity');
 	}
 
-	public function setUnitOfMeasure($unit)
+	public function setUnitOfMeasure(string $unit): bool
 	{
 		return $this->set('UnitOfMeasure', $unit);
 	}
 
-	public function getUnitOfMeasure()
+	public function getUnitOfMeasure(): string
 	{
 		return $this->get('UnitOfMeasure');
 	}
 
-	public function setRate($rate)
+	public function setRate($rate): bool
 	{
-		return $this->set('Rate', (float) $rate);
+		return $this->set('Rate', floatval($rate));
 	}
 
-	public function getRate()
+	public function getRate(): float
 	{
 		return $this->get('Rate');
 	}
 
-	public function setRatePercent($percent)
+	public function setRatePercent($percent): bool
 	{
-		return $this->set('RatePercent', (float) $percent);
+		return $this->set('RatePercent', floatval($percent));
 	}
 
-	public function getRatePercent()
+	public function getRatePercent(): float
 	{
 		return $this->get('RatePercent');
 	}
 
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
-	public function setClassApplicationID($value)
+	public function setClassApplicationID($value): void
 	{
 
 	}
 
-	public function setClassName($name)
+	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef Name', $name);
 	}
 
-	public function getClassListID()
+	public function getClassListID(): string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName()
+	public function getClassName(): string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function setAmount($amount)
+	public function setAmount($amount): bool
 	{
 		return $this->setAmountType('Amount', $amount);
 	}
 
-	public function getAmount()
+	public function getAmount(): string
 	{
 		return $this->getAmountType('Amount');
 	}
 
-	public function setSalesTaxCodeName($name)
+	public function setSalesTaxCodeName(string $name): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $name);
 	}
 
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
 
-	public function setTaxable()
+	public function setTaxable(): bool
 	{
-		return $this->set('SalesTaxCodeRef FullName', QUICKBOOKS_TAXABLE);
+		return $this->set('SalesTaxCodeRef FullName', PackageInfo::TaxCode['TAXABLE']);
 	}
 
-	public function setNonTaxable()
+	public function setNonTaxable(): bool
 	{
-		return $this->set('SalesTaxCodeRef FullName', QUICKBOOKS_NONTAXABLE);
+		return $this->set('SalesTaxCodeRef FullName', PackageInfo::TaxCode['NONTAXABLE']);
 	}
 
-	public function getTaxable()
+	public function getTaxable(): bool
 	{
-		return $this->get('SalesTaxCodeRef FullName') == QUICKBOOKS_TAXABLE;
+		return $this->get('SalesTaxCodeRef FullName') == PackageInfo::TaxCode['TAXABLE'];
 	}
 
-	public function getMarkupRate()
+	public function getMarkupRate(): ?float
 	{
 		return $this->get('MarkupRate');
 	}
 
-	public function setMarkupRate($rate)
+	public function setMarkupRate($rate): bool
 	{
-		return $this->set('MarkupRate', (float) $rate);
+		return $this->set('MarkupRate', floatval($rate));
 	}
 
-	public function setMarkupRatePercent($percent)
+	public function setMarkupRatePercent($percent): bool
 	{
-		return $this->set('MarkupRatePercent', (float) $percent);
+		return $this->set('MarkupRatePercent', floatval($percent));
 	}
 
-	public function getMarkupRatePercent()
+	public function getMarkupRatePercent(): ?float
 	{
 		return $this->get('MarkupRatePercent');
 	}
 
-	public function setPriceLevelListID($ListID)
+	public function setPriceLevelListID(string $ListID): bool
 	{
 		return $this->set('PriceLevelRef ListID', $ListID);
 	}
 
-	public function setPriceLevelName($name)
+	public function setPriceLevelName(string $name): bool
 	{
 		return $this->set('PriceLevelRef FullName', $name);
 	}
 
-	public function setPriceLevelApplicationID()
+	public function setPriceLevelApplicationID(): void
 	{
 
 	}
 
-	public function getPriceLevelName()
+	public function getPriceLevelName(): string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
 
-	public function getPriceLevelListID()
+	public function getPriceLevelListID(): string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
 
-	public function setOverrideItemAccountName($name)
+	public function setOverrideItemAccountName(string $name): bool
 	{
 		return $this->set('OverrideItemAccountRef FullName', $name);
 	}
 
-	public function setOverrideItemAccountListID($ListID)
+	public function setOverrideItemAccountListID(string $ListID): bool
 	{
 		return $this->set('OverrideItemAccountRef ListID', $ListID);
 	}
 
-	public function setOverrideItemAccountApplicationID($value)
+	public function setOverrideItemAccountApplicationID($value): void
 	{
 
 	}
 
-	public function getOverrideItemAccountListID()
+	public function getOverrideItemAccountListID(): string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
 
-	public function getOverrideItemAccountName()
+	public function getOverrideItemAccountName(): string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
 
-	public function setOther1($value)
+	public function setOther1(string $value): bool
 	{
 		return $this->set('Other1', $value);
 	}
 
-	public function getOther1()
+	public function getOther1(): string
 	{
 		return $this->get('Other1');
 	}
 
-	public function setOther2($value)
+	public function setOther2(string $value): bool
 	{
 		return $this->set('Other2', $value);
 	}
 
-	public function getOther2()
+	public function getOther2(): string
 	{
 		return $this->get('Other2');
 	}
 
 	/**
 	 *
-	 *
-	 * @return boolean
 	 */
-	protected function _cleanup()
+	protected function _cleanup(): bool
 	{
 		if ($this->exists('Amount'))
 		{
@@ -296,17 +288,18 @@ class QuickBooks_QBXML_Object_Estimate_EstimateLine extends QuickBooks_QBXML_Obj
 		return true;
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		$this->_cleanup();
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_ESTIMATE:
+			case PackageInfo::Actions['ADD_ESTIMATE']:
 				$root = 'EstimateLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_ESTIMATE:
+
+			case PackageInfo::Actions['MOD_ESTIMATE']:
 				$root = 'EstimateLineMod';
 				$parent = null;
 				break;
@@ -317,10 +310,8 @@ class QuickBooks_QBXML_Object_Estimate_EstimateLine extends QuickBooks_QBXML_Obj
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'EstimateLine';
 	}

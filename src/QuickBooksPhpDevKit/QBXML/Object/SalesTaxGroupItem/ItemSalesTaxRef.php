@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -6,58 +6,50 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\SalesTaxGroupItem;
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/SalesTaxGroupItem.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\SalesTaxGroupItem;
 
 /**
  *
  *
  */
-class QuickBooks_QBXML_Object_SalesTaxGroupItem_ItemSalesTaxRef extends QuickBooks_QBXML_Object
+class ItemSalesTaxRef extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks SalesReceipt SalesReceiptLine object
-	 *
-	 * @param array $arr
+	 * Create a new QuickBooks SalesTaxGroupItem ItemSalesTaxRef object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setFullName($FullName)
+	public function setFullName(string $FullName): bool
 	{
 		return $this->setFullNameType('FullName', null, null, $FullName);
 	}
 
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
-	public function getFullName()
+	public function getFullName(): string
 	{
 		return $this->get('FullName');
 	}
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'ItemSalesTaxRef';
 	}

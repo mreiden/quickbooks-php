@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -7,58 +7,50 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet;
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/UnitOfMeasureSet.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet;
 
 /**
  *
  *
  */
-class QuickBooks_QBXML_Object_UnitOfMeasureSet_DefaultUnit extends QuickBooks_QBXML_Object
+class DefaultUnit extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks SalesReceipt SalesReceiptLine object
-	 *
-	 * @param array $arr
+	 * Create a new QuickBooks UnitOfMeasureSet DefaultUnit object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
-	public function setUnitUsedFor($str)
+	public function setUnitUsedFor(string $str): bool
 	{
 		return $this->setUnitUsedFor('UnitUsedFor', $str);
 	}
 
-	public function getUnitUsedFor()
+	public function getUnitUsedFor(): string
 	{
 		return $this->get('UnitUsedFor');
 	}
 
-	public function setUnit($unit)
+	public function setUnit(string $unit): bool
 	{
 		return $this->set('Unit', $unit);
 	}
 
-	public function getUnit()
+	public function getUnit(): string
 	{
 		return $this->get('Unit');
 	}
 
 	/**
 	 * Tell the type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
 		return 'DefaultUnit';
 	}

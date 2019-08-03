@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks InventoryAdjustment object container
@@ -12,27 +12,21 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
 
-/**
- * InventoryAdjustmentLine lines for InventoryAdjustments
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object/InventoryAdjustment/InventoryAdjustmentLine.php');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\InventoryAdjustment\InventoryAdjustmentLine;
 
 /**
  * Quickbooks InventoryAdjustment definition
  */
-class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Object
+class InventoryAdjustment extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks InventoryAdjustment object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\InventoryAdjustment object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -40,37 +34,31 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets the Account ListID
 	 */
-	public function getAccountListID()
+	public function getAccountListID(): string
 	{
 		return $this->get('AccountRef ListID');
 	}
 
 	/**
 	 * Set the Account ListID
-	 *
-	 * @param string ListID
-	 * @return boolean
 	 */
-	public function setAccountListID($value)
+	public function setAccountListID(string $ListID): bool
 	{
-		return $this->set('AccountRef ListID', $value);
+		return $this->set('AccountRef ListID', $ListID);
 	}
 
 	/**
 	 * Gets the Account Name
 	 */
-	public function getAccountName()
+	public function getAccountName(): string
 	{
 		return $this->get('AccountRef FullName');
 	}
 
 	/**
 	 * Set the account Name
-	 *
-	 * @param string name
-	 * @return boolean
 	 */
-	public function setAccountName($value)
+	public function setAccountName(string $value): bool
 	{
 		return $this->set('AccountRef FullName', $value);
 	}
@@ -78,36 +66,31 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets the transaction date
 	 */
-	public function getTxnDate()
+	public function getTxnDate(?string $format = 'Y-m-d'): string
 	{
-		return $this->get('TxnDate');
+		return $this->getDateType('TxnDate');
 	}
 
 	/**
 	 * Set the transaction date
-	 *
-	 * @param string
-	 * @return boolean
 	 */
-	public function setTxnDate($value)
+	public function setTxnDate($value): bool
 	{
-		return $this->set('TxnDate', $value);
+		return $this->setDateType('TxnDate', $value);
 	}
 
 	/**
 	 * Gets the RefNumber
 	 */
-	public function getRefNumber()
+	public function getRefNumber(): string
 	{
 		return $this->get('RefNumber');
 	}
 
 	/**
 	 * Set the RefNumber
-	 *
-	 * @return boolean
 	 */
-	public function setRefNumber($value)
+	public function setRefNumber($value): bool
 	{
 		return $this->set('RefNumber', $value);
 	}
@@ -115,18 +98,15 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets the Memo
 	 */
-	public function getMemo()
+	public function getMemo(): string
 	{
 		return $this->get('Memo');
 	}
 
 	/**
 	 * Set the Memo
-	 *
-	 * @param string
-	 * @return boolean
 	 */
-	public function setMemo($value)
+	public function setMemo(string $value): bool
 	{
 		return $this->set('Memo', $value);
 	}
@@ -134,18 +114,15 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets the Customer ListID
 	 */
-	public function getCustomerListID()
+	public function getCustomerListID(): string
 	{
 		return $this->get('CustomerRef ListID');
 	}
 
 	/**
 	 * Set the Customer ListID
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setCustomerListID($ListID)
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID', $ListID);
 	}
@@ -153,18 +130,15 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets the Customer Name
 	 */
-	public function getCustomerName()
+	public function getCustomerName(): string
 	{
 		return $this->get('CustomerRef FullName');
 	}
 
 	/**
 	 * Set the Customer Name
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setCustomerName($name)
+	public function setCustomerName(string $name): bool
 	{
 			return $this->set('CustomerRef FullName', $name);
 	}
@@ -172,18 +146,15 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets the Class ListID
 	 */
-	public function getClassListID()
+	public function getClassListID(): string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
 	/**
 	 * Set the class ListID
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
@@ -191,23 +162,20 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets the Class Name
 	 */
-	public function getClassName()
+	public function getClassName(): string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
 	/**
 	 * Set the class name
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setClassName($name)
+	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef Name', $name);
 	}
 
-	public function addInventoryAdjustmentLine($obj)
+	public function addInventoryAdjustmentLine(InventoryAdjustmentLine $obj): bool
 	{
 		return $this->addListItem('InventoryAdjustmentLine', $obj);
 	}
@@ -217,7 +185,7 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	 *
 	 * @param $i a number between 0 and added Lines-1
 	 */
-	public function getInventoryAdjustmentLine($i)
+	public function getInventoryAdjustmentLine(int $i): ?InventoryAdjustmentLine
 	{
 		return $this->getListItem('InventoryAdjustmentLine', $i);
 	}
@@ -225,7 +193,7 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	/**
 	 * Gets a list of all InventoryAdjustment Lines
 	 */
-	public function getInventoryAdjustmentLines()
+	public function getInventoryAdjustmentLines(): array
 	{
 		return $this->getList('InventoryAdjustmentLine');
 	}
@@ -505,11 +473,11 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 	}
 */
 
-	public function asList($request)
+	public function asList(string $request)
 	{
 		switch ($request)
 		{
-			case QUICKBOOKS_ADD_INVENTORYADJUSTMENT . 'Rq':
+			case PackageInfo::Actions['ADD_INVENTORYADJUSTMENT'] . 'Rq':
 
 				if (isset($this->_object['InventoryAdjustmentLine']))
 				{
@@ -521,7 +489,7 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 		return parent::asList($request);
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(string $root = null, string $parent = null, $object = null)
 	{
 		if (is_null($object))
 		{
@@ -530,7 +498,7 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 
 		switch ($root)
 		{
-			case QUICKBOOKS_ADD_INVENTORYADJUSTMENT:
+			case PackageInfo::Actions['ADD_INVENTORYADJUSTMENT']:
 				foreach ($object['InventoryAdjustmentLineAdd'] as $key => $obj)
 				{
 					$obj->setOverride('InventoryAdjustmentLineAdd');
@@ -544,11 +512,9 @@ class QuickBooks_QBXML_Object_InventoryAdjustment extends QuickBooks_QBXML_Objec
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_INVENTORYADJUSTMENT;
+		return PackageInfo::Actions['OBJECT_INVENTORYADJUSTMENT'];
 	}
 }

@@ -1,12 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * QuickBooks ServiceItem object container
- *
- * NOTE: By default, ServiceItems are created as SalesOrPurchase items, and are
- * thus *NOT* created as SalesAndPurchase items. If you want to create an item
- * that is sold *and* purchased, you'll need to set the type with the method:
- * 	-> {@link QuickBooks_Object_ServiceItem::isSalesAndPurchase()}
+ * QuickBooks SalesTaxItem object container
  *
  * @author Keith Palmer <keith@consolibyte.com>
  * @license LICENSE.txt
@@ -15,74 +10,64 @@
  * @subpackage Object
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_SalesTaxItem extends QuickBooks_QBXML_Object
+class SalesTaxItem extends AbstractQbxmlObject
 {
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
 
 	/**
 	 * Set the ListID for this item
-	 *
-	 * @param string $ListID
-	 * @return boolean
 	 */
-	public function setListID($ListID)
+	public function setListID(string $ListID): bool
 	{
 		return $this->set('ListID', $ListID);
 	}
 
 	/**
 	 * Get the ListID for this item
-	 *
-	 * @return string
 	 */
-	public function getListID()
+	public function getListID(): string
 	{
 		return $this->get('ListID');
 	}
 
 	/**
 	 * Set the name for this item
-	 *
-	 * @param string $name
-	 * @return boolean
 	 */
-	public function setName($name)
+	public function setName(string $name): bool
 	{
 		return $this->set('Name', $name);
 	}
 
-	public function getIsActive()
+	public function getIsActive(): bool
 	{
 		return $this->getBooleanType('IsActive', true);
 	}
 
-	public function setIsActive($IsActive)
+	public function setIsActive(bool $IsActive): bool
 	{
 		return $this->setBooleanType('IsActive', $IsActive);
 	}
 
 	/**
 	 * Get the name for this item
-	 *
-	 * @return string
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return $this->get('Name');
 	}
 
-	public function setTaxRate($rate)
+	public function setTaxRate($rate): bool
 	{
 		return $this->set('TaxRate', (float) $rate);
 	}
@@ -92,64 +77,62 @@ class QuickBooks_QBXML_Object_SalesTaxItem extends QuickBooks_QBXML_Object
 		return $this->get('TaxRate');
 	}
 
-	public function setDescription($desc)
+	public function setDescription(string $desc): bool
 	{
 		return $this->set('ItemDesc', $desc);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->get('ItemDesc');
 	}
 
-	public function setTaxVendorListID($ListID)
+	public function setTaxVendorListID(string $ListID): bool
 	{
 		return $this->set('TaxVendorRef ListID', $ListID);
 	}
 
-	public function setTaxVendorName($name)
+	public function setTaxVendorName(string $name): bool
 	{
 		return $this->set('TaxVendorRef FullName', $name);
 	}
 
 	// @todo Make sure these are ->setFullNameType instead of just ->set
-	public function setTaxVendorFullName($FullName)
+	public function setTaxVendorFullName(string $FullName): bool
 	{
 		return $this->set('TaxVendorRef FullName', $FullName);
 	}
 
-	public function setTaxVendorApplicationID($value)
+	public function setTaxVendorApplicationID($value): bool
 	{
-		return $this->set('TaxVendorRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_VENDOR, QUICKBOOKS_LISTID, $value));
+		return $this->set('TaxVendorRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_VENDOR'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getTaxVendorApplicationID()
 	{
-		return $this->get('TaxVendorRef ' . QUICKBOOKS_API_APPLICATIONID);
+		return $this->get('TaxVendorRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getTaxVendorListID()
+	public function getTaxVendorListID(): string
 	{
 		return $this->get('TaxVendorRef ListID');
 	}
 
-	public function getTaxVendorName()
+	public function getTaxVendorName(): string
 	{
 		return $this->get('TaxVendorRef FullName');
 	}
 
-	public function getTaxVendorFullName()
+	public function getTaxVendorFullName(): string
 	{
 		return $this->get('TaxVendorRef FullName');
 	}
 
 	/**
 	 * Tell what type of object this is
-	 *
-	 * @return string
 	 */
-	public function object()
+	public function object(): string
 	{
-		return QUICKBOOKS_OBJECT_SALESTAXITEM;
+		return PackageInfo::Actions['OBJECT_SALESTAXITEM'];
 	}
 }

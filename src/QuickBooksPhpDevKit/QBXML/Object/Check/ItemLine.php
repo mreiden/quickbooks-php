@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Check class for QuickBooks
@@ -10,22 +10,22 @@
  * @subpackage Object
  */
 
-/**
- * QuickBooks object base class
- */
-QuickBooks_Loader::load('/QuickBooks/QBXML/Object.php');
+namespace QuickBooksPhpDevKit\QBXML\Object\Check;
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Check;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
  */
-class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
+class ItemLine extends AbstractQbxmlObject
 {
 	/**
-	 * Create a new QuickBooks_Object_Check_ItemLine object
-	 *
-	 * @param array $arr
+	 * Create a new QBXML\Object\Check\ItemLine object
 	 */
-	public function __construct($arr = array())
+	public function __construct(array $arr = [])
 	{
 		parent::__construct($arr);
 	}
@@ -34,21 +34,16 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the ItemRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setItemListID($ListID)
+	public function setItemListID(string $ListID): bool
 	{
 		return $this->set('ItemRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the ItemRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getItemListID()
+	public function getItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
@@ -59,30 +54,25 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setItemApplicationID($value)
+	public function setItemApplicationID($value): bool
 	{
-		return $this->set('ItemRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ITEM, QUICKBOOKS_LISTID, $value));
+		return $this->set('ItemRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ITEM'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: ItemRef FullName, datatype:
 
 	/**
 	 * Set the ItemRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setItemFullName($FullName)
+	public function setItemFullName(string $FullName): bool
 	{
 		return $this->set('ItemRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the ItemRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getItemFullName()
+	public function getItemFullName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -91,57 +81,47 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the Desc for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setDesc($value)
+	public function setDesc(string $value): bool
 	{
 		return $this->set('Desc', $value);
 	}
 
 	/**
 	 * Get the Desc for the Check
-	 *
-	 * @return string
 	 */
-	public function getDesc()
+	public function getDesc(): ?string
 	{
 		return $this->get('Desc');
 	}
 
 	/**
-	 * @see QuickBooks_Object_Check_ItemLineAdd::setDesc()
+	 * @see self::setDesc()
 	 */
-	public function setDescription($value)
+	public function setDescription(string $value): bool
 	{
-		$this->setDesc($value);
+		return $this->setDesc($value);
 	}
 
 	/**
-	 * @see QuickBooks_Object_Check_ItemLineAdd::getDesc()
+	 * @see self::getDesc()
 	 */
-	public function getDescription()
+	public function getDescription(): ?string
 	{
-		$this->getDesc();
+		return $this->getDesc();
 	}
 	// Path: Quantity, datatype:
 
 	/**
 	 * Set the Quantity for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setQuantity($value)
+	public function setQuantity($value): bool
 	{
 		return $this->set('Quantity', (float) $value);
 	}
 
 	/**
 	 * Get the Quantity for the Check
-	 *
-	 * @return string
 	 */
 	public function getQuantity()
 	{
@@ -152,21 +132,16 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the UnitOfMeasure for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setUnitOfMeasure($value)
+	public function setUnitOfMeasure(string $value): bool
 	{
 		return $this->set('UnitOfMeasure', $value);
 	}
 
 	/**
 	 * Get the UnitOfMeasure for the Check
-	 *
-	 * @return string
 	 */
-	public function getUnitOfMeasure()
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
@@ -175,67 +150,52 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the Cost for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setCost($value)
+	public function setCost($value): bool
 	{
-		return $this->set('Cost', $value);
+		return $this->setAmountType('Cost', $value);
 	}
 
 	/**
 	 * Get the Cost for the Check
-	 *
-	 * @return string
 	 */
-	public function getCost()
+	public function getCost(): ?string
 	{
-		return $this->get('Cost');
+		return $this->getAmountType('Cost');
 	}
 
 	// Path: Amount, datatype:
 
 	/**
 	 * Set the Amount for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setAmount($value)
+	public function setAmount($value): bool
 	{
-		return $this->set('Amount', $value);
+		return $this->setAmountType('Amount', $value);
 	}
 
 	/**
 	 * Get the Amount for the Check
-	 *
-	 * @return string
 	 */
-	public function getAmount()
+	public function getAmount(): ?string
 	{
-		return $this->get('Amount');
+		return $this->getAmountType('Amount');
 	}
 
 	// Path: TaxAmount, datatype:
 
 	/**
 	 * Set the TaxAmount for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setTaxAmount($value)
+	public function setTaxAmount($value): bool
 	{
-		return $this->set('TaxAmount', $value);
+		return $this->setAmountType('TaxAmount', $value);
 	}
 
 	/**
 	 * Get the TaxAmount for the Check
-	 *
-	 * @return string
 	 */
-	public function getTaxAmount()
+	public function getTaxAmount(): ?string
 	{
 		return $this->get('TaxAmount');
 	}
@@ -244,21 +204,16 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the CustomerRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setCustomerListID($ListID)
+	public function setCustomerListID(string $ListID): bool
 	{
 		return $this->set('CustomerRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the CustomerRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getCustomerListID()
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -269,30 +224,25 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setCustomerApplicationID($value)
+	public function setCustomerApplicationID($value): bool
 	{
-		return $this->set('CustomerRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CUSTOMER, QUICKBOOKS_LISTID, $value));
+		return $this->set('CustomerRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CUSTOMER'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: CustomerRef FullName, datatype:
 
 	/**
 	 * Set the CustomerRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setCustomerName($FullName)
+	public function setCustomerName(string $FullName): bool
 	{
 		return $this->set('CustomerRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the CustomerRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getCustomerName()
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -301,21 +251,16 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the ClassRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the ClassRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getClassListID()
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -326,30 +271,25 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setClassApplicationID($value)
+	public function setClassApplicationID($value): bool
 	{
-		return $this->set('ClassRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_CLASS, QUICKBOOKS_LISTID, $value));
+		return $this->set('ClassRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CLASS'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: ClassRef FullName, datatype:
 
 	/**
 	 * Set the ClassRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setClassName($FullName)
+	public function setClassName(string $FullName): bool
 	{
 		return $this->set('ClassRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the ClassRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getClassName()
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -358,55 +298,42 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the SalesTaxCodeRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setSalesTaxCodeListID($ListID)
+	public function setSalesTaxCodeListID(string $ListID): bool
 	{
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the SalesTaxCodeRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getSalesTaxCodeListID()
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
 
 	/**
 	 * Set the primary key for the related record within your own application for the Check
-	 *
-	 * @param mixed $value			The primary key within your own application
-	 * @return string
 	 */
-	public function setSalesTaxCodeApplicationID($value)
+	public function setSalesTaxCodeApplicationID($value): bool
 	{
-		return $this->set('SalesTaxCodeRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESTAXCODE, QUICKBOOKS_LISTID, $value));
+		return $this->set('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_SALESTAXCODE'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: SalesTaxCodeRef FullName, datatype:
 
 	/**
 	 * Set the SalesTaxCodeRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setSalesTaxCodeName($FullName)
+	public function setSalesTaxCodeName(string $FullName): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the SalesTaxCodeRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getSalesTaxCodeName()
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
@@ -415,21 +342,16 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the BillableStatus for the Check
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setBillableStatus($value)
+	public function setBillableStatus(string $value): bool
 	{
 		return $this->set('BillableStatus', $value);
 	}
 
 	/**
 	 * Get the BillableStatus for the Check
-	 *
-	 * @return string
 	 */
-	public function getBillableStatus()
+	public function getBillableStatus(): ?string
 	{
 		return $this->get('BillableStatus');
 	}
@@ -438,21 +360,16 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 	/**
 	 * Set the OverrideItemAccountRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setOverrideItemAccountListID($ListID)
+	public function setOverrideItemAccountListID(string $ListID): bool
 	{
 		return $this->set('OverrideItemAccountRef ListID', $ListID);
 	}
 
 	/**
 	 * Get the OverrideItemAccountRef ListID for the Check
-	 *
-	 * @return string
 	 */
-	public function getOverrideItemAccountListID()
+	public function getOverrideItemAccountListID(): ?string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
@@ -463,35 +380,30 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setOverrideItemAccountApplicationID($value)
+	public function setOverrideItemAccountApplicationID($value): bool
 	{
-		return $this->set('OverrideItemAccountRef ' . QUICKBOOKS_API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_OVERRIDEITEMACCOUNT, QUICKBOOKS_LISTID, $value));
+		return $this->set('OverrideItemAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_OVERRIDEITEMACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	// Path: OverrideItemAccountRef FullName, datatype:
 
 	/**
 	 * Set the OverrideItemAccountRef FullName for the Check
-	 *
-	 * @param string $FullName		The FullName of the record to reference
-	 * @return boolean
 	 */
-	public function setOverrideItemAccountName($FullName)
+	public function setOverrideItemAccountName(string $FullName): bool
 	{
 		return $this->set('OverrideItemAccountRef FullName', $FullName);
 	}
 
 	/**
 	 * Get the OverrideItemAccountRef FullName for the Check
-	 *
-	 * @return string
 	 */
-	public function getOverrideItemAccountName()
+	public function getOverrideItemAccountName(): ?string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
 
-	public function asXML($root = null, $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, $object = null): Node
 	{
 		if (is_null($object))
 		{
@@ -500,11 +412,12 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 
 		switch ($parent)
 		{
-			case QUICKBOOKS_ADD_CHECK:
+			case PackageInfo::Actions['ADD_CHECK']:
 				$root = 'ItemLineAdd';
 				$parent = null;
 				break;
-			case QUICKBOOKS_MOD_CHECK:
+
+			case PackageInfo::Actions['MOD_CHECK']:
 				$root = 'ItemLineMod';
 				$parent = null;
 				break;
@@ -513,7 +426,7 @@ class QuickBooks_QBXML_Object_Check_ItemLine extends QuickBooks_QBXML_Object
 		return parent::asXML($root, $parent, $object);
 	}
 
-	public function object()
+	public function object(): string
 	{
 		return 'ItemLine';
 	}
