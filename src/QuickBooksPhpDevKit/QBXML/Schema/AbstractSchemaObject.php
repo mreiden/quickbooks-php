@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -10,44 +10,32 @@
  * @subpackage QBXML
  */
 
-/**
- *
- */
-define('QUICKBOOKS_QBXML_SCHEMA_TYPE_STRTYPE', 'STRTYPE');
+namespace QuickBooksPhpDevKit\QBXML\Schema;
 
 /**
  *
  */
-define('QUICKBOOKS_QBXML_SCHEMA_TYPE_IDTYPE', 'IDTYPE');
-
-/**
- *
- */
-define('QUICKBOOKS_QBXML_SCHEMA_TYPE_BOOLTYPE', 'BOOLTYPE');
-
-define('QUICKBOOKS_QBXML_SCHEMA_TYPE_AMTTYPE', 'AMTTYPE');
-
-/**
- *
- */
-abstract class QuickBooks_QBXML_Schema_Object
+abstract class AbstractSchemaObject
 {
-	abstract protected function &_qbxmlWrapper();
+	public const TYPE_STRTYPE = 'STRTYPE';
+	public const TYPE_IDTYPE = 'IDTYPE';
+	public const TYPE_BOOLTYPE = 'BOOLTYPE';
+	public const TYPE_AMTTYPE = 'AMTTYPE';
 
-	public function qbxmlWrapper()
+
+	abstract protected function &_qbxmlWrapper(): string;
+
+	public function qbxmlWrapper(): string
 	{
 		return $this->_qbxmlWrapper();
 	}
 
-	abstract protected function &_dataTypePaths();
+	abstract protected function &_dataTypePaths(): array;
 
 	/**
 	 *
-	 *
-	 * @param string $match
-	 * @return array
 	 */
-	public function paths($match = null)
+	public function paths(?string $match = null): array
 	{
 		$paths = $this->_dataTypePaths();
 
@@ -56,17 +44,13 @@ abstract class QuickBooks_QBXML_Schema_Object
 
 	/**
 	 *
-	 *
-	 * @param string $path
-	 * @param boolean $case_doesnt_matter
-	 * @return string
 	 */
-	public function dataType($path, $case_doesnt_matter = true)
+	public function dataType(string $path, bool $case_doesnt_matter = true): ?string
 	{
 		/*
-		static $paths = array(
+		static $paths = [
 			'Name' => 'STRTYPE',
-			);
+		];
 		*/
 
 		$paths = $this->_dataTypePaths();
@@ -89,23 +73,18 @@ abstract class QuickBooks_QBXML_Schema_Object
 		return null;
 	}
 
-	abstract protected function &_maxLengthPaths();
+	abstract protected function &_maxLengthPaths(): array;
 
 	/**
 	 *
-	 *
-	 * @param string $path
-	 * @param boolean $case_doesnt_matter
-	 * @param string $locale
-	 * @return integer
 	 */
-	public function maxLength($path, $case_doesnt_matter = true, $locale = null)
+	public function maxLength(string $path, bool $case_doesnt_matter = true, ?string $locale = null): int
 	{
 		/*
-		static $paths = array(
+		static $paths = [
 			'Name' => 40,
 			'FirstName' => 41,
-			);
+		];
 		*/
 
 		$paths = $this->_maxLengthPaths();
@@ -128,83 +107,62 @@ abstract class QuickBooks_QBXML_Schema_Object
 		return 0;
 	}
 
-	abstract protected function &_isOptionalPaths();
+	abstract protected function &_isOptionalPaths(): array;
 
-	public function isOptional($path)
+	public function isOptional(string $path): bool
 	{
 		/*
-		static $paths = array(
+		static $paths = [
 			'Name' => false,
 			'FirstName' => true,
 			'LastName' => true,
-			);
+		];
 		*/
 
 		$paths = $this->_isOptionalPaths();
 
-		if (isset($paths[$path]))
-		{
-			return $paths[$path];
-		}
-
-		return true;
+		return $paths[$path] ?? true;
 	}
 
-	abstract protected function &_sinceVersionPaths();
+	abstract protected function &_sinceVersionPaths(): array;
 
-	public function sinceVersion($path)
+	public function sinceVersion(string $path): float
 	{
 		/*
-		static $paths = array(
+		static $paths = [
 			'FirstName' => '0.0',
 			'LastName' => '0.0',
-			);
+		];
 		*/
 
 		$paths = $this->_sinceVersionPaths();
 
-		if (isset($paths[$path]))
-		{
-			return $paths[$path];
-		}
-
-		return '999.99';
+		return $paths[$path] ?? 999.99;
 	}
 
-	abstract protected function &_isRepeatablePaths();
+	abstract protected function &_isRepeatablePaths(): array;
 
 	/**
 	 * Tell whether or not a specific element is repeatable
-	 *
-	 * @param string $path
-	 * @return boolean
 	 */
-	public function isRepeatable($path)
+	public function isRepeatable(string $path): bool
 	{
 		/*
-		static $paths = array(
+		static $paths = [
 			'FirstName' => false,
 			'LastName' => false,
-			);
+		];
 		*/
 
 		$paths = $this->_isRepeatablePaths();
 
-		if (isset($paths[$path]))
-		{
-			return $paths[$path];
-		}
-
-		return false;
+		return $paths[$path] ?? false;
 	}
 
 	/**
 	 * Tell whether or not an element exists
-	 *
-	 * @param string $path
-	 * @return boolean
 	 */
-	public function exists($path, $case_doesnt_matter = true, $is_end_element = false)
+	public function exists(string $path, bool $case_doesnt_matter = true, bool $is_end_element = false): bool
 	{
 		$ordered_paths = $this->_reorderPathsPaths();
 
@@ -227,9 +185,9 @@ abstract class QuickBooks_QBXML_Schema_Object
 	}
 
 	/**
-	 *
+	 * Returns the original
 	 */
-	public function unfold($path)
+	public function unfold(string $path)
 	{
 		static $paths = null;
 
@@ -241,12 +199,7 @@ abstract class QuickBooks_QBXML_Schema_Object
 
 		//print('unfolding: {' . $path . '}' . "\n");
 
-		if (isset($paths[strtolower($path)]))
-		{
-			return $paths[strtolower($path)];
-		}
-
-		return null;
+		return $paths[strtolower($path)] ?? null;
 	}
 
 	/**
@@ -254,9 +207,10 @@ abstract class QuickBooks_QBXML_Schema_Object
 	 * @note WARNING! These are lists of UNSUPPORTED locales, NOT lists of supported ones!
 	 *
 	 */
-	protected function &_inLocalePaths()
+	protected function &_inLocalePaths(): array
 	{
-		$arr = array();
+		$arr = [];
+
 		return $arr;
 	}
 
@@ -265,7 +219,7 @@ abstract class QuickBooks_QBXML_Schema_Object
 	 * @note WARNING! These are lists of UNSUPPORTED locales, NOT lists of supported ones!
 	 *
 	 */
-	public function localePaths()
+	public function localePaths(): array
 	{
 		return $this->_inLocalePaths();
 	}
@@ -273,10 +227,10 @@ abstract class QuickBooks_QBXML_Schema_Object
 	/*
 	public function inLocale($path, $locale)
 	{
-		//static $paths = array(
-		//	'FirstName' => array( 'QBD', 'QBCA', 'QBUK', 'QBAU' ),
-		//	'LastName' => array( 'QBD', 'QBCA', 'QBUK', 'QBAU' ),
-		//	);
+		//static $paths = [
+		//	'FirstName' => ['QBD', 'QBCA', 'QBUK', 'QBAU'],
+		//	'LastName' => ['QBD', 'QBCA', 'QBUK', 'QBAU'],
+		//];
 
 		$paths = $this->_inLocalePaths();
 
@@ -291,19 +245,13 @@ abstract class QuickBooks_QBXML_Schema_Object
 
 	/**
 	 * Return a list of paths in a specific schema order
-	 *
-	 * @return array
 	 */
-	abstract protected function &_reorderPathsPaths();
+	abstract protected function &_reorderPathsPaths(): array;
 
 	/**
 	 * Re-order an array to match the schema order
-	 *
-	 * @param array $unordered_paths
-	 * @param boolean $allow_application_id
-	 * @return array
 	 */
-	public function reorderPaths($unordered_paths, $allow_application_id = true, $allow_application_editsequence = true)
+	public function reorderPaths(array $unordered_paths, bool $allow_application_id = true, bool $allow_application_editsequence = true): array
 	{
 		/*
 		static $ordered_paths = array(
@@ -314,8 +262,7 @@ abstract class QuickBooks_QBXML_Schema_Object
 		*/
 
 		$ordered_paths = $this->_reorderPathsPaths();
-
-		$tmp = array();
+		$tmp = [];
 
 		foreach ($ordered_paths as $key => $path)
 		{
@@ -332,7 +279,7 @@ abstract class QuickBooks_QBXML_Schema_Object
 
 				$parent = trim(substr($path, 0, -7));
 
-				$apppath = trim($parent . ' ' . QUICKBOOKS_API_APPLICATIONID);
+				$apppath = trim($parent . ' ' . PackageInfo::$API_APPLICATIONID);
 
 				if (in_array($apppath, $unordered_paths))
 				{
@@ -343,7 +290,7 @@ abstract class QuickBooks_QBXML_Schema_Object
 			{
 				$parent = trim(substr($path, 0, -6));
 
-				$apppath = $parent . ' ' . QUICKBOOKS_API_APPLICATIONID;
+				$apppath = $parent . ' ' . PackageInfo::$API_APPLICATIONID;
 
 				if (in_array($apppath, $unordered_paths))
 				{
@@ -360,7 +307,7 @@ abstract class QuickBooks_QBXML_Schema_Object
 				}
 			}*/
 
-			/*else if ($path == QUICKBOOKS_API_APPLICATIONID)
+			/*else if ($path == PackageInfo::$API_APPLICATIONID)
 			{
 				print('HERE!');
 			}*/
