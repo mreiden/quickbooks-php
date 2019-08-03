@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Client adapter base class
@@ -16,12 +16,14 @@
  * @subpackage Adapter
  */
 
+namespace QuickBooksPhpDevKit\Adapter;
+
 /**
  *
  */
-interface QuickBooks_Adapter_Client
+interface Client
 {
-	public function __construct($endpoint, $wsdl = QUICKBOOKS_WSDL, $trace = true);
+	public function __construct($endpoint, $wsdl, $trace = true);
 
 	public function authenticate($user, $pass);
 
@@ -32,5 +34,4 @@ interface QuickBooks_Adapter_Client
 	public function getLastRequest();
 
 	public function getLastResponse();
-
 }

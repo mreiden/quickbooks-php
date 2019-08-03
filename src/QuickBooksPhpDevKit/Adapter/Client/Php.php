@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,21 +16,34 @@
  * @subpackage Adapter
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Adapter/Client.php');
+namespace QuickBooksPhpDevKit\Adapter\Client;
+
+use \SoapClient as SoapClient;
+use QuickBooksPhpDevKit\Adapter\Client;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\WebConnector\Request\Authenticate;
+use QuickBooksPhpDevKit\WebConnector\Request\Clientversion;
+use QuickBooksPhpDevKit\WebConnector\Request\Closeconnection;
+use QuickBooksPhpDevKit\WebConnector\Request\Connectionerror;
+use QuickBooksPhpDevKit\WebConnector\Request\Getlasterror;
+use QuickBooksPhpDevKit\WebConnector\Request\Receiveresponsexml;
+use QuickBooksPhpDevKit\WebConnector\Request\Sendrequestxml;
+use QuickBooksPhpDevKit\WebConnector\Request\Serverversion;
 
 /**
  *
  */
-class QuickBooks_Adapter_Client_Php extends SoapClient implements QuickBooks_Adapter_Client
+class Php extends SoapClient implements Client
 {
-	public function __construct($endpoint, $wsdl = QUICKBOOKS_WSDL, $trace = true)
+	public function __construct(string $endpoint, ?string $wsdl = null, bool $trace = true)
 	{
 		ini_set('soap.wsdl_cache_enabled', '0');
 
-		$options['location'] = $endpoint;
+		$wsdl = $wsdl ?? PackageInfo::$WSDL;
+
+		$options= [
+			'location' => $endpoint,
+		];
 
 		if ($trace)
 		{
@@ -42,40 +55,39 @@ class QuickBooks_Adapter_Client_Php extends SoapClient implements QuickBooks_Ada
 
 	/**
 	 * Authenticate against a QuickBooks SOAP server
-	 *
-	 * @param string $user
-	 * @param string $pass
-	 * @return array
 	 */
-	public function authenticate($user, $pass)
+	public function authenticate(string $user, string $pass): array
 	{
-		$req = new QuickBooks_Request_Authenticate($user, $pass);
+		$req = new Authenticate($user, $pass);
 
-		$resp = parent::__soapCall('authenticate', array( $req ));
+		$resp = parent::__soapCall('authenticate', [$req]);
 		$tmp = current($resp);
 
 		return current($tmp);
 	}
 
-	public function sendRequestXML($ticket, $hcpresponse, $companyfile, $country, $majorversion, $minorversion)
+	/**
+	 * Get the QBXML from the server to send to quickbooks
+	 */
+	public function sendRequestXML(string $ticket, string $hcpresponse, string $companyfile, string $country, int $majorversion, int $minorversion): array
 	{
-		$req = new QuickBooks_Request_SendRequestXML($ticket, $hcpresponse, $companyfile, $country, $majorversion, $minorversion);
+		$req = new Sendrequestxml($ticket, $hcpresponse, $companyfile, $country, $majorversion, $minorversion);
 
 		//print("SENDING:<pre>");
 		//print_r($req);
 		//print('</pre>');
 
-		$resp = parent::__soapCall('sendRequestXML', array( $req ));
+		$resp = parent::__soapCall('sendRequestXML', [$req]);
 		$tmp = current($resp);
 
 		return $tmp;
 	}
 
-	public function receiveResponseXML($ticket, $response, $hresult, $message)
+	public function receiveResponseXML(string $ticket, string $response, $hresult, string $message): array
 	{
-		$req = new QuickBooks_Request_ReceiveResponseXML($ticket, $response, $hresult, $message);
+		$req = new Receiveresponsexml($ticket, $response, $hresult, $message);
 
-		$resp = parent::__soapCall('receiveResponseXML', array( $req ));
+		$resp = parent::__soapCall('receiveResponseXML', [$req]);
 		$tmp = current($resp);
 
 		return $tmp;
