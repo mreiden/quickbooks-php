@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Adapter class for the built-in QuickBooks SOAP server
@@ -16,25 +16,19 @@
  * @subpackage Adapter
  */
 
-/**
- * Server adapter base-class
- */
-QuickBooks_Loader::load('/QuickBooks/Adapter/Server.php');
+namespace QuickBooksPhpDevKit\Adapter\SOAP\Server;
 
-/**
- * SOAP server base class
- */
-QuickBooks_Loader::load('/QuickBooks/SOAP/Server.php');
+use QuickBooksPhpDevKit\Adapter\SOAP\Server\AbstractAdapter;
+use QuickBooksPhpDevKit\Adapter\SOAP\Server\AdapterInterface;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\SOAP\Server;
 
 /**
  *
  */
-class QuickBooks_Adapter_Server_Builtin implements QuickBooks_Adapter_Server
+class BuiltinAdapter extends AbstractAdapter implements AdapterInterface
 {
-	/**
-	 * QuickBooks_SOAP_Server built-in SOAP server instance
-	 */
-	protected $_server;
+	protected $SoapServerClass = Server::class;
 
 	/**
 	 * Create a new adapter for the built-in SOAP server
@@ -42,39 +36,8 @@ class QuickBooks_Adapter_Server_Builtin implements QuickBooks_Adapter_Server
 	 * @param string $wsdl				The path to the WSDL file
 	 * @param array $soap_options		An array of SOAP server options
 	 */
-	public function __construct($wsdl, $soap_options)
+	public function __construct(?string $wsdl = null, array $soap_options = [])
 	{
-		$this->_server = new QuickBooks_SOAP_Server($wsdl, $soap_options);
-	}
-
-	/**
-	 * Handle an incoming SOAP request
-	 *
-	 * @param string $raw_http_input	A string SOAP request
-	 * @return string					A string containing XML SOAP output
-	 */
-	public function handle($raw_http_input)
-	{
-		return $this->_server->handle($raw_http_input);
-	}
-
-	/**
-	 *
-	 *
-	 *
-	 */
-	public function setClass($class, $dsn_or_conn, $map, $onerror, $hooks, $log_level, $raw_http_input, $handler_options, $driver_options, $callback_options)
-	{
-		return $this->_server->setClass($class, $dsn_or_conn, $map, $onerror, $hooks, $log_level, $raw_http_input, $handler_options, $driver_options, $callback_options);
-	}
-
-	/**
-	 *
-	 *
-	 *
-	 */
-	public function getFunctions()
-	{
-		return $this->_server->getFunctions();
+		$this->configure($wsdl, $soap_options);
 	}
 }

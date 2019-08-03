@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks Server-Adapter interface
@@ -23,48 +23,33 @@
  * @subpackage Adapter
  */
 
+namespace QuickBooksPhpDevKit\Adapter\SOAP\Server;
+
 /**
- * QuickBooks server adapter interface
+ * SOAP Server Adapter Interface
  */
-interface QuickBooks_Adapter_Server
+interface AdapterInterface
 {
 	/**
 	 * Create a new instance of the server adapter
 	 *
-	 * @param string $wsdl			The path to the WSDL
+	 * @param string $wsdl			The path to the WSDL file
 	 * @param array $soap_options	Any SOAP configuration options to pass to the server class
 	 */
-	public function __construct($wsdl, $soap_options);
+	public function __construct(string $wsdl, array $soap_options);
 
 	/**
 	 * Handle a SOAP request
-	 *
-	 * @param string $raw_http_input
-	 * @return boolean
 	 */
-	public function handle($raw_http_input);
+	public function handle(string $raw_http_input): void;
 
 	/**
 	 * Return a list of implemented SOAP methods/functions
-	 *
-	 * @return array
 	 */
-	public function getFunctions();
+	public function getFunctions(): array;
 
 	/**
 	 * Set a class whose methods will handle various SOAP methods/functions
-	 *
-	 * @param string $class					The name of the class
-	 * @param string $dsn_or_conn
-	 * @param array $map
-	 * @param array $onerror
-	 * @param array $hooks
-	 * @param integer $log_level
-	 * @param string $raw_http_input
-	 * @param array $handler_options
-	 * @param array $driver_options
-	 * @param array $callback_options
-	 * @return boolean
 	 */
-	public function setClass($class, $dsn_or_conn, $map, $onerror, $hooks, $log_level, $raw_http_input, $handler_options, $driver_options, $callback_options);
+	public function setClass(string $class, $dsn_or_conn, array $map, array $onerror, array $hooks, int $log_level, string $raw_http_input, array $handler_options, array $driver_options, array $callback_options): void;
 }
