@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -11,15 +11,21 @@
  *
  */
 
-QuickBooks_Loader::load('/QuickBooks/Map.php');
+namespace QuickBooksPhpDevKit\Map;
 
-QuickBooks_Loader::load('/QuickBooks/Driver/Factory.php');
+use QuickBooksPhpDevKit\Driver\Factory;
+use QuickBooksPhpDevKit\Driver\Sql;
+use QuickBooksPhpDevKit\Map;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\SQL\Schema;
+use QuickBooksPhpDevKit\SQL\SqlObject;
+use QuickBooksPhpDevKit\Utilities;
 
-class QuickBooks_Map_Qbxml extends QuickBooks_Map
+class Qbxml extends Map
 {
 	protected $_driver;
 
-	public function __construct($dsn_or_Driver, $driver_options = array())
+	public function __construct($dsn_or_Driver, array $driver_options = [])
 	{
 		if (is_object($dsn_or_Driver))
 		{
@@ -27,33 +33,32 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 		}
 		else
 		{
-			$this->_driver = QuickBooks_Driver_Factory::create($dsn_or_Driver, $driver_options);
+			$this->_driver = Factory::create($dsn_or_Driver, $driver_options);
 		}
 	}
 
-	public function mark($mark_as, $object_or_action, $ID, $TxnID_or_ListID = null, $errnum = null, $errmsg = null, $mark_as_dequeued = true)
+	public function mark($mark_as, $object_or_action, $ID, $TxnID_or_ListID = null, $errnum = null, $errmsg = null, $mark_as_dequeued = true): bool
 	{
 		$Driver = $this->_driver;
 
-		$object = QuickBooks_Utilities::actionToObject($object_or_action);
+		$object = Utilities::actionToObject($object_or_action);
 
-		$table_and_field = array();
+		$table_and_field = [];
 
 		// Convert to table and primary key, select qbsql id
-		QuickBooks_SQL_Schema::mapPrimaryKey($object, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $table_and_field);
+		Schema::mapPrimaryKey($object, Schema::MAP_TO_SQL, $table_and_field);
 
-		if (!empty($table_and_field[0]) and
-			!empty($table_and_field[1]))
+		if (!empty($table_and_field[0]) && !empty($table_and_field[1]))
 		{
 			switch ($mark_as)
 			{
-				case QuickBooks_Map::MARK_ADD:
+				case Map::MARK_ADD:
 
-					$arr = array();
+					$arr = [];
 
-					$where = array(
-						array( QUICKBOOKS_DRIVER_SQL_FIELD_ID => $ID ),
-						);
+					$where = [
+						[Sql::Field['ID'] => $ID],
+					];
 
 					if ($TxnID_or_ListID)
 					{
@@ -62,7 +67,7 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 						// Get the existing temporary ID
 						$errnum = null;
 						$errmsg = null;
-						$existing = $Driver->fetch($Driver->query("SELECT " . $table_and_field[1] . " FROM " . QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table_and_field[0] . " WHERE " . QUICKBOOKS_DRIVER_SQL_FIELD_ID . " = " . $ID, $errnum, $errmsg));
+						$existing = $Driver->fetch($Driver->query("SELECT " . $table_and_field[1] . " FROM " . Sql::$TablePrefix['BASE'] . $table_and_field[0] . " WHERE " . Sql::Field['ID'] . " = " . $ID, $errnum, $errmsg));
 
 						if (!$existing)
 						{
@@ -77,8 +82,8 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 
 					if ($errnum)
 					{
-						$arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER] = $errnum;
-						$arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_MESSAGE] = $errmsg;
+						$arr[Sql::Field['ERROR_NUMBER']] = $errnum;
+						$arr[Sql::Field['ERROR_MESSAGE']] = $errmsg;
 
 						// Don't mark it as synced/discovered if there was an error
 						$resync = false;
@@ -88,12 +93,12 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 					/*
 					if ($mark_as_dequeued)
 					{
-						$arr[QUICKBOOKS_DRIVER_SQL_FIELD_ENQUEUE_TIME] = date('Y-m-d H:i:s');
+						$arr[Sql::Field['ENQUEUE_TIME']] = date('Y-m-d H:i:s');
 					}
 					*/
 
 					$Driver->update(
-						QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table_and_field[0],
+						Sql::$TablePrefix['BASE'] . $table_and_field[0],
 						$arr,
 						$where,
 						$resync,
@@ -101,10 +106,10 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 
 					if ($TxnID_or_ListID)
 					{
-						$Object = new QuickBooks_SQL_Object($table_and_field[0], '', array());
+						$Object = new SqlObject($table_and_field[0], '', []);
 						$Object->set($table_and_field[1], $TxnID_or_ListID);
 
-						$action = QuickBooks_Utilities::objectToAdd($object_or_action);
+						$action = Utilities::objectToAdd($object_or_action);
 
 						$this->_updateRelatives($table_and_field[0], $action, $Object, $existing_TxnID_or_ListID);
 					}
@@ -116,21 +121,20 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 		return false;
 	}
 
-	public function flat($map, $object_or_action, $ID)
+	public function flat(string $map, string $object_or_action, $ID)
 	{
 		$Driver = $this->_driver;
 
-		if ($map == QuickBooks_Map::MAP_QBXML)
+		if ($map == Map::MAP_QBXML)
 		{
-			$object = QuickBooks_Utilities::actionToObject($object_or_action);
+			$object = Utilities::actionToObject($object_or_action);
 
-			$table_and_field = array();
+			$table_and_field = [];
 
 			// Convert to table and primary key, select qbsql id
-			QuickBooks_SQL_Schema::mapPrimaryKey($object, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $table_and_field);
+			Schema::mapPrimaryKey($object, Schema::MAP_TO_SQL, $table_and_field);
 
-			if (!empty($table_and_field[0]) and
-				!empty($table_and_field[1]))
+			if (!empty($table_and_field[0]) && !empty($table_and_field[1]))
 			{
 				$errnum = null;
 				$errmsg = null;
@@ -138,39 +142,36 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 					SELECT
 						*
 					FROM
-						" . QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table_and_field[0] . "
+						" . Sql::$TablePrefix['BASE'] . $table_and_field[0] . "
 					WHERE
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_ID . " = " . (int) $ID, $errnum, $errmsg));
+						" . Sql::Field['ID'] . " = " . (int) $ID, $errnum, $errmsg));
 			}
 		}
-
-		return null;
 	}
 
-	public function table($map, $object_or_action, $ID)
+	public function table(string $map, $object_or_action, $ID): ?string
 	{
 		$Driver = $this->_driver;
 
-		if ($map == QuickBooks_Map::MAP_QBXML)
+		if ($map == Map::MAP_QBXML)
 		{
-			$object = QuickBooks_Utilities::actionToObject($object_or_action);
+			$object = Utilities::actionToObject($object_or_action);
 
-			$table_and_field = array();
+			$table_and_field = [];
 
 			// Convert to table and primary key, select qbsql id
-			QuickBooks_SQL_Schema::mapPrimaryKey($object, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $table_and_field);
+			Schema::mapPrimaryKey($object, Schema::MAP_TO_SQL, $table_and_field);
 
-			if (!empty($table_and_field[0]) and
-				!empty($table_and_field[1]))
+			if (!empty($table_and_field[0]) && !empty($table_and_field[1]))
 			{
-				return QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table_and_field[0];
+				return Sql::$TablePrefix['BASE'] . $table_and_field[0];
 			}
 		}
 
 		return null;
 	}
 
-	public function adds($adds = array(), $mark_as_queued = true, $limit = null)
+	public function adds(array $adds = [], bool $mark_as_queued = true, ?int $limit = null): array
 	{
 		$Driver = $this->_driver;
 
@@ -178,28 +179,27 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 
 		$sql_add = $adds;
 
-		$list = array();
+		$list = [];
 
 		//$Driver->log('Input is: ' . print_r($adds, true));
 
 		// Check if any objects need to be pushed back to QuickBooks
 		foreach ($sql_add as $action => $priority)
 		{
-			$object = QuickBooks_Utilities::actionToObject($action);
+			$object = Utilities::actionToObject($action);
 
 			//$Driver->log('Action is: ' . $action . ', object is: ' . $object);
 
-			$table_and_field = array();
+			$table_and_field = [];
 
 			// Convert to table and primary key, select qbsql id
-			QuickBooks_SQL_Schema::mapPrimaryKey($object, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $table_and_field);
+			Schema::mapPrimaryKey($object, Schema::MAP_TO_SQL, $table_and_field);
 
 			$Driver->log('Searching table: ' . print_r($table_and_field, true) . ' for ADDED records.');
 
 			//print_r($table_and_field);
 
-			if (!empty($table_and_field[0]) and
-				!empty($table_and_field[1]))
+			if (!empty($table_and_field[0]) && !empty($table_and_field[1]))
 			{
 				// For ADDs
 				// 	- Do not sync if to_skip = 1
@@ -223,18 +223,18 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 
 				$sql = "
 					SELECT
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_ID . ",
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER . " " . $extras . "
+						" . Sql::Field['ID'] . ",
+						" . Sql::Field['ERROR_NUMBER'] . " " . $extras . "
 					FROM
-						" . QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table_and_field[0] . "
+						" . Sql::$TablePrefix['BASE'] . $table_and_field[0] . "
 					WHERE
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_MODIFY . " IS NOT NULL AND
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_RESYNC . " IS NULL AND
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_TO_SKIP . " != 1 AND
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_TO_DELETE . " != 1 AND
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_FLAG_DELETED . " != 1 AND
-						" . QUICKBOOKS_DRIVER_SQL_FIELD_MODIFY . " <= '" . $NOW . "' ";
-				//		" . QUICKBOOKS_DRIVER_SQL_FLAG_TO_VOID . " != 1 ";
+						" . Sql::Field['MODIFY'] . " IS NOT NULL AND
+						" . Sql::Field['RESYNC'] . " IS NULL AND
+						" . Sql::Field['TO_SKIP'] . " != 1 AND
+						" . Sql::Field['TO_DELETE'] . " != 1 AND
+						" . Sql::Field['FLAG_DELETED'] . " != 1 AND
+						" . Sql::Field['MODIFY'] . " <= '" . $NOW . "' ";
+				//		" . Sql::Field['TO_VOID'] . " != 1 ";
 
 				//$Driver->log($sql);
 
@@ -246,25 +246,25 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 
 				while ($arr = $Driver->fetch($res))
 				{
-					if (strlen($arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER]))
+					if (strlen($arr[Sql::Field['ERROR_NUMBER']]))
 					{
 						continue;
 					}
 
 					if (!isset($list[$action]))
 					{
-						$list[$action] = array();
+						$list[$action] = [];
 					}
 
 					$tmp_priority = $priority;
-					if ($priority_reduce and
-						isset($arr[$priority_reduce]) and
+					if ($priority_reduce &&
+						isset($arr[$priority_reduce]) &&
 						!empty($arr[$priority_reduce]))
 					{
 						$tmp_priority = $priority - 1;
 					}
 
-					$list[$action][$arr[QUICKBOOKS_DRIVER_SQL_FIELD_ID]] = $tmp_priority;
+					$list[$action][$arr[Sql::Field['ID']]] = $tmp_priority;
 
 					$count++;
 
@@ -275,11 +275,11 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 						$errmsg = '';
 						$Driver->query("
 							UPDATE
-								" . QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table_and_field[0] . "
+								" . Sql::$TablePrefix['BASE'] . $table_and_field[0] . "
 							SET
-								" . QUICKBOOKS_DRIVER_SQL_FIELD_ENQUEUE_TIME . " = '" . date('Y-m-d H:i:s') . "'
+								" . Sql::Field['ENQUEUE_TIME'] . " = '" . date('Y-m-d H:i:s') . "'
 							WHERE
-								" . QUICKBOOKS_DRIVER_SQL_FIELD_ID . " = " . $arr[QUICKBOOKS_DRIVER_SQL_FIELD_ID], $errnum, $errmsg);
+								" . Sql::Field['ID'] . " = " . $arr[Sql::Field['ID']], $errnum, $errmsg);
 					}
 
 					/*
@@ -289,8 +289,7 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 					}
 					*/
 
-					if ($limit > 0 and
-						$count >= $limit)
+					if ($limit > 0 && $count >= $limit)
 					{
 						break 2;
 					}
@@ -301,19 +300,19 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 		return $list;
 	}
 
-	public function mods($mods = array(), $mark_as_queued = true)
+	public function mods(array $mods = [], bool $mark_as_queued = true): array
 	{
-		return array();
+		return [];
 	}
 
-	public function imports($imports = array())
+	public function imports(array $imports = []): array
 	{
-		return array();
+		return [];
 	}
 
-	public function queries($queries = array())
+	public function queries(array$queries = []): array
 	{
-		return array();
+		return [];
 	}
 
 	/**
@@ -322,14 +321,14 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 	 * @param unknown_type $Object
 	 * @param unknown_type $tmp_TxnID_or_ListID
 	 */
-	protected function _updateRelatives($table, $action, $Object, $tmp_TxnID_or_ListID)
+	protected function _updateRelatives(string $table, string $action, $Object, string $tmp_TxnID_or_ListID): bool
 	{
 		$Driver = $this->_driver;
 
 		//print('updating relatives' . "\n");
 
 		// This should *ONLY* be used when we are ADDING records
-		//	If it's an update, any relatives *should already have* the permenent ListID
+		//	If it's an update, any relatives *should already have* the permanent ListID
 		//	If it's an add, any relatives *have not yet been added* and thus can be marked modified without causing sync issues
 		if (substr($action, -3, 3) != 'Add')
 		{
@@ -337,58 +336,58 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 			return false;
 		}
 
-		$map = array(
-			'invoice' => array(
+		$map = [
+			'invoice' => [
 				'key' => 'TxnID',
-				'relatives' => array(
+				'relatives' => [
 					//'estimate_linkedtxn' => 'ToTxnID:Type=Invoice',
 					//'salesorder_linkedtxn' => 'ToTxnID:Type=Invoice',
 					'receivepayment_appliedtotxn' => 'ToTxnID:TxnType=Invoice', // 'ToTxnID:Type=Invoice',
 					'invoice_invoiceline' => 'Invoice_TxnID', //
 					'dataext' => 'Entity_ListID:EntityType=Customer', 	// update the Entity_ListID where EntityType = 'Customer' (and the existing Entity_ListID is the old ListID)
-					)
-				),
-			'receivepayment' => array(
+				],
+			],
+			'receivepayment' => [
 				'key' => 'TxnID',
-				'relatives' => array(
+				'relatives' => [
 					'receivepayment_appliedtotxn' => 'ReceivePayment_TxnID',
-					),
-				),
+				],
+			],
 
-			'salesreceipt' => array(
+			'salesreceipt' => [
 				'key' => 'TxnID',
-				'relatives' => array(
+				'relatives' => [
 					'salesreceipt_salesreceiptline' => 'SalesReceipt_TxnID',
-					),
-				),
-			'salesorder' => array(
+				],
+			],
+			'salesorder' => [
 				'key' => 'TxnID',
-				'relatives' => array(
+				'relatives' => [
 					'salesorder_salesorderline' => 'SalesOrder_TxnID',
 					'invoice_linkedtxn' => 'ToTxnID:TxnType=SalesOrder',
-					),
-				),
-			);
+				],
+			],
+		];
 
 		if (empty($map[$table]))
 		{
 			//print('returning false because of missing map: ' . $table . "\n");
-			return 0;
+			return false;
 		}
 
 		$TxnID_or_ListID = $Object->get($map[$table]['key']);
 		foreach ($map[$table]['relatives'] as $relative_table => $relative_field)
 		{
-			$Driver->log('Now updating [' . $relative_table . '] for field [' . $relative_field . '] with value [' . $TxnID_or_ListID . ']', null, QUICKBOOKS_LOG_DEBUG);
+			$Driver->log('Now updating [' . $relative_table . '] for field [' . $relative_field . '] with value [' . $TxnID_or_ListID . ']', null, PackageInfo::LogLevel['DEBUG']);
 			//print('updating realtive: ' . $relative_table . "\n");
 
 			//$multipart = array( $relative_field => $extra['AddResponse_OldKey'] );
-			//$tmp = new QuickBooks_SQL_Object($relative_table, null);
+			//$tmp = new SqlObject($relative_table, null);
 
 			//@todo Make the Boolean TRUE value used in the QUICKBOOKS_DRIVER_SQL_FIELD_DELETED_FLAG field a constant,
 			//      in case the sql driver used uses something other than 1 and 0.
 			//$tmp->set($relative_field, $TxnID_or_ListID);
-			//$Driver->update(QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $relative_table, $tmp, array( $multipart ), false);
+			//$Driver->update(Sql::$TablePrefix['BASE'] . $relative_table, $tmp, array( $multipart ), false);
 
 			// First, if the record has already been modified, then we need to
 			//	make sure that it stays marked modified. Otherwise, we need to
@@ -412,7 +411,7 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 			$errmsg = null;
 			$sql = "
 				UPDATE
-					" . QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $relative_table . "
+					" . Sql::$TablePrefix['BASE'] . $relative_table . "
 				SET
 					" . $relative_field . " = '%s'
 				WHERE
@@ -420,9 +419,12 @@ class QuickBooks_Map_Qbxml extends QuickBooks_Map
 
 			//print($sql . "\n\n");
 
-			$Driver->query($sql, $errnum, $errmsg, null, null, array(
-					$TxnID_or_ListID,
-					$tmp_TxnID_or_ListID));
+			$Driver->query($sql, $errnum, $errmsg, null, null, [
+				$TxnID_or_ListID,
+				$tmp_TxnID_or_ListID,
+			]);
 		}
+
+		return true;
 	}
 }

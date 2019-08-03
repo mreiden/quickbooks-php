@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Casts to cast data types to QuickBooks qbXML values and fit values in qbXML fields
@@ -13,17 +13,21 @@
  * @subpackage Cast
  */
 
+namespace QuickBooksPhpDevKit;
+
+use QuickBooksPhpDevKit\PackageInfo;
+
 /**
  * QuickBooks casts and data types
  */
-class QuickBooks_Cast
+class Cast
 {
-	static public function datatype($type_or_action, $field)
+	static public function datatype(string $type_or_action, string $field): void
 	{
 
 	}
 
-	static public function maxlength($type_or_action, $field)
+	static public function maxlength(string $type_or_action, string $field): void
 	{
 
 	}
@@ -124,13 +128,10 @@ class QuickBooks_Cast
 	 * QuickBooks often uses unusually short field lengths. This function will
 	 * convert common long words to shorter abbreviations in an attempt to make
 	 * a string fit cleanly into the very short fields.
-	 *
-	 * @param string $value		The value to apply the abbreviations to
-	 * @return string
 	 */
-	static protected function _castAbbreviations($value)
+	static protected function _castAbbreviations(string $value): string
 	{
-		$abbrevs = array(
+		$abbrevs = [
 			'Administration' => 'Admin.',
 			'Academic' => 'Acad.',
 			'Academy' => 'Acad.',
@@ -171,7 +172,7 @@ class QuickBooks_Cast
 			'Southeast' => 'SE',
 			'University' => 'Univ.',
 			'Western' => 'W.',
-			);
+		];
 
 		return str_ireplace(array_keys($abbrevs), array_values($abbrevs), $value);
 	}
@@ -191,15 +192,15 @@ class QuickBooks_Cast
 	 * @param boolean $with_abbrevs		Whether or not to abbreviate some long words to shorten the string
 	 * @return string					The shortened string
 	 */
-	static protected function _castTruncate($value, $length, $with_abbrevs = true)
+	static protected function _castTruncate(string $value, int $length, bool $with_abbrevs = true): string
 	{
-		//$value = QuickBooks_Cast::_castCharset($value);
+		//$value = static::_castCharset($value);
 
 		if (strlen($value) > $length)
 		{
 			if ($with_abbrevs)
 			{
-				$value = QuickBooks_Cast::_castAbbreviations($value);
+				$value = static::_castAbbreviations($value);
 			}
 
 			if (strlen($value) > $length)
@@ -220,12 +221,13 @@ class QuickBooks_Cast
 	 *
 	 *
 	 */
-	static protected function _fnmatch($pattern, $str)
+	static protected function _fnmatch(string $pattern, string $str): string
 	{
-		$arr = array(
+		$arr = [
 			'\*' => '.*',
 			'\?' => '.'
-			);
+		];
+
 		return preg_match('#^' . strtr(preg_quote($pattern, '#'), $arr) . '$#i', $str);
 	}
 
@@ -244,18 +246,18 @@ class QuickBooks_Cast
 	 * @param boolean $htmlspecialchars
 	 * @return string
 	 */
-	static public function cast($type_or_action, $field, $value, $use_abbrevs = true, $htmlspecialchars = true)
+	static public function cast(string $type_or_action, string $field, $value, bool $use_abbrevs = true, bool $htmlspecialchars = true)
 	{
 		$type_or_action = strtolower($type_or_action);
 
-		static $files = array();
+		static $files = [];
 
 		if (!count($files))
 		{
-			$dh = opendir(dirname(__FILE__) . '/QBXML/Schema/Object');
+			$dh = opendir(__DIR__ . '/QBXML/Schema/Object');
 			while (false !== ($file = readdir($dh)))
 			{
-				if ($file{0} == '.' or substr($file, -6, 6) != 'Rq.php')
+				if ($file{0} == '.' || substr($file, -6, 6) != 'Rq.php')
 				{
 					continue;
 				}
@@ -287,9 +289,9 @@ class QuickBooks_Cast
 		}
 		*/
 
-		$types = array();
-		$types3 = array();
-		$types5 = array();
+		$types = [];
+		$types3 = [];
+		$types5 = [];
 
 		reset($files);
 		foreach ($files as $file)
@@ -328,20 +330,17 @@ class QuickBooks_Cast
 
 		if (isset($types[$type_or_action]))
 		{
-			QuickBooks_Loader::load('/QuickBooks/QBXML/Schema/Object/' . $types[$type_or_action] . '.php');
-			$class = 'QuickBooks_QBXML_Schema_Object_' . $types[$type_or_action];
+			$class = "QuickBooksPhpDevKit\\QBXML\\Schema\\Object\\" . $types[$type_or_action];
 			$schema = new $class();
 		}
 		else if (isset($types3[$type_or_action]))		// substr -3
 		{
-			QuickBooks_Loader::load('/QuickBooks/QBXML/Schema/Object/' . $types3[$type_or_action] . '.php');
-			$class = 'QuickBooks_QBXML_Schema_Object_' . $types3[$type_or_action];
+			$class = "QuickBooksPhpDevKit\\QBXML\\Schema\\Object\\" . $types3[$type_or_action];
 			$schema = new $class();
 		}
 		else if (isset($types5[$type_or_action]))		// substr -5
 		{
-			QuickBooks_Loader::load('/QuickBooks/QBXML/Schema/Object/' . $types5[$type_or_action] . '.php');
-			$class = 'QuickBooks_QBXML_Schema_Object_' . $types5[$type_or_action];
+			$class = "QuickBooksPhpDevKit\\QBXML\\Schema\\Object\\" . $types5[$type_or_action];
 			$schema = new $class();
 		}
 		//else
@@ -351,9 +350,9 @@ class QuickBooks_Cast
 
 		//print('	casting using schema: ' . get_class($schema) . "\n");
 
-		if ($class and $schema)
+		if ($class && $schema)
 		{
-			if (!$schema->exists($field) and false !== strpos($field, '_'))
+			if (!$schema->exists($field) && false !== strpos($field, '_'))
 			{
 				$field = str_replace('_', ' ', $field);
 			}
@@ -362,54 +361,47 @@ class QuickBooks_Cast
 			{
 				switch ($schema->dataType($field))
 				{
-					case QUICKBOOKS_DATATYPE_STRING:
+					case PackageInfo::DataType['ENUM']:
+					case PackageInfo::DataType['ID']:
+						// do nothing
+						break;
 
+					case PackageInfo::DataType['STRING']:
 						$maxlength = $schema->maxLength($field);
 
 						// Use only ASCII characters
-						//$value = QuickBooks_Cast::_castCharset($value);
+						//$value = static::_castCharset($value);
 
 						// Make sure it'll fit in the allocated field length
-						if (is_int($maxlength) and $maxlength > 0)
+						if (is_int($maxlength) && $maxlength > 0)
 						{
-							$value = QuickBooks_Cast::_castTruncate($value, $maxlength, $use_abbrevs);
+							$value = static::_castTruncate((string) $value, $maxlength, $use_abbrevs);
 						}
-
 						break;
-					case QUICKBOOKS_DATATYPE_DATE:
+
+					case PackageInfo::DataType['DATE']:
 						if ($value)
 						{
 							$value = date('Y-m-d', strtotime($value));
 						}
 						break;
-					case QUICKBOOKS_DATATYPE_DATETIME:
+
+					case PackageInfo::DataType['DATETIME']:
 						if ($value)
 						{
 							$value = date('Y-m-d', strtotime($value)) . 'T' . date('H:i:s', strtotime($value));
 						}
 						break;
-					case QUICKBOOKS_DATATYPE_ENUM:
-						// do nothing
-						break;
-					case QUICKBOOKS_DATATYPE_ID:
-						// do nothing
-						break;
-					case QUICKBOOKS_DATATYPE_FLOAT:
+
+					case PackageInfo::DataType['FLOAT']:
 						$value = (float) $value;
 						break;
-					case QUICKBOOKS_DATATYPE_BOOLEAN:
 
-						if ($value and $value !== 'false')
-						{
-							$value = 'true';
-						}
-						else
-						{
-							$value = 'false';
-						}
-
+					case PackageInfo::DataType['BOOLEAN']:
+						$value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
 						break;
-					case QUICKBOOKS_DATATYPE_INTEGER:
+
+					case PackageInfo::DataType['INTEGER']:
 						$value = (int) $value;
 						break;
 				}
@@ -441,13 +433,13 @@ class QuickBooks_Cast
 		{
 			//print("DECODING");
 
-			$entities = array(
+			$entities = [
 				'&' => '&amp;',
 				'<' => '&lt;',
 				'>' => '&gt;',
 				//'\'' => '&apos;',
 				'"' => '&quot;',
-				);
+			];
 
 			// First, *unreplace* things so that we don't double escape them
 			$value = str_replace(array_values($entities), array_keys($entities), $value);
@@ -460,7 +452,7 @@ class QuickBooks_Cast
 			//print($value . "\n\n\n");
 
 			// UTF8 character handling, decode UTF8 to character decimal codes
-			$value = QuickBooks_Cast::_decodeUTF8($value);
+			$value = static::_decodeUTF8($value);
 
 			//die($value . "\n\n");
 		}
@@ -470,12 +462,8 @@ class QuickBooks_Cast
 
 	/**
 	 * Test a string to see if it has 8 bit symbols in it
-	 *
-	 * @param string $string
-	 * @param string $charset
-	 * @return bool
 	 */
-	static protected function _is8Bit($string, $charset = '')
+	static protected function _is8Bit(string $string, string $charset = ''): bool
 	{
 		if (preg_match("/^iso-8859/i", $charset))
 		{
@@ -486,16 +474,13 @@ class QuickBooks_Cast
 			$needle = '/[\200-\237]|\240|[\241-\377]/';
 		}
 
-		return preg_match("$needle", $string);
+		return 1 === preg_match("$needle", $string);
 	}
 
 	/**
 	 * Converts string from an encoded string to UTF8
-	 *
-	 * @param string $string 		Text with numeric unicode entities
-	 * @return string 				UTF-8 text
 	 */
-	static protected function _encodeUTF8($string)
+	static protected function _encodeUTF8(string $string): string
 	{
 		// Don't run encoding function, if there is no encoded characters
 		if (!preg_match("'&#[0-9]+;'", $string))
@@ -515,10 +500,10 @@ class QuickBooks_Cast
 	 * @param string $string 	Encoded string
 	 * @return string 			Decoded string
 	 */
-	static protected function _decodeUTF8($string)
+	static protected function _decodeUTF8(string $string): string
 	{
 		// don't do decoding when there are no 8bit symbols
-		if (!QuickBooks_Cast::_is8Bit($string, 'utf-8'))
+		if (!static::_is8Bit($string, 'utf-8'))
 		{
 			return $string;
 		}
@@ -527,8 +512,8 @@ class QuickBooks_Cast
 		$string = preg_replace_callback("/([\360-\367])([\200-\277])([\200-\277])([\200-\277])/",
 		function($arr)
 		{
-		    $val = ((ord($arr[1])-240)*262144+(ord($arr[2])-128)*4096+(ord($arr[3])-128)*64+(ord($arr[4])-128));
-		    return "&#" . $val . ";";
+			$val = ((ord($arr[1])-240)*262144+(ord($arr[2])-128)*4096+(ord($arr[3])-128)*64+(ord($arr[4])-128));
+			return "&#" . $val . ";";
 		}, $string);
 
 
@@ -536,8 +521,8 @@ class QuickBooks_Cast
 		$string = preg_replace_callback("/([\340-\357])([\200-\277])([\200-\277])/",
 		function($arr)
 		{
-		    $val = ((ord($arr[1])-224)*4096+(ord($arr[2])-128)*64+(ord($arr[3])-128));
-		    return "&#" . $val . ";";
+			$val = ((ord($arr[1])-224)*4096+(ord($arr[2])-128)*64+(ord($arr[3])-128));
+			return "&#" . $val . ";";
 		}, $string);
 
 
@@ -545,8 +530,8 @@ class QuickBooks_Cast
 		$string = preg_replace_callback("/([\300-\337])([\200-\277])/",
 		function($arr)
 		{
-		    $val = ((ord($arr[1])-192)*64+(ord($arr[2])-128));
-		    return "&#" . $val . ";";
+			$val = ((ord($arr[1])-192)*64+(ord($arr[2])-128));
+			return "&#" . $val . ";";
 		}, $string);
 
 		// remove broken unicode
@@ -562,7 +547,7 @@ class QuickBooks_Cast
  * @param int $var		Decimal unicode value
  * @return string		UTF-8 character
  */
-function QuickBooks_Cast_unicodetoutf8($var)
+function QuickBooks_Cast_unicodetoutf8(int $var): string
 {
 	if ($var < 128)
 	{

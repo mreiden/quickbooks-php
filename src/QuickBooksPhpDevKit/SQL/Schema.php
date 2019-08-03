@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Schema mapping methods for mapping XML schemas to SQL schemas, and vice-versa
@@ -14,32 +14,14 @@
  * @subpackage SQL
  */
 
-/**
- * QuickBooks SQL base class (is this even required?)
- */
-QuickBooks_Loader::load('/QuickBooks/SQL.php');
+namespace QuickBooksPhpDevKit\SQL;
 
-/**
- * XML parsing
- */
-QuickBooks_Loader::load('/QuickBooks/XML.php');
-
-/**
- * Various utilities methods
- */
-QuickBooks_Loader::load('/QuickBooks/Utilities.php');
-
-/**
- * Map a SQL schema to a qbXML schema
- * @var char
- */
-define('QUICKBOOKS_SQL_SCHEMA_MAP_TO_XML', 'q');
-
-/**
- * Map a qbXML schema to an SQL schema
- * @var char
- */
-define('QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL', 's');
+use QuickBooksPhpDevKit\Cast;
+use QuickBooksPhpDevKit\Driver\Sql;
+use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\XML\Parser;
 
 /**
  * Schema mapping methods for mapping XML schemas to SQL schemas, and vice versa
@@ -50,8 +32,21 @@ define('QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL', 's');
  * and then vice-versa for when you need to convert SQL objects back to qbXML
  * objects.
  */
-class QuickBooks_SQL_Schema
+class Schema
 {
+	/**
+	 * Map a SQL schema to a qbXML schema
+	 * @var char
+	 */
+	public const MAP_TO_XML = 'q';
+
+	/**
+	 * Map a qbXML schema to an SQL schema
+	 * @var char
+	 */
+	public const MAP_TO_SQL = 's';
+
+
 	/**
 	 * Take a qbXML schema and transform that schema to an SQL schema definition
 	 *
@@ -59,9 +54,9 @@ class QuickBooks_SQL_Schema
 	 * @param array $tables			An array of... erm... something?
 	 * @return boolean
 	 */
-	static public function mapSchemaToSQLDefinition($xml, &$tables)
+	static public function mapSchemaToSQLDefinition(string $xml, array &$tables): bool
 	{
-		$Parser = new QuickBooks_XML_Parser($xml);
+		$Parser = new Parser($xml);
 
 		$errnum = 0;
 		$errmsg = '';
@@ -82,7 +77,7 @@ class QuickBooks_SQL_Schema
 		// Loop through and transform the QueryRs node
 		foreach ($rs->children() as $qbxml)
 		{
-			QuickBooks_SQL_Schema::_transform('', $qbxml, $tables);
+			static::_transform('', $qbxml, $tables);
 		}
 
 		/*
@@ -90,8 +85,8 @@ class QuickBooks_SQL_Schema
 		{
 			$node = array_shift($subtables);
 
-			$subsubtables = array();
-			$tables[] = QuickBooks_SQL_Schema::_transform('', $node, $subsubtables);
+			$subsubtables = [];
+			$tables[] = self::_transform('', $node, $subsubtables);
 
 			$subtables = array_merge($subtables, $subsubtables);
 		}
@@ -104,7 +99,7 @@ class QuickBooks_SQL_Schema
 
 		// This is a list of field names that will *always* be assigned
 		//	indexes, regardless of what table they are in
-		$always_index_fields = array(
+		$always_index_fields = [
 			'qbsql_external_id',
 			'Name',
 			'FullName',
@@ -139,12 +134,12 @@ class QuickBooks_SQL_Schema
 			'IsToBeEmailed',
 			'IsFullyInvoiced',
 			//'IsFinanceCharge',
-			);
+		];
 
 		// This is a list of table.field names that will be assigned indexes
-		$always_index_tablefields = array(
+		$always_index_tablefields = [
 			//'Account.AccountType',
-			);
+		];
 
 		/*
 		'*FullName',
@@ -157,35 +152,35 @@ class QuickBooks_SQL_Schema
 
 		foreach ($tables as $table => $tabledef)
 		{
-			$uniques = array();
-			$indexes = array();
+			$uniques = [];
+			$indexes = [];
 
 			foreach ($tabledef[1] as $field => $fielddef)
 			{
-				if ($field == 'ListID' or 		// Unique keys
-					$field == 'TxnID' or
+				if ($field == 'ListID' || 		// Unique keys
+					$field == 'TxnID' ||
 					$field == 'Name')
 				{
 					// We can't apply indexes to TEXT columns, so we need to
 					//	check and make sure the column isn't of type TEXT
 					//	before we decide to use this as an index
 
-					if ($fielddef[0] != QUICKBOOKS_DRIVER_SQL_TEXT)
+					if ($fielddef[0] != Sql::DataType['TEXT'])
 					{
 						$uniques[] = $field;
 					}
 				}
-				else if (substr($field, -6, 6) == 'ListID' or 		// Other things we should index for performance
-					substr($field, -5, 5) == 'TxnID' or
-					substr($field, -6, 6) == 'LineID' or
-					in_array($field, $always_index_fields) or
+				else if (substr($field, -6, 6) == 'ListID' || 		// Other things we should index for performance
+					substr($field, -5, 5) == 'TxnID' ||
+					substr($field, -6, 6) == 'LineID' ||
+					in_array($field, $always_index_fields) ||
 					in_array($table . '.' . $field, $always_index_tablefields))
 				{
 					// We can't apply indexes to TEXT columns, so we need to
 					//	check and make sure the column isn't of type TEXT
 					//	before we decide to use this as an index
 
-					if ($fielddef[0] != QUICKBOOKS_DRIVER_SQL_TEXT)
+					if ($fielddef[0] != Sql::DataType['TEXT'])
 					{
 						$indexes[] = $field;
 					}
@@ -204,24 +199,16 @@ class QuickBooks_SQL_Schema
 
 	/**
 	 * Transform an XML document into an SQL schema
-	 *
-	 * @param string $curpath
-	 * @param QuickBooks_XML_Node $node
-	 * @param array $tables
-	 * @return
 	 */
-	static protected function _transform($curpath, $node, &$tables)
+	static protected function _transform(string $curpath, Node $node, array &$tables): bool
 	{
-		print('' . $curpath . '   node: ' . $node->name() . "\n");
+		//print('' . $curpath . '   node: ' . $node->name() . "\n");
 
-		$table = '';
-		$field = '';
+		$this_sql = [];
+		$other_sql = [];
+		self::mapToSchema($curpath . ' ' . $node->name(), static::MAP_TO_SQL, $this_sql, $other_sql);
 
-		$this_sql = array();
-		$other_sql = array();
-		QuickBooks_SQL_Schema::mapToSchema($curpath . ' ' . $node->name(), QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $this_sql, $other_sql);
-
-		foreach (array_merge(array( $this_sql ), $other_sql) as $sql)
+		foreach (array_merge([$this_sql], $other_sql) as $sql)
 		{
 			$table = $sql[0];
 			$field = $sql[1];
@@ -242,13 +229,13 @@ class QuickBooks_SQL_Schema
 			{
 				if (!isset($tables[$table]))
 				{
-					$tables[$table] = array(
+					$tables[$table] = [
 						0 => $table,
-						1 => array(),		// fields
-						2 => null, 			// primary key
-						3 => array(), 		// other keys
-						4 => array(  ), 		// uniques
-						);
+						1 => [],		// fields
+						2 => null,		// primary key
+						3 => [],		// other keys
+						4 => [],		// uniques
+					];
 				}
 			}
 
@@ -256,7 +243,7 @@ class QuickBooks_SQL_Schema
 			{
 				if (!isset($tables[$table][1][$field]))
 				{
-					$tables[$table][1][$field] = QuickBooks_SQL_Schema::mapFieldToSQLDefinition($table, $field, $node->data());
+					$tables[$table][1][$field] = self::mapFieldToSQLDefinition($table, $field, $node->data());
 				}
 			}
 		}
@@ -265,7 +252,7 @@ class QuickBooks_SQL_Schema
 		{
 			foreach ($node->children() as $child)
 			{
-				QuickBooks_SQL_Schema::_transform($curpath . ' ' . $node->name(), $child, $tables);
+				self::_transform($curpath . ' ' . $node->name(), $child, $tables);
 			}
 		}
 
@@ -279,9 +266,9 @@ class QuickBooks_SQL_Schema
 	 * @param string $str			The string to test
 	 * @return boolean
 	 */
-	static protected function _fnmatch($pattern, $str)
+	static protected function _fnmatch(string $pattern, string $str): bool
 	{
-		return QuickBooks_Utilities::fnmatch($pattern, $str);
+		return Utilities::fnmatch($pattern, $str);
 	}
 
 	/**
@@ -290,7 +277,7 @@ class QuickBooks_SQL_Schema
 	 *
 	 *
 	 */
-	static public function mapIndexes($table)
+	static public function mapIndexes(string $table): void
 	{
 
 	}
@@ -305,7 +292,7 @@ class QuickBooks_SQL_Schema
 	 * @param mixed $map					In SCHEMA_MAP_TO_SQL mode, this is set to a tuple containing the SQL table and SQL field name, in SQL_MAP_TO_SCHEMA mode this is set to the XML path
 	 * @return void
 	 */
-	static public function mapPrimaryKey($path_or_tablefield, $mode, &$map, $options = array())
+	static public function mapPrimaryKey(string $path_or_tablefield, string $mode, &$map, array $options = []): void
 	{
 		static $xml_to_sql = array(
 			'AccountRet' => 																			array( 'Account', 'ListID' ),
@@ -497,7 +484,7 @@ class QuickBooks_SQL_Schema
 
 			);
 
-		if ($mode == QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL)
+		if ($mode == static::MAP_TO_SQL)
 		{
 			if (!isset($xml_to_sql[$path_or_tablefield]))
 			{
@@ -509,14 +496,14 @@ class QuickBooks_SQL_Schema
 					if (isset($xml_to_sql[$path_or_tablefield]))
 					{
 						$map = $xml_to_sql[$path_or_tablefield];
-						QuickBooks_SQL_Schema::_applyOptions($map, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $options);
+						self::_applyOptions($map, static::MAP_TO_SQL, $options);
 					}
 				}
 			}
 			else
 			{
 				$map = $xml_to_sql[$path_or_tablefield];
-				QuickBooks_SQL_Schema::_applyOptions($map, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $options);
+				self::_applyOptions($map, static::MAP_TO_SQL, $options);
 			}
 		}
 		else
@@ -532,10 +519,10 @@ class QuickBooks_SQL_Schema
 	 *
 	 * @param string $path			The XML path *or*
 	 * @param char $mode
-	 * @param array $map
+	 * @param array|string $map
 	 * @return void
 	 */
-	static public function mapToSchema($path_or_tablefield, $mode, &$map, &$others, $options = array())
+	static public function mapToSchema(string $path_or_tablefield, string $mode, &$map, &$others, array $options = [])
 	{
 		static $xml_to_sql = array(
 			'AccountRet' => 							array( 'Account', null ),
@@ -1349,13 +1336,11 @@ class QuickBooks_SQL_Schema
 			'ItemNonInventoryRet ParentRef' => 								array( null, null ),
 			'ItemNonInventoryRet ParentRef *' => 							array( 'ItemNonInventory', 'Parent_*' ),
 			'ItemNonInventoryRet UnitOfMeasureRef' => 						array( null, null ),
-			'ItemNonInventoryRet UnitOfMeasureRef *' => 					array( 'itemnoninventory', 'UnitOfMeasure_*' ),
-			'ItemNonInventoryRet SalesTaxCodeRef' => 						array( null, null ),
-			'ItemNonInventoryRet SalesTaxCodeRef' => 						array( 'itemnoninventory', 'SalesTaxCode_*' ),
-			'ItemNonInventoryRet UnitOfMeasureSetRef' => 					array( null, null ),
-			'ItemNonInventoryRet UnitOfMeasureSetRef *' => 					array( 'ItemNonInventory', 'UnitOfMeasureSet_*' ),
+			'ItemNonInventoryRet UnitOfMeasureRef *' => 					array( 'ItemNonInventory', 'UnitOfMeasure_*' ),
 			'ItemNonInventoryRet SalesTaxCodeRef' => 						array( null, null ),
 			'ItemNonInventoryRet SalesTaxCodeRef *' => 						array( 'ItemNonInventory', 'SalesTaxCode_*' ),
+			'ItemNonInventoryRet UnitOfMeasureSetRef' => 					array( null, null ),
+			'ItemNonInventoryRet UnitOfMeasureSetRef *' => 					array( 'ItemNonInventory', 'UnitOfMeasureSet_*' ),
 			'ItemNonInventoryRet SalesOrPurchase' => 						array( null, null ),
 			'ItemNonInventoryRet SalesOrPurchase *' => 						array( 'ItemNonInventory', 'SalesOrPurchase_*' ),
 			'ItemNonInventoryRet SalesOrPurchase AccountRef' => 			array( null, null ),
@@ -1652,7 +1637,6 @@ class QuickBooks_SQL_Schema
 			'PurchaseOrderRet PurchaseOrderLineGroupRet PurchaseOrderLineRet CustomerRef *' => 			array( 'PurchaseOrder_PurchaseOrderLineGroup_PurchaseOrderLine', 'Customer_*' ),
 
 			'PurchaseOrderRet PurchaseOrderLineGroupRet PurchaseOrderLineRet DataExtRet' => 			array( null, null ),
-			'PurchaseOrderRet PurchaseOrderLineGroupRet PurchaseOrderLineRet DataExtRet *' => 			array( null, null ),
 			'PurchaseOrderRet PurchaseOrderLineGroupRet PurchaseOrderLineRet DataExtRet *' => 			array( 'DataExt', '*' ),
 
 			'PurchaseOrderRet PurchaseOrderLineGroupRet PurchaseOrderLineRet *' => 						array( 'PurchaseOrder_PurchaseOrderLineGroup_PurchaseOrderLine', '*' ),
@@ -1882,10 +1866,6 @@ class QuickBooks_SQL_Schema
 
 			'ShipMethodRet' => 								array( 'ShipMethod', null ),
 			'ShipMethodRet *' => 							array( 'ShipMethod', '*' ),
-
-			'StandardTermsRet' => 							array( 'StandardTerms', null ),
-
-			'StandardTermsRet *' => 						array( 'StandardTerms', '*' ),
 
 			'StandardTermsRet' => 							array( null, null ),
 			'StandardTermsRet *' =>		 					array( 'StandardTerms', '*' ),
@@ -2351,20 +2331,20 @@ class QuickBooks_SQL_Schema
 				),
 			);
 
-		if ($mode == QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL)		// map the QuickBooks XML tags to SQL schema
+		if ($mode == static::MAP_TO_SQL)		// map the QuickBooks XML tags to SQL schema
 		{
 			$path = trim($path_or_tablefield);
 			$spaces = substr_count($path, ' ');
-			$map = array( null, null );		// default map
+			$map = [null, null];		// default map
 
 			// @todo Can we break out of this big loop early to improve performance?
 
 			foreach ($xml_to_sql as $pattern => $table_and_field)
 			{
-				if (substr_count($pattern, ' ') == $spaces and 		// check path depth
-					false !== strpos($pattern, '*'))
+				if ((substr_count($pattern, ' ') == $spaces) && 		// check path depth
+					(false !== strpos($pattern, '*')))
 				{
-					if (QuickBooks_SQL_Schema::_fnmatch($pattern, $path)) 	// check it to see if this pattern matches
+					if (self::_fnmatch($pattern, $path)) 	// check it to see if this pattern matches
 					{
 						foreach (explode(' ', $pattern) as $kpart => $vpart)
 						{
@@ -2393,12 +2373,12 @@ class QuickBooks_SQL_Schema
 								}
 								*/
 
-								$map = array(
+								$map = [
 									$table_and_field[0],
 									str_replace('*', $match, $table_and_field[1]),
-									);
+								];
 
-								QuickBooks_SQL_Schema::_applyOptions($map, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $options);
+								self::_applyOptions($map, static::MAP_TO_SQL, $options);
 
 								break;
 							}
@@ -2407,15 +2387,16 @@ class QuickBooks_SQL_Schema
 				}
 				else if ($pattern == $path)
 				{
+//					echo"\n\n\n"; var_dump($pattern); var_dump($path); var_dump($table_and_field); var_dump($options); //exit("\n".__FILE__.':'.__LINE__);
 					$map = $table_and_field;
-					QuickBooks_SQL_Schema::_applyOptions($map, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $options);
+					self::_applyOptions($map, static::MAP_TO_SQL, $options);
 
 					if (isset($xml_to_sql_others[$pattern]))
 					{
 						$others = $xml_to_sql_others[$pattern];
 						foreach ($others as $key => $other)
 						{
-							QuickBooks_SQL_Schema::_applyOptions($other, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $options);
+							self::_applyOptions($other, static::MAP_TO_SQL, $options);
 							$others[$key] = $other;
 						}
 					}
@@ -2427,7 +2408,7 @@ class QuickBooks_SQL_Schema
 			//print_r($map);
 			//print_r($others);
 		}
-		else		// mode = QUICKBOOKS_SQL_SCHEMA_MAP_TO_XML		map the SQL schema back to QuickBooks qbXML tags
+		else		// mode = static::MAP_TO_XML		map the SQL schema back to QuickBooks qbXML tags
 		{
 			$tablefield = trim($path_or_tablefield);
 			$tablefield_compare = strtolower($tablefield);
@@ -2443,13 +2424,13 @@ class QuickBooks_SQL_Schema
 					$map = $path;
 					break;
 				}
-				else if (substr_count($pattern, '_') == $underscores and
+				else if (substr_count($pattern, '_') == $underscores &&
 					false !== strpos($pattern, '*'))
 				{
-					if (QuickBooks_SQL_Schema::_fnmatch($pattern_compare, $tablefield_compare))
+					if (self::_fnmatch($pattern_compare, $tablefield_compare))
 					{
 						$tmp_pattern = explode('.', $pattern);
-						if (count($tmp_pattern) == 2 and
+						if (count($tmp_pattern) == 2 &&
 							$tmp_pattern[1] == '*')
 						{
 							// table.* pattern
@@ -2474,289 +2455,260 @@ class QuickBooks_SQL_Schema
 		}
 	}
 
-	static protected function _applyOptions(&$path_or_arrtablefield, $mode, $options)
+	static protected function _applyOptions(array &$path_or_arrtablefield, string $mode, array $options): ?int
 	{
 		$applied = 0;
 
-		$defaults = array(
-			'desc_to_descrip' => 			true,
-			'uppercase_tables' => 			false,
-			'lowercase_tables' => 			true,
-			'uppercase_fields' => 			false,
-			'lowercase_fields' => 			false,
-			'prepend_parent' => 			true,
-			);
-
+		$defaults = [
+			'desc_to_descrip'     => true,
+			'uppercase_tables'    => false,
+			'lowercase_tables'    => true,
+			'uppercase_fields'    => false,
+			'lowercase_fields'    => false,
+			'prepend_parent'      => true,
+		];
 		$options = array_merge($defaults, $options);
 
-		if ($mode == QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL)
+		if ($mode == static::MAP_TO_SQL)
 		{
+			if (is_string($path_or_arrtablefield[0]))
+			{
+				if ($options['uppercase_tables'])
+				{
+					$path_or_arrtablefield[0] = strtoupper($path_or_arrtablefield[0]);
+					$applied++;
+				}
+				else if ($options['lowercase_tables'])
+				{
+					$path_or_arrtablefield[0] = strtolower($path_or_arrtablefield[0]);
+					$applied++;
+				}
+			}
 
-			if ($options['uppercase_tables'])
+			if (is_string($path_or_arrtablefield[1]))
 			{
-				$path_or_arrtablefield[0] = strtoupper($path_or_arrtablefield[0]);
-				$applied++;
-			}
-			else if ($options['lowercase_tables'])
-			{
-				$path_or_arrtablefield[0] = strtolower($path_or_arrtablefield[0]);
-				$applied++;
-			}
-
-			if ($options['uppercase_fields'])
-			{
-				$path_or_arrtablefield[1] = strtoupper($path_or_arrtablefield[1]);
-				$applied++;
-			}
-			else if ($options['lowercase_fields'])
-			{
-				$path_or_arrtablefield[1] = strtolower($path_or_arrtablefield[1]);
-				$applied++;
+				if ($options['uppercase_fields'])
+				{
+					$path_or_arrtablefield[1] = strtoupper($path_or_arrtablefield[1]);
+					$applied++;
+				}
+				else if ($options['lowercase_fields'])
+				{
+					$path_or_arrtablefield[1] = strtolower($path_or_arrtablefield[1]);
+					$applied++;
+				}
 			}
 
 			return $applied;
 		}
-		else
-		{
 
-		}
+		return null;
 	}
 
 	/**
 	 * Map a qbXML XML field type to it's SQL type definition
 	 *
-	 * @param string $object_type
-	 * @param string $field
-	 * @param string $qb_type
-	 * @return array
 	 * @TODO We case the input to lowercase, and so the array has to be in lowercase. Is there a better way to do this?
 	 */
-	static public function mapFieldToSQLDefinition($object_type, $field, $qb_type)
+	static public function mapFieldToSQLDefinition(string $object_type, string $field, string $qb_type): array
 	{
 		// array( type, length, default )
 
-		static $overrides = array(
-			'billpaymentcheck' => array(
-				'istobeprinted' => array( null, null, 'null' ),
-				),
-			'check' => array(
-				'istobeprinted' => array( null, null, 'null' ),
-				),
-			'creditmemo' => array(
-				'ispending' => array( null, null, 'null' ),
-				),
-			'creditmemo_creditmemoline' => array(
-				'creditcardtxninputinfo_expirationmonth' => array( null, null, 'null' ),
-				'creditcardtxninputinfo_expirationyear' => array( null, null, 'null' ),
-				'creditcardtxnresultinfo_resultcode' => array( null, null, 'null' ),
-				'creditcardtxnresultinfo_paymentgroupingcode' => array( null, null, 'null' ),
-				'creditcardtxnresultinfo_txnauthorizationstamp' => array( null, null, 'null' ),
-				),
-			'creditmemo_creditmemolinegroup_creditmemoline' => array(
-				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => array( null, null, 'null' ),
-				),
-			'customer' => array(
-				'creditcardinfo_expirationmonth' => array( null, null, 'null' ),
-				'creditcardinfo_expirationyear' => array( null, null, 'null' )
-				),
-			'employee' => array(
-				'employeepayrollinfo_clearearnings' => array( null, null, 'null' ),
-				'employeepayrollinfo_isusingtimedatatocreatepaychecks' => array( null, null, 'null' ),
-				'employeepayrollinfo_sickhours_isresettinghourseachnewyear' => array( null, null, 'null' ),
-				'employeepayrollinfo_vacationhours_isresettinghourseachnewyear' => array( null, null, 'null' ),
-				),
-			'estimate' => array(
-				'istobeemailed' => array( null, null, 'null' ),
-				),
-			'estimate_estimateline' => array(
-				'quantity' => array( null, null, 'null' ),
-				),
-			'itemnoninventory' => array(
-				'salesorpurchase_price' => array( null, null, 'null' ),
-				'salesorpurchase_pricepercent' => array( null, null, 'null' ),
-				'salesorpurchase_salesprice' => array( null, null, 'null' ),
-				'salesorpurchase_purchasecost' => array( null, null, 'null' )
-				),
-			'itemdiscount' => array(
-				'discountrate' => array( null, null, 'null' ),
-				'discountratepercent' => array( null, null, 'null' )
-				),
-			'inventoryadjustment_inventoryadjustmentline' => array(
-				'quantityadjustment_newquantity' => array( null, null, 'null' ),
-				'quantityadjustment_quantitydifference' => array( null, null, 'null' ),
-				'valueadjustment_newquantity' => array( null, null, 'null' ),
-				'valueadjustment_quantitydifference' => array( null, null, 'null' ),
-				'valueadjustment_newvalue' => array( null, null, 'null' ),
-				'valueadjustment_valuedifference' => array( null, null, 'null' ),
-				),
-			'invoice' => array(
-				'ispending' => array( null, null, 'null' ),
-				'isfinancecharge' => array( null, null, 'null' ),
-				'ispaid' => array( null, null, 'null' ),
-				'istobeprinted' => array( null, null, 'null' ),
-				'istobeemailed' => array( null, null, 'null' ),
-				),
-			'invoice_invoiceline' => array(
-				'quantity' => array( null, null, 'null' )
-				),
-			'purchaseorder' => array(
-				'ismanuallyclosed' => array( null, null, 'null' ),
-				'isfullyreceived' => array( null, null, 'null' ),
-				'istobeprinted' => array( null, null, 'null' ),
-				'istobeemailed' => array( null, null, 'null' ),
-				),
-			'purchaseorder_purchaseorderline' => array(
-				'ismanuallyclosed' => array( null, null, 'null' ),
-				'receivedquantity' => array( null, null, 'null' ),
-				'quantity' => array( null, null, 'null' )
-				),
-			'receivepayment' => array(
-				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => array( null, null, 'null' ),
-				),
-			'salesorder' => array(
-				'ismanuallyclosed' => array( null, null, 'null' ),
-				'isfullyinvoiced' => array( null, null, 'null' ),
-				'istobeprinted' => array( null, null, 'null' ),
-				'istobeemailed' => array( null, null, 'null' ),
-				),
-			'salesorder_salesorderline' => array(
-				'quantity' => array( null, null, 'null' ),
-				'invoiced' => array( null, null, 'null' ),
-				'ismanuallyclosed' => array( null, null, 'null' ),
-				),
-			'salesreceipt' => array(
-				'ispending' => array( null, null, 'null' ),
-				'istobeprinted' => array( null, null, 'null' ),
-				'istobeemailed' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => array( null, null, 'null' ),
-				),
-			'salesreceipt_salesreceiptline' => array(
-				'quantity' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => array( null, null, 'null' ),
-				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => array( null, null, 'null' ),
-				),
-			);
+		static $overrides = [
+			'billpaymentcheck' => [
+				'istobeprinted' => [null, null, 'null'],
+			],
+			'check' => [
+				'istobeprinted' => [null, null, 'null'],
+			],
+			'creditmemo' => [
+				'ispending' => [null, null, 'null'],
+			],
+			'creditmemo_creditmemoline' => [
+				'creditcardtxninputinfo_expirationmonth' => [null, null, 'null'],
+				'creditcardtxninputinfo_expirationyear' => [null, null, 'null'],
+				'creditcardtxnresultinfo_resultcode' => [null, null, 'null'],
+				'creditcardtxnresultinfo_paymentgroupingcode' => [null, null, 'null'],
+				'creditcardtxnresultinfo_txnauthorizationstamp' => [null, null, 'null'],
+			],
+			'creditmemo_creditmemolinegroup_creditmemoline' => [
+				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => [null, null, 'null'],
+			],
+			'customer' => [
+				'creditcardinfo_expirationmonth' => [null, null, 'null'],
+				'creditcardinfo_expirationyear' => [null, null, 'null'],
+			],
+			'employee' => [
+				'employeepayrollinfo_clearearnings' => [null, null, 'null'],
+				'employeepayrollinfo_isusingtimedatatocreatepaychecks' => [null, null, 'null'],
+				'employeepayrollinfo_sickhours_isresettinghourseachnewyear' => [null, null, 'null'],
+				'employeepayrollinfo_vacationhours_isresettinghourseachnewyear' => [null, null, 'null'],
+			],
+			'estimate' => [
+				'istobeemailed' => [null, null, 'null'],
+			],
+			'estimate_estimateline' => [
+				'quantity' => [null, null, 'null'],
+			],
+			'itemnoninventory' => [
+				'salesorpurchase_price' => [null, null, 'null'],
+				'salesorpurchase_pricepercent' => [null, null, 'null'],
+				'salesorpurchase_salesprice' => [null, null, 'null'],
+				'salesorpurchase_purchasecost' => [null, null, 'null'],
+			],
+			'itemdiscount' => [
+				'discountrate' => [null, null, 'null'],
+				'discountratepercent' => [null, null, 'null'],
+			],
+			'inventoryadjustment_inventoryadjustmentline' => [
+				'quantityadjustment_newquantity' => [null, null, 'null'],
+				'quantityadjustment_quantitydifference' => [null, null, 'null'],
+				'valueadjustment_newquantity' => [null, null, 'null'],
+				'valueadjustment_quantitydifference' => [null, null, 'null'],
+				'valueadjustment_newvalue' => [null, null, 'null'],
+				'valueadjustment_valuedifference' => [null, null, 'null'],
+			],
+			'invoice' => [
+				'ispending' => [null, null, 'null'],
+				'isfinancecharge' => [null, null, 'null'],
+				'ispaid' => [null, null, 'null'],
+				'istobeprinted' => [null, null, 'null'],
+				'istobeemailed' => [null, null, 'null'],
+			],
+			'invoice_invoiceline' => [
+				'quantity' => [null, null, 'null'],
+			],
+			'purchaseorder' => [
+				'ismanuallyclosed' => [null, null, 'null'],
+				'isfullyreceived' => [null, null, 'null'],
+				'istobeprinted' => [null, null, 'null'],
+				'istobeemailed' => [null, null, 'null'],
+			],
+			'purchaseorder_purchaseorderline' => [
+				'ismanuallyclosed' => [null, null, 'null'],
+				'receivedquantity' => [null, null, 'null'],
+				'quantity' => [null, null, 'null'],
+			],
+			'receivepayment' => [
+				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => [null, null, 'null'],
+			],
+			'salesorder' => [
+				'ismanuallyclosed' => [null, null, 'null'],
+				'isfullyinvoiced' => [null, null, 'null'],
+				'istobeprinted' => [null, null, 'null'],
+				'istobeemailed' => [null, null, 'null'],
+			],
+			'salesorder_salesorderline' => [
+				'quantity' => [null, null, 'null'],
+				'invoiced' => [null, null, 'null'],
+				'ismanuallyclosed' => [null, null, 'null'],
+			],
+			'salesreceipt' => [
+				'ispending' => [null, null, 'null'],
+				'istobeprinted' => [null, null, 'null'],
+				'istobeemailed' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => [null, null, 'null'],
+			],
+			'salesreceipt_salesreceiptline' => [
+				'quantity' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxninputinfo_expirationmonth' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxninputinfo_expirationyear' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_resultcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_paymentgroupingcode' => [null, null, 'null'],
+				'creditcardtxninfo_creditcardtxnresultinfo_txnauthorizationstamp' => [null, null, 'null'],
+			],
+		];
 
 		$object_type = strtolower($object_type);
 		$field = strtolower($field);
-
-		$type = QUICKBOOKS_DRIVER_SQL_VARCHAR;
-		$length = 32;
-		$default = null;
 
 		// Default mappings for types
 		switch ($qb_type)
 		{
 			case 'AMTTYPE':
-
-				$type = QUICKBOOKS_DRIVER_SQL_DECIMAL;
+				$type = Sql::DataType['DECIMAL'];
 				$length = '10,2';
 				$default = 'null';
-
 				break;
-			case 'PRICETYPE':
 
-				$type = QUICKBOOKS_DRIVER_SQL_DECIMAL;
+			case 'PRICETYPE':
+				$type = Sql::DataType['DECIMAL'];
 				$length = '13,5';
 				$default = 'null';
-
 				break;
-			case 'PERCENTTYPE':
 
-				$type = QUICKBOOKS_DRIVER_SQL_DECIMAL;
+			case 'PERCENTTYPE':
+				$type = Sql::DataType['DECIMAL'];
 				$length = '12,5';
 				$default = 'null';
-
 				break;
+
 			case 'DATETYPE':
-
-				$type = QUICKBOOKS_DRIVER_SQL_DATE;
+				$type = Sql::DataType['DATE'];
 				$length = null;
 				$default = 'null';
-
 				break;
+
 			case 'DATETIMETYPE':
-
-				$type = QUICKBOOKS_DRIVER_SQL_DATETIME;
+				$type = Sql::DataType['DATETIME'];
 				$length = null;
 				$default = 'null';
-
 				break;
-			case 'BOOLTYPE':
 
-				$type = QUICKBOOKS_DRIVER_SQL_BOOLEAN;
+			case 'BOOLTYPE':
+				$type = Sql::DataType['BOOLEAN'];
 				$length = null;
 				$default = false;
-
 				break;
-			case 'INTTYPE':
 
-				$type = QUICKBOOKS_DRIVER_SQL_INTEGER;
+			case 'INTTYPE':
+				$type = Sql::DataType['INTEGER'];
 				$length = null;
 				$default = 0;
-
 				break;
-			case 'QUANTYPE':
 
-				$type = QUICKBOOKS_DRIVER_SQL_DECIMAL;
+			case 'QUANTYPE':
+				$type = Sql::DataType['DECIMAL'];
 				$length = '12,5';
 				$default = 0;
-
 				break;
-			case 'IDTYPE':
 
-				$type = QUICKBOOKS_DRIVER_SQL_VARCHAR;
-				$length = 40;
-				$default = 'null';
-
-				break;
 			case 'ENUMTYPE':
-
-				$type = QUICKBOOKS_DRIVER_SQL_VARCHAR;
+			case 'IDTYPE':
+				$type = Sql::DataType['VARCHAR'];
 				$length = 40;
 				$default = 'null';
-
 				break;
+
 			case 'STRTYPE':
 			default:
-
 				//print('casting: ' . $object_type . "\n");
 				//print('field: ' . $field . "\n");
 
 				$x = str_repeat('x', 10000);
-				$length = strlen(QuickBooks_Cast::cast($object_type, $field, $x));
+				$length = strlen(Cast::cast($object_type, $field, $x));
 
 				// All FullName and *_FullName fields should be VARCHAR(255) so we can add INDEXes to them
-				if ($length > 255 and
+				if ($length > 255 &&
 					strtolower(substr($field, -8)) == 'fullname')
 				{
 					$length = 255;
 				}
 
 				// If the length is really long, put it in a TEXT field instead of a VARCHAR
-				if ($length > 255)
-				{
-					$type = QUICKBOOKS_DRIVER_SQL_TEXT;
-				}
-				else
-				{
-					$type = QUICKBOOKS_DRIVER_SQL_VARCHAR;
-				}
+				$type = $length > 255 ? Sql::DataType['TEXT'] : Sql::DataType['VARCHAR'];
 
 				$default = 'null';
 
@@ -2773,7 +2725,6 @@ class QuickBooks_SQL_Schema
 						$default = $overrides[$object_type][$field][2];
 					}
 				}
-
 				break;
 		}
 
@@ -2802,15 +2753,15 @@ class QuickBooks_SQL_Schema
 		}*/
 
 		// @TODO -- Keith, is this a good way to accomplish converting all txnid/listid fields to varchar? ~Garrett
-		if (stripos($field, 'listid') !== false or stripos($field, 'txnid') !== false)
+		if ((stripos($field, 'listid') !== false) || (stripos($field, 'txnid') !== false))
 		{
-			$type = QUICKBOOKS_DRIVER_SQL_VARCHAR;
+			$type = Sql::DataType['VARCHAR'];
 			$length = 40;
 			$default = 'null';
 		}
 		else if (strtolower($field) == 'sortorder')
 		{
-			$type = QUICKBOOKS_DRIVER_SQL_INTEGER;
+			$type = Sql::DataType['INTEGER'];
 			$length = null;
 			$default = 0;
 		}
@@ -2833,6 +2784,6 @@ class QuickBooks_SQL_Schema
 			}
 		}
 
-		return array( $type, $length, $default );
+		return [$type, $length, $default];
 	}
 }

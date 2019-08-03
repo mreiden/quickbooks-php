@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -10,10 +10,12 @@
  * @subpackage SQL
  */
 
+namespace QuickBooksPhpDevKit\SQL;
+
 /**
  *
  */
-class QuickBooks_SQL_Object
+class SqlObject
 {
 	/**
 	 * @var string
@@ -32,11 +34,8 @@ class QuickBooks_SQL_Object
 
 	/**
 	 *
-	 *
-	 * @param string $type
-	 * @param array $arr
 	 */
-	public function __construct($table, $path, $arr = array())
+	public function __construct(?string $table, ?string $path, array $arr = [])
 	{
 		$this->_table = $table;
 		$this->_path = $path;
@@ -47,19 +46,17 @@ class QuickBooks_SQL_Object
 	 * Return the type of SQL object this is
 	 *
 	 * @deprecated
-	 * @return string
 	 */
-	public function type()
+	public function type(): string
+	{
+		return $this->_table;
+	}
+	public function table(): string
 	{
 		return $this->_table;
 	}
 
-	public function table()
-	{
-		return $this->_table;
-	}
-
-	public function path()
+	public function path(): string
 	{
 		return $this->_path;
 	}
@@ -71,7 +68,7 @@ class QuickBooks_SQL_Object
 	 * @param mixed $value
 	 * @return void
 	 */
-	public function set($key, $value)
+	public function set(string $key, $value): void
 	{
 		$this->_arr[$key] = $value;
 	}
@@ -83,7 +80,7 @@ class QuickBooks_SQL_Object
 	 * @param mixed $value
 	 * @return void
 	 */
-	public function remove($key)
+	public function remove(string $key): void
 	{
 		if ($this->exists($key))
 		{
@@ -97,12 +94,12 @@ class QuickBooks_SQL_Object
 	 * @param string $path
 	 * @return void
 	 */
-	public function change($path)
+	public function change(string $path): void
 	{
 		$this->_path = $path;
 	}
 
-	public function get($key, $default = null)
+	public function get(string $key, $default = null)
 	{
 		if ($this->exists($key))
 		{
@@ -112,17 +109,17 @@ class QuickBooks_SQL_Object
 		return $default;
 	}
 
-	public function exists($key)
+	public function exists(string $key): bool
 	{
 		return isset($this->_arr[$key]);
 	}
 
-	public function asArray()
+	public function asArray(): array
 	{
 		return $this->_arr;
 	}
 
-	public function asXML()
+	public function asXML(): void
 	{
 
 	}

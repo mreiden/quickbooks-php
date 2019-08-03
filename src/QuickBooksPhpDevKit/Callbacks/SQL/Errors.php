@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,31 +16,38 @@
  * @subpackage SQL
  */
 
-// For DEBUGGING only
-//require_once '/Users/kpalmer/Projects/QuickBooks/QuickBooks.php';
+namespace QuickBooksPhpDevKit\Callbacks\SQL;
+
+use QuickBooksPhpDevKit\Driver\Singleton;
+use QuickBooksPhpDevKit\Driver\Sql;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\SQL\Schema;
+use QuickBooksPhpDevKit\SQL\SqlObject;
+use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\XML;
 
 /**
  *
  */
-class QuickBooks_Callbacks_SQL_Errors
+class Errors
 {
 	/**
 	 * @TODO Change this to return false by default, and only catch the specific errors we're concerned with.
 	 *
 	 */
-	static public function catchall($requestID, $user, $action, $ident, $extra, &$err, $xml, $errnum, $errmsg, $config)
+	static public function catchall($requestID, string $user, string $action, $ident, ?array $extra, ?string &$err, ?string $xml, ?int $errnum, ?string $errmsg, ?array $config)
 	{
-		$Driver = QuickBooks_Driver_Singleton::getInstance();
+		$Driver = Singleton::getInstance();
 
-		$ignore = array(
-			QUICKBOOKS_IMPORT_DELETEDTXNS => true,
-			QUICKBOOKS_QUERY_DELETEDTXNS => true,
-			QUICKBOOKS_IMPORT_DELETEDLISTS => true,
-			QUICKBOOKS_QUERY_DELETEDLISTS => true,
-			QUICKBOOKS_VOID_TRANSACTION => true,
-			QUICKBOOKS_DELETE_TRANSACTION => true,
-			QUICKBOOKS_DELETE_LIST => true,
-			);
+		$ignore = [
+			PackageInfo::Actions['IMPORT_DELETEDTXN'] => true,
+			PackageInfo::Actions['QUERY_DELETEDTXNS'] => true,
+			PackageInfo::Actions['IMPORT_DELETEDLISTS'] => true,
+			PackageInfo::Actions['QUERY_DELETEDLISTS'] => true,
+			PackageInfo::Actions['VOID_TRANSACTION'] => true,
+			PackageInfo::Actions['DELETE_TRANSACTION'] => true,
+			PackageInfo::Actions['DELETE_LIST'] => true,
+		];
 
 		if (isset($ignore[$action]))
 		{
@@ -49,146 +56,139 @@ class QuickBooks_Callbacks_SQL_Errors
 		}
 
 		/*
-		$Parser = new QuickBooks_XML($xml);
+		$Parser = new XML($xml);
 		$errnumTemp = 0;
 		$errmsgTemp = '';
 		$Doc = $Parser->parse($errnumTemp, $errmsgTemp);
 		$Root = $Doc->getRoot();
 		$emailStr = var_export($Root->children(), true);
 
-		$List = $Root->getChildAt('QBXML QBXMLMsgsRs '.QuickBooks_Utilities::actionToResponse($action));
+		$List = $Root->getChildAt('QBXML QBXMLMsgsRs '.Utilities::actionToResponse($action));
 		$Node = current($List->children());
 		*/
 
-		$map = array();
-		$others = array();
-		QuickBooks_SQL_Schema::mapToSchema(trim(QuickBooks_Utilities::actionToXMLElement($action)), QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $map, $others);
-		$object = new QuickBooks_SQL_Object($map[0], trim(QuickBooks_Utilities::actionToXMLElement($action)));
+		$map = [];;
+		$others = [];;
+		Schema::mapToSchema(trim(Utilities::actionToXMLElement($action)), Schema::MAP_TO_SQL, $map, $others);
+		$object = new SqlObject($map[0], trim(Utilities::actionToXMLElement($action)));
 		$table = $object->table();
 
 		$existing = null;
 
-		if ($table and is_numeric($ident))
+		if ($table && is_numeric($ident))
 		{
-			$multipart = array(
-				QUICKBOOKS_DRIVER_SQL_FIELD_ID => $ident
-				);
+			$multipart = [
+				Sql::Field['ID'] => $ident,
+			];
 
-			$existing = $Driver->get(QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table, $multipart );
+			$existing = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . $table, $multipart);
 		}
 
 		switch ($errnum)
 		{
 			case 1:		// These errors occur when we search for something and it doesn't exist
 			case 500:	// 	i.e. we query for invoices modified since xyz, but there are none that have been modified since then
-
 				// This isn't really an error, just ignore it
-
-				if ($action == QUICKBOOKS_DERIVE_CUSTOMER)
+				if ($action == PackageInfo::Actions['DERIVE_CUSTOMER'])
 				{
 					// Tried to derive, doesn't exist, add it
 					$Driver->queueEnqueue(
 						$user,
-						QUICKBOOKS_ADD_CUSTOMER,
+						PackageInfo::Actions['ADD_CUSTOMER'],
 						$ident,
 						true,
-						QuickBooks_Utilities::priorityForAction(QUICKBOOKS_ADD_CUSTOMER));
+						Utilities::priorityForAction(PackageInfo::Actions['ADD_CUSTOMER']));
 				}
-				else if ($action == QUICKBOOKS_DERIVE_INVOICE)
+				else if ($action == PackageInfo::Actions['DERIVE_INVOICE'])
 				{
 					// Tried to derive, doesn't exist, add it
 					$Driver->queueEnqueue(
 						$user,
-						QUICKBOOKS_ADD_INVOICE,
+						PackageInfo::Actions['ADD_INVOICE'],
 						$ident,
 						true,
-						QuickBooks_Utilities::priorityForAction(QUICKBOOKS_ADD_INVOICE));
+						Utilities::priorityForAction(PackageInfo::Actions['ADD_INVOICE']));
 				}
-				else if ($action == QUICKBOOKS_DERIVE_RECEIVEPAYMENT)
+				else if ($action == PackageInfo::Actions['DERIVE_RECEIVEPAYMENT'])
 				{
 					// Tried to derive, doesn't exist, add it
 					$Driver->queueEnqueue(
 						$user,
-						QUICKBOOKS_ADD_RECEIVEPAYMENT,
+						PackageInfo::Actions['ADD_RECEIVEPAYMENT'],
 						$ident,
 						true,
-						QuickBooks_Utilities::priorityForAction(QUICKBOOKS_ADD_RECEIVEPAYMENT));
+						Utilities::priorityForAction(PackageInfo::Actions['ADD_RECEIVEPAYMENT']));
 				}
-
 				return true;
-			case 1000: // An internal error occured
 
+			case 1000: // An internal error occurred
 				// @todo Hopefully at some point we'll have a better idea of how to handle this error...
-
 				return true;
+
 			//case 3120:			// 3120 errors are handled in the 3210 error handler section
 			//	break;
 			case 3170:	// This list has been modified by another user.
 			case 3175:
 			case 3176:
 			case 3180:
-
 				// This error can occur in several different situations, so we test per situation
-				if (false !== strpos($errmsg, 'list has been modified by another user') or
-					false !== strpos($errmsg, 'internals could not be locked') or
-					false !== strpos($errmsg, 'failed to acquire the lock') or
+				if (false !== strpos($errmsg, 'list has been modified by another user') ||
+					false !== strpos($errmsg, 'internals could not be locked') ||
+					false !== strpos($errmsg, 'failed to acquire the lock') ||
 					false !== strpos($errmsg, 'list element is in use'))
 				{
 					// This is *not* an error, we can just send the request again, and it'll go through just fine
 					return true;
 				}
-
 				break;
+
 			case 3200:
 				// Ignore EditSequence errors (the record will be picked up and a conflict reported next time it runs... maybe?)
-
-				if ($action == QUICKBOOKS_MOD_CUSTOMER and
+				if ($action == PackageInfo::Actions['MOD_CUSTOMER'] &&
 					$existing)
 				{
 					// Queue up a derive customer request
 					// Tried to derive, doesn't exist, add it
 					$Driver->queueEnqueue(
 						$user,
-						QUICKBOOKS_DERIVE_CUSTOMER,
+						PackageInfo::Actions['DERIVE_CUSTOMER'],
 						$ident,
 						true,
 						9999,
-						array( 'ListID' => $existing['ListID'] ));
+						['ListID' => $existing['ListID']]);
 				}
-				else if ($action == QUICKBOOKS_MOD_INVOICE and
+				else if ($action == PackageInfo::Actions['MOD_INVOICE'] &&
 					$existing)
 				{
 					// Queue up a derive customer request
 					// Tried to derive, doesn't exist, add it
 					$Driver->queueEnqueue(
 						$user,
-						QUICKBOOKS_DERIVE_INVOICE,
+						PackageInfo::Actions['DERIVE_INVOICE'],
 						$ident,
 						true,
 						9999,
-						array( 'TxnID' => $existing['TxnID'] ));
+						['TxnID' => $existing['TxnID']]);
 				}
-
 				return true;
+
 			case 3120:
 			case 3210:
-
 				//print_r($existing);
 				//print('TXNID: [' . $existing['TxnID'] . ']');
 
-				// 3210: The &quot;AppliedToTxnAdd payment amount&quot; field has an invalid value &quot;129.43&quot;.  QuickBooks error message: You cannot pay more than the amount due.
-				if ($action == QUICKBOOKS_ADD_RECEIVEPAYMENT and
-					(false !== strpos($errmsg, 'pay more than the amount due') or false !== strpos($errmsg, 'cannot be found')) and
+				// 3210: The &quot;AppliedToTxnAdd payment amount&quot; field has an invalid value &quot;129.43&quot;. QuickBooks error message: You cannot pay more than the amount due.
+				if ($action == PackageInfo::Actions['ADD_RECEIVEPAYMENT'] &&
+					(false !== strpos($errmsg, 'pay more than the amount due') || false !== strpos($errmsg, 'cannot be found')) &&
 					$existing)
 				{
 					// If this happens, we're going to try to re-submit the payment, *without* the AppliedToTxn element
-
 					$db_errnum = null;
 					$db_errmsg = null;
 
 					$Driver->query("
 						UPDATE
-							" . QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . "receivepayment_appliedtotxn
+							" . Sql::$TablePrefix['SQL_MIRROR'] . "receivepayment_appliedtotxn
 						SET
 							qbsql_to_skip = 1
 						WHERE
@@ -197,50 +197,45 @@ class QuickBooks_Callbacks_SQL_Errors
 						$db_errmsg,
 						null,
 						null,
-						array( $existing['TxnID'] ));
+						[ $existing['TxnID'] ]);
 
 					return true;
 				}
-
 				break;
-			case 3250: // This feature is not enabled or not available in this version of QuickBooks.
 
+			case 3250:			// This feature is not enabled or not available in this version of QuickBooks.
 				// Do nothing (this can be safely ignored)
-
 				return true;
-			case 3260: // Insufficient permission level to perform this action.
-			case 3261: // The integrated application has no permission to ac...
 
+			case 3260:			// Insufficient permission level to perform this action.
+			case 3261:			// The integrated application has no permission to ac...
 				// There's nothing we can do about this, if they don't grant the user permission, just skip it
-
 				return true;
-			case 3100: // Name of List Element is already in use.
 
-
-
+			case 3100:			// Name of List Element is already in use.
 				break;
-			case '0x8004040D':	// The ticket parameter is invalid  (how does this happen!?!)
 
+			case '0x8004040D':	// The ticket parameter is invalid (how does this happen!?!)
 				return true;
 		}
 
 		// This is our catch-all which marks the item as errored out
 		if (strstr($xml, 'statusSeverity="Info"') === false) // If it's NOT just an Info message.
 		{
-			$multipart = array( QUICKBOOKS_DRIVER_SQL_FIELD_ID => $ident );
-			$object->set(QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER, $errnum);
-			$object->set(QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_MESSAGE, $errmsg);
+			$multipart = [Sql::Field['ID'] => $ident];
+			$object->set(Sql::Field['ERROR_NUMBER'], $errnum);
+			$object->set(Sql::Field['ERROR_MESSAGE'], $errmsg);
 
 			// Do not set the resync field, we want resync and modified timestamps to be different
 			$update_resync_field = false;
 			$update_discov_field = false;
 			$update_derive_field = false;
 
-			if ($table and
+			if ($table &&
 				is_numeric($ident))		// This catches cases where errors occur on IMPORT requests with ap9y8ag random idents
 			{
 				// Set the error message
-				$Driver->update(QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table, $object, array( $multipart ),
+				$Driver->update(Sql::$TablePrefix['SQL_MIRROR'] . $table, $object, [$multipart],
 					$update_resync_field,
 					$update_discov_field,
 					$update_derive_field);
@@ -262,9 +257,9 @@ class QuickBooks_Callbacks_SQL_Errors
 /*
 $requestID = 'asdf';
 $user = 'quickbooks';
-$action = QUICKBOOKS_ADD_RECEIVEPAYMENT;
+$action = PackageInfo::Actions['ADD_RECEIVEPAYMENT'];
 $ident = 1;
-$extra = array();
+$extra = [];;
 $err = null;
 
 $xml = '<?xml version="1.0" ?>
@@ -272,14 +267,14 @@ $xml = '<?xml version="1.0" ?>
 <QBXMLMsgsRs>
 <ReceivePaymentAddRs
 requestID="U2hpcE1ldGhvZEltcG9ydHxmMmMyNzk1OGQ5Y2UwMTZiYzViN2RmYTZlMDJlODM5NA=="
-statusCode="3210" statusSeverity="Info" statusMessage="The &quot;AppliedToTxnAdd payment amount&quot; field has an invalid value &quot;129.43&quot;.  QuickBooks error message: You cannot pay more than the amount due." />
+statusCode="3210" statusSeverity="Info" statusMessage="The &quot;AppliedToTxnAdd payment amount&quot; field has an invalid value &quot;129.43&quot;. QuickBooks error message: You cannot pay more than the amount due." />
 </QBXMLMsgsRs>
 </QBXML>';
 
 $errnum = 3210;
-$errmsg = 'The &quot;AppliedToTxnAdd payment amount&quot; field has an invalid value &quot;129.43&quot;.  QuickBooks error message: You cannot pay more than the amount due.';
-$config = array();
+$errmsg = 'The &quot;AppliedToTxnAdd payment amount&quot; field has an invalid value &quot;129.43&quot;. QuickBooks error message: You cannot pay more than the amount due.';
+$config = [];;
 
-$tmp = QuickBooks_Driver_Singleton::getInstance('mysql://root:root@localhost/quickbooks_sql', array(), array(), QUICKBOOKS_LOG_DEVELOP);
-QuickBooks_Callbacks_SQL_Errors::catchall($requestID, $user, $action, $ident, $extra, $err, $xml, $errnum, $errmsg, $config);
+$tmp = Singleton::getInstance('mysql://root:root@localhost/quickbooks_sql', [], [], PackageInfo::LogLevel['DEVELOP']);
+self::catchall($requestID, $user, $action, $ident, $extra, $err, $xml, $errnum, $errmsg, $config);
 */

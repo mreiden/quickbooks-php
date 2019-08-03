@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -10,47 +10,49 @@
  * @subpackage SQL
  */
 
+namespace QuickBooksPhpDevKit;
+
 /**
  *
  */
-class QuickBooks_SQL
+class SQL
 {
 	/**
 	 * Hook which occurs every time a new record is INSERTed into the SQL mirror
 	 */
-	const HOOK_SQL_INSERT = 'QuickBooks_SQL sql-insert';
+	public const HOOK_SQL_INSERT = 'QuickBooks_SQL sql-insert';
 
 	/**
 	 * Hook which occurs every time a record is UPDATEd in the SQL mirror
 	 */
-	const HOOK_SQL_UPDATE = 'QuickBooks_SQL sql-update';
+	public const HOOK_SQL_UPDATE = 'QuickBooks_SQL sql-update';
 
 	/**
 	 *
 	 */
-	const HOOK_SQL_DELETE = 'QuickBooks_SQL sql-delete';
+	public const HOOK_SQL_DELETE = 'QuickBooks_SQL sql-delete';
 
 	/**
 	 *
 	 */
-	const HOOK_SQL_INVENTORY = 'QuickBooks_SQL sql-inventory';
+	public const HOOK_SQL_INVENTORY = 'QuickBooks_SQL sql-inventory';
 
-	const HOOK_SQL_INVENTORYASSEMBLY = 'QuickBooks_SQL sql-inventoryassembly';
-
-	/**
-	 *
-	 */
-	const HOOK_QUICKBOOKS_INSERT = 'QuickBooks_SQL quickbooks-insert';
+	public const HOOK_SQL_INVENTORYASSEMBLY = 'QuickBooks_SQL sql-inventoryassembly';
 
 	/**
 	 *
 	 */
-	const HOOK_QUICKBOOKS_UPDATE = 'QuickBooks_SQL quickbooks-update';
+	public const HOOK_QUICKBOOKS_INSERT = 'QuickBooks_SQL quickbooks-insert';
 
 	/**
 	 *
 	 */
-	const HOOK_QUICKBOOKS_DELETE = 'QuickBooks_SQL quickbooks-delete';
+	public const HOOK_QUICKBOOKS_UPDATE = 'QuickBooks_SQL quickbooks-update';
+
+	/**
+	 *
+	 */
+	public const HOOK_QUICKBOOKS_DELETE = 'QuickBooks_SQL quickbooks-delete';
 
 	/**
 	 *
@@ -59,33 +61,23 @@ class QuickBooks_SQL
 
 	/**
 	 *
-	 *
-	 * @param string $dsn
-	 * @param array $sql_options
-	 * @param array $driver_options
 	 */
-	public function __construct($dsn, $sql_options = array(), $driver_options = array())
+	public function __construct(string $dsn, array $sql_options = [], array $driver_options = [])
 	{
 		$this->_config = $this->_defaults($sql_options);
 	}
 
-	protected function _defaults($options)
+	protected function _defaults(array $options): array
 	{
-		$defaults = array(
-
-			);
+		$defaults = [];
 
 		return array_merge($defaults, $options);
 	}
 
 	/**
 	 * Tell whether or not a string starts with another string
-	 *
-	 * @param string $str
-	 * @param string $startswith
-	 * @return boolean
 	 */
-	protected function _startsWith($str, $startswith)
+	protected function _startsWith(string $str, string $startswith): bool
 	{
 		$length = strlen($startswith);
 
@@ -99,7 +91,7 @@ class QuickBooks_SQL
 	 * @param boolean $look		Whether or not to examine the query and see if it's an INSERT/UPDATE/DELETE query
 	 * @return resource
 	 */
-	public function query($sql, $look = true)
+	public function query(string $sql, bool $look = true)
 	{
 		if ($this->_driver)
 		{
@@ -135,18 +127,15 @@ class QuickBooks_SQL
 	 * @param integer $index
 	 * @return object
 	 */
-	public function fetch($res, $as_object = true, $index = null)
+	public function fetch($res, bool $as_object = true, ?int $index = null)
 	{
 
 	}
 
 	/**
 	 *
-	 *
-	 * @param string $str
-	 * @return string
 	 */
-	public function escape($str)
+	public function escape(string $str): string
 	{
 
 	}
@@ -156,7 +145,7 @@ class QuickBooks_SQL
 
 	}
 
-	public function getCustomer($listID)
+	public function getCustomer(string $listID)
 	{
 
 	}
@@ -166,12 +155,12 @@ class QuickBooks_SQL
 
 	}
 
-	public function modifyCustomer($listID, $customer)
+	public function modifyCustomer(string $listID, $customer)
 	{
 
 	}
 
-	public function deleteCustomer($listID)
+	public function deleteCustomer(string $listID)
 	{
 
 	}
