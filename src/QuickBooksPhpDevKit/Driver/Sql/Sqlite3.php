@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * SQLite 3 backend for the QuickBooks SOAP server
+ * SQLite3 backend for the QuickBooks SOAP server
  *
  * Copyright (c) 2010 Keith Palmer / ConsoliBYTE, LLC.
  * All rights reserved. This program and the accompanying materials
@@ -13,8 +13,8 @@
  * SOAP server and your application. The SOAP server stores queue requests
  * using the backend.
  *
- * This backend driver is for a MySQL database. You can use the
- * {@see QuickBooks_Utilities} class to initalize the five tables in the MySQL
+ * This backend driver is for a SQLite3 database. You can use the
+ * {@see QuickBooks_Utilities} class to initalize the five tables in the SQLite3
  * database.
  *
  * @author Keith Palmer <keith@consolibyte.com>
@@ -25,595 +25,414 @@
  * @subpackage Driver
  */
 
-/**
- * Base QuickBooks constants
- */
-require_once 'QuickBooks.php';
+namespace QuickBooksPhpDevKit\Driver\Sql;
 
-/**
- * QuickBooks driver base class
- */
-require_once 'QuickBooks/Driver.php';
+use \SQLite3 as PhpSQLite3;
+use \SQLite3Result;
+use QuickBooksPhpDevKit\Driver\Sql;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
 
-/**
- * QuickBooks driver SQL base class
- */
-require_once 'QuickBooks/Driver/Sql.php';
 
 /**
- * QuickBooks utilities class
+ * QuickBooks SQLite3 back-end driver
  */
-require_once 'QuickBooks/Utilities.php';
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_SALT'))
+class Sqlite3 extends Sql
 {
-    /**
-     * Salt used when hashing to create ticket values
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_SALT', QUICKBOOKS_DRIVER_SQL_SALT);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX'))
-{
-    /**
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX', QUICKBOOKS_DRIVER_SQL_PREFIX);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_QUEUETABLE'))
-{
-    /**
-     * MySQL table name to store queued requests in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_QUEUETABLE', QUICKBOOKS_DRIVER_SQL_QUEUETABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_USERTABLE'))
-{
-    /**
-     * MySQL table name to store usernames/passwords for the QuickBooks SOAP server
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_USERTABLE', QUICKBOOKS_DRIVER_SQL_USERTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_TICKETTABLE'))
-{
-    /**
-     * The table name to store session tickets in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_TICKETTABLE', QUICKBOOKS_DRIVER_SQL_TICKETTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_LOGTABLE'))
-{
-    /**
-     * The table name to store log data in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_LOGTABLE', QUICKBOOKS_DRIVER_SQL_LOGTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_RECURTABLE'))
-{
-    /**
-     * The table name to store recurring events in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_RECURTABLE', QUICKBOOKS_DRIVER_SQL_RECURTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_IDENTTABLE'))
-{
-    /**
-     * The table name to store identifiers in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_IDENTTABLE', QUICKBOOKS_DRIVER_SQL_IDENTTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_CONFIGTABLE'))
-{
-    /**
-     * The table name to store configuration options in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_CONFIGTABLE', QUICKBOOKS_DRIVER_SQL_CONFIGTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_NOTIFYTABLE'))
-{
-    /**
-     * The table name to store notifications in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_NOTIFYTABLE', QUICKBOOKS_DRIVER_SQL_NOTIFYTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_SQLITE3_CONNECTIONTABLE'))
-{
-    /**
-     * The table name to store connection data in
-     *
-     * @var string
-     */
-    define('QUICKBOOKS_DRIVER_SQL_SQLITE3_CONNECTIONTABLE', QUICKBOOKS_DRIVER_SQL_CONNECTIONTABLE);
-}
-
-/**
- * QuickBooks MySQL back-end driver
- */
-class QuickBooks_Driver_Sql_Sqlite3 extends QuickBooks_Driver_Sql
-{
-    /**
-     * SQLite3 connection resource
-     *
-     * @var SQLite3
-     */
-    protected $_conn;
-
-    /**
-     * Log level (debug, verbose, normal)
-     *
-     * @var integer
-     */
-    protected $_log_level;
-
-    /**
-     * User-defined hook functions
-     *
-     * @var array
-     */
-    protected $_hooks;
-
-    /**
-     *
-     */
-    protected $_database;
-
-    /**
-     * Create a new MySQL back-end driver
-     *
-     * @param string $dsn		A DSN-style connection string (i.e.: "mysql://your-mysql-username:your-mysql-password@your-mysql-host:port/your-mysql-database")
-     * @param array $config		Configuration options for the driver (not currently supported)
-     */
-    public function __construct($dsn_or_conn, $config)
-    {
-        $config = $this->_defaults($config);
-        $this->_log_level = (int) $config['log_level'];
-
-        if (is_resource($dsn_or_conn))
-        {
-            $this->_conn = $dsn_or_conn;
-        }
-        else
-        {
-            $defaults = array(
-                'scheme' => 'sqlite',
-                'host' => 'localhost',
-                'port' => 3306,
-                'user' => 'root',
-                'pass' => '',
-                'path' => '/quickbooks',
-            );
-
-            $parse = QuickBooks_Utilities::parseDSN($dsn_or_conn, $defaults);
-
-
-            //print_r($parse);
-            //exit;
-
-            $this->_connect($parse['host'], $parse['port'], $parse['user'], $parse['pass'], $parse['path'], $config['new_link'], $config['client_flags']);
-        }
-
-        // Call the parent constructor too
-        parent::__construct($dsn_or_conn, $config);
-    }
-
-    /**
-     * Merge an array of configuration options with the defaults
-     *
-     * @param array $config
-     * @return array
-     */
-    protected function _defaults($config)
-    {
-        $defaults = array(
-            'log_level' => QUICKBOOKS_LOG_NORMAL,
-            'client_flags' => 0,
-            'new_link' => true,
-        );
-
-        return array_merge($defaults, $config);
-    }
-
-    /**
-     * Tell whether or not the SQL driver has been initialized
-     *
-     * @return boolean
-     */
-    protected function _initialized()
-    {
-        $required = array(
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_IDENTTABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_TICKETTABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_USERTABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_RECURTABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_QUEUETABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_LOGTABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_CONFIGTABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_NOTIFYTABLE) => false,
-            $this->_mapTableName(QUICKBOOKS_DRIVER_SQL_CONNECTIONTABLE) => false,
-        );
-
-        $errnum = 0;
-        $errmsg = '';
-        $res = $this->_query("SELECT * FROM sqlite_master WHERE type = 'table' ", $errnum, $errmsg);
-        while ($arr = $this->_fetch($res))
-        {
-            $table = $arr['tbl_name'];
-
-            if (isset($required[$table]))
-            {
-                $required[$table] = true;
-            }
-        }
-
-        foreach ($required as $table => $exists)
-        {
-            if (!$exists)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Connect to the database
-     *
-     * @param string $host				The hostname the database is located at
-     * @param integer $port				The port the database is at
-     * @param string $user				Username for connecting
-     * @param string $pass				Password for connecting
-     * @param string $db				The database name
-     * @param boolean $new_link			TRUE for establishing a new link to the database, FALSE to re-use an existing one
-     * @param integer $client_flags		Database connection flags (see the PHP/MySQL documentation)
-     * @return boolean
-     */
-    protected function _connect($host, $port, $user, $pass, $db, $new_link, $client_flags)
-    {
-        try {
-            $this->_conn = new SQLite3($db);
-        }
-        catch(\Exception $ex) {
-            die('db: '. $db . 'ex: ' . $ex->getMessage());
-        }
-        return true;
-    }
-
-    /**
-     * Fetch an array from a database result set
-     *
-     * @param resource $res
-     * @return array
-     */
-    protected function _fetch($res)
-    {
-        return $res->fetchArray(SQLITE3_ASSOC);
-    }
-
-    /**
-     * Query the database
-     *
-     * @param string $sql
-     * @return resource
-     */
-    protected function _query($sql, &$errnum, &$errmsg, $offset = 0, $limit = null)
-    {
-        if ($limit and strtoupper(substr(trim($sql), 0, 6)) == 'SELECT')
-        {
-            if ($offset)
-            {
-                $sql .= " LIMIT " . (int) $offset . ", " . (int) $limit;
-            }
-            else
-            {
-                $sql .= " LIMIT " . (int) $limit;
-            }
-        }
-        else if ($offset and strtoupper(substr(trim($sql), 0, 6)) == 'SELECT')
-        {
-            // @todo Should this be implemented...?
-        }
-
-        try {
-
-            $res = $this->_conn->query($sql);
-
-            if (!$res)
-            {
-                $errnum = -99;
-                $errmsg = 'SQLLite Query Error';
-
-                trigger_error('Error Num.: ' . $errnum . "\n" . 'Error Msg.:' . $errmsg . "\n" . 'SQL: ' . $sql, E_USER_ERROR);
-                return false;
-            }
-        }
-        catch(\Exception $e) {
-            trigger_error($e->getMessage());
-        }
-
-        return $res;
-    }
-
-    /**
-     *
-     *
-     *
-     */
-    protected function _fields($table)
-    {
-        $sql = "SHOW FIELDS FROM " . $table;
-
-        $list = array();
-
-        $errnum = 0;
-        $errmsg = '';
-        $res = $this->_query($sql, $errnum, $errmsg);
-        while ($arr = $this->_fetch($res))
-        {
-            $list[] = current($arr);
-        }
-
-        return $list;
-    }
-
-    /**
-     * Issue a query to the SQL server
-     *
-     * @param string $sql
-     * @param integer $errnum
-     * @param string $errmsg
-     * @return resource
-     */
-    /*public function query($sql, &$errnum, &$errmsg, $offset = 0, $limit = null)
-    {
-        return $this->_query($sql, $errnum, $errmsg, $offset, $limit);
-    }*/
-
-    /**
-     * Tell the number of rows the last run query affected
-     *
-     * @return integer
-     */
-    public function affected()
-    {
-        //return mysql_affected_rows($this->_conn);
-        return 0;
-    }
-
-    /**
-     * Tell the last inserted AUTO_INCREMENT value
-     *
-     * @return integer
-     */
-    public function last()
-    {
-        //return mysql_insert_id($this->_conn);
-        return $this->_conn->lastInsertRowID();
-        //return sqlite_last_insert_rowid($this->_conn);
-    }
-
-    /**
-     * Tell the number of records in a result resource
-     *
-     * @param resource $res
-     * @return integer
-     */
-    public function count($res)
-    {
-        return $this->_count($res);
-    }
-
-    /**
-     * Escape a string
-     *
-     * @param string $str
-     * @return string
-     */
-    public function escape($str)
-    {
-        return $this->_escape($str);
-    }
-
-    /**
-     * Fetch a record from a result set
-     *
-     * @param resource $res
-     * @return array
-     */
-    public function fetch($res)
-    {
-        return $this->_fetch($res);
-    }
-
-    /**
-     * Rewind the result set
-     *
-     * @param resource $res
-     * @return boolean
-     */
-    public function rewind($res)
-    {
-        sqlite_rewind($res);
-    }
-
-    /**
-     * Escape a string for the database
-     *
-     * @param string $str
-     * @return string
-     */
-    protected function _escape($str)
-    {
-        //return mysql_real_escape_string($str, $this->_conn);
-        return SQLite3::escapeString($str);
-    }
-
-    /**
-     * Count the number of rows returned from the database
-     *
-     * @param resource $res
-     * @return integer
-     */
-    protected function _count($res)
-    {
-        //return mysql_num_rows($res);
-        return sqlite_num_rows($res);
-    }
-
-    /**
-     * Override for the default SQL generation functions, MySQL-specific field generation function
-     *
-     * @param string $name
-     * @param array $def
-     * @return string
-     */
-    protected function _generateFieldSchema($name, $def)
-    {
-        switch ($def[0])
-        {
-            case QUICKBOOKS_DRIVER_SQL_SERIAL:
-
-                $sql = $name . ' INTEGER PRIMARY KEY  '; // AUTO_INCREMENT
-                return $sql;
-            case QUICKBOOKS_DRIVER_SQL_TIMESTAMP:
-            case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_INSERT_OR_UPDATE:
-
-                $sql = $name . ' TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ';
-                return $sql;
-            case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_UPDATE:
-
-                $sql = $name . ' TIMESTAMP DEFAULT 0 ON UPDATE CURRENT_TIMESTAMP ';
-                return $sql;
-            case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_INSERT:
-
-                $sql = $name . ' TIMESTAMP DEFAULT CURRENT_TIMESTAMP ';
-                return $sql;
-            case QUICKBOOKS_DRIVER_SQL_BOOLEAN:
-                $sql = $name . ' tinyint(1) ';
-
-                if (isset($def[2]))
-                {
-                    if (strtolower($def[2]) == 'null')
-                    {
-                        $sql .= ' DEFAULT NULL ';
-                    }
-                    else if ($def[2])
-                    {
-                        $sql .= ' DEFAULT 1 ';
-                    }
-                    else
-                    {
-                        $sql .= ' DEFAULT 0 ';
-                    }
-                }
-
-                return $sql;
-            case QUICKBOOKS_DRIVER_SQL_INTEGER:
-                $sql = $name . ' int(10) ';
-
-                if (isset($def[2]))
-                {
-                    if (strtolower($def[2]) == 'null')
-                    {
-                        $sql .= ' DEFAULT NULL ';
-                    }
-                    else
-                    {
-                        $sql .= ' DEFAULT ' . (int) $def[2];
-                    }
-                }
-                else
-                {
-                    $sql .= ' NOT NULL ';
-                }
-
-                return $sql;
-            default:
-
-                return parent::_generateFieldSchema($name, $def);
-        }
-    }
-
-    /**
-     * Map a default SQL table name to a MySQL table name
-     *
-     * @param string
-     * @return string
-     */
-    protected function _mapTableName($table)
-    {
-        switch ($table)
-        {
-            case QUICKBOOKS_DRIVER_SQL_LOGTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_LOGTABLE;
-            case QUICKBOOKS_DRIVER_SQL_QUEUETABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_QUEUETABLE;
-            case QUICKBOOKS_DRIVER_SQL_RECURTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_RECURTABLE;
-            case QUICKBOOKS_DRIVER_SQL_TICKETTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_TICKETTABLE;
-            case QUICKBOOKS_DRIVER_SQL_USERTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_USERTABLE;
-            case QUICKBOOKS_DRIVER_SQL_CONFIGTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_CONFIGTABLE;
-            case QUICKBOOKS_DRIVER_SQL_IDENTTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_IDENTTABLE;
-            case QUICKBOOKS_DRIVER_SQL_NOTIFYTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_NOTIFYTABLE;
-            case QUICKBOOKS_DRIVER_SQL_CONNECTIONTABLE:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . QUICKBOOKS_DRIVER_SQL_SQLITE3_CONNECTIONTABLE;
-            default:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_PREFIX . $table;
-        }
-    }
-
-    protected function _mapSalt($salt)
-    {
-        switch ($salt)
-        {
-            case QUICKBOOKS_DRIVER_SQL_SALT:
-                return QUICKBOOKS_DRIVER_SQL_SQLITE3_SALT;
-            default:
-                return $salt;
-        }
-    }
-
-    protected function _generateCreateTable($name, $arr, $primary = array(), $keys = array(), $uniques = array(), $if_not_exists = true)
-    {
-        $arr_sql = parent::_generateCreateTable($name, $arr, $primary, $keys, $uniques, $if_not_exists);
-
-        if (is_array($primary) and count($primary) == 1)
-        {
-            $primary = current($primary);
-        }
-
-        return $arr_sql;
-    }
+	/**
+	 * SQLite3 connection resource
+	 *
+	 * @var SQLite3
+	 */
+	protected $_conn;
+
+	/**
+	 *
+	 */
+	protected $_database;
+
+	/**
+	 * Create a new SQLite3 back-end driver
+	 *
+	 * @param connection|array|string	$dsn	A database connection resource, configuration array, or a DSN-style connection string (i.e.: "sqlite3://your-sqlite3-username:your-sqlite3-password@your-sqlite3-host:port/your-sqlite3-database")
+	 * @param array 					$config	Configuration options for the driver (not currently supported)
+	 */
+	public function __construct($dsn_or_conn, array $config)
+	{
+		$config = $this->_defaults($config);
+
+		// Use the log level if it was provided in config
+		if (isset($config['log_level']))
+		{
+			$this->setLogLevel($config['log_level']);
+		}
+
+		if ($dsn_or_conn instanceof PhpSQLite3)
+		{
+			$this->_conn = $dsn_or_conn;
+		}
+		else
+		{
+			$defaults = [
+				'backend' => 'sqlite3',
+				'host' => 'localhost',
+				'port' => '',
+				'username' => '',
+				'password' => '',
+				'database' => '',
+			];
+
+			$parse = Utilities::parseDSN($dsn_or_conn, $defaults);
+			//print_r($parse);
+			//exit;
+
+			$this->_connect($parse['host'], $parse['port'], $parse['username'], $parse['password'], $parse['database'], $config['new_link'], $config['client_flags']);
+		}
+
+		// Call the parent constructor too
+		parent::__construct($dsn_or_conn, $config);
+	}
+
+	/**
+	 * Merge an array of configuration options with the defaults
+	 */
+	protected function _defaults(array $config): array
+	{
+		$defaults = [
+			'log_level' => PackageInfo::LogLevel['NORMAL'],
+			'client_flags' => 0,
+			'new_link' => true,
+		];
+
+		return array_merge($defaults, $config);
+	}
+
+	/**
+	 * Tell whether or not the SQL database has been initialized
+	 */
+	protected function _initialized(): bool
+	{
+		$required = [
+			//$this->_mapTableName(static::$Table['IDENT']) => false,
+			$this->_mapTableName(static::$Table['TICKET']) => false,
+			$this->_mapTableName(static::$Table['USER']) => false,
+			$this->_mapTableName(static::$Table['RECUR']) => false,
+			$this->_mapTableName(static::$Table['QUEUE']) => false,
+			$this->_mapTableName(static::$Table['LOG']) => false,
+			$this->_mapTableName(static::$Table['CONFIG']) => false,
+			//$this->_mapTableName(static::$Table['NOTIFY']) => false,
+			//$this->_mapTableName(static::$Table['CONNECTION']) => false,
+		];
+
+		$numRequiredTables = count($required);
+		$errnum = 0;
+		$errmsg = '';
+		$res = $this->_query("SELECT * FROM sqlite_master WHERE type = 'table' ", $errnum, $errmsg);
+		while ($arr = $this->_fetch($res))
+		{
+			$table = $arr['tbl_name'];
+			if (isset($required[$table]))
+			{
+				$numRequiredTables--;
+			}
+		}
+
+		return 0 === $numRequiredTables;
+	}
+
+	/**
+	 * Connect to the database
+	 *
+	 * @param string $db	The absolute path to the SQLite3 database file
+	 */
+	protected function _connect(string $host, $port, string $user, string $pass, string $db, bool $new_link, ?int $client_flags = null): bool
+	{
+		$this->_conn = new PhpSQLite3($db);
+		$this->_conn->enableExceptions(true);
+
+		try
+		{
+			// SQLite3 is stupid and does not give an error if you open a non-SQLite3 database (such as a text file), so try querying the database information
+			$err = 0;
+			$errmsg = '';
+			$this->_query('PRAGMA database_list', $err, $errmsg);
+		}
+		catch(\Exception $e)
+		{
+			throw new \Exception($this->_conn->lastErrorMsg());
+		}
+
+		return true;
+	}
+
+	/**
+	 * Fetch an array from a database result set
+	 */
+	protected function _fetch($res): array
+	{
+		if (null === $res)
+		{
+			return [];
+		}
+
+		// returns false if no rows are fetched
+		$arr = $res->fetchArray(SQLITE3_ASSOC);
+
+		return false === $arr ? [] : $arr;
+	}
+
+	/**
+	 * Query the database
+	 */
+	protected function _query(string $sql, ?int &$errnum, ?string &$errmsg, ?int $offset = 0, ?int $limit = null): ?SQLite3Result
+	{
+		$isSelectQuery = strtoupper(substr(trim($sql), 0, 6)) === 'SELECT';
+		if ($isSelectQuery && null !== $limit)
+		{
+			$sql .= ' LIMIT ' . $limit;
+			if (null !== $offset)
+			{
+				$sql .= ' OFFSET ' . $offset;
+			}
+		}
+
+		try
+		{
+			$res = $this->_conn->query($sql);
+
+			if (!$res)
+			{
+				$errnum = -99;
+				$errmsg = 'SQLLite Query Error';
+
+				trigger_error('Error Num.: ' . $errnum . "\n" . 'Error Msg.:' . $errmsg . "\n" . 'SQL: ' . $sql, E_USER_ERROR);
+
+				return null;
+			}
+
+			if ($isSelectQuery)
+			{
+				// Really bad hack (fetch all rows and reset to the first) since SQLite3 lacks a num_rows function
+				// Only for SELECT queries since it seems to cause an INSERT/UPDATE query to be run a second time.
+				$numRows = 0;
+				while ($row = $res->fetchArray(SQLITE3_NUM))
+				{
+					$numRows++;
+				}
+				$res->quickbooksRowCount = $numRows;
+				$res->reset();
+			}
+
+		}
+		catch(\Exception $e)
+		{
+			trigger_error($e->getMessage());
+		}
+
+		return $res;
+	}
+
+	/**
+	 *
+	 *
+	 *
+	 */
+	protected function _fields(string $table): array
+	{
+		$sql = "PRAGMA table_info('" . $this->escape($table) ."')";
+
+		$list = [];
+
+		$errnum = 0;
+		$errmsg = '';
+		$res = $this->_query($sql, $errnum, $errmsg);
+		if ($res)
+		{
+			while ($arr = $this->_fetch($res))
+			{
+				$list[] = $arr['name'];
+			}
+		}
+
+		return $list;
+	}
+
+	/**
+	 * Issue a query to the SQL server
+	 *
+	 * @param string $sql
+	 * @param integer $errnum
+	 * @param string $errmsg
+	 * @return resource
+	 */
+	/*public function query($sql, &$errnum, &$errmsg, $offset = 0, $limit = null)
+	{
+		return $this->_query($sql, $errnum, $errmsg, $offset, $limit);
+	}*/
+
+	/**
+	 * Tell the number of rows the last run query affected
+	 */
+	public function affected(): int
+	{
+		return $this->_conn->changes();
+	}
+
+	/**
+	 * Tell the last inserted AUTO_INCREMENT value
+	 */
+	public function last(): int
+	{
+		return $this->_conn->lastInsertRowID();
+	}
+
+	/**
+	 * Fetch a record from a result set
+	 */
+	public function fetch($res): array
+	{
+		return $this->_fetch($res);
+	}
+
+	/**
+	 * Escape a string for the database
+	 */
+	public function escape(string $str): string
+	{
+		return $this->_escape($str);
+	}
+
+	/**
+	 * Escape a string for the database
+	 */
+	protected function _escape(string $str): string
+	{
+		return PhpSQLite3::escapeString($str);
+	}
+
+	/**
+	 * Tell the number of records in a result resource
+	 * /
+	public function count($res): int
+	{
+		return $this->_count($res);
+	}
+	*/
+
+	/**
+	 * Count the number of rows returned from the database
+	 */
+	protected function _count($res): int
+	{
+		// return sqlite_num_rows($res);
+		return $res->quickbooksRowCount ?? 0;
+	}
+
+	/**
+	 * Rewind the result set
+	 */
+	public function rewind($res): bool
+	{
+		return $res->reset();
+	}
+
+	/**
+	 * Override for the default SQL generation functions, SQLite3-specific field generation function
+	 */
+	protected function _generateFieldSchema(string $name, array $def): string
+	{
+		switch ($def[0])
+		{
+			case static::DataType['SERIAL']:
+				$sql = $name . ' INTEGER PRIMARY KEY '; // AUTO_INCREMENT
+				return $sql;
+
+			case static::DataType['TIMESTAMP']:
+			case static::DataType['TIMESTAMP_ON_INSERT_OR_UPDATE']:
+			case static::DataType['TIMESTAMP_ON_UPDATE']:
+			case static::DataType['TIMESTAMP_ON_INSERT']:
+				$sql = $name . ' TIMESTAMP DEFAULT CURRENT_TIMESTAMP ';
+				return $sql;
+
+			case static::DataType['BOOLEAN']:
+				$sql = $name . ' tinyint(1) ';
+
+				if (isset($def[2]))
+				{
+					if (is_string($def[2]) && strtolower($def[2]) == 'null')
+					{
+						$sql .= ' DEFAULT NULL ';
+					}
+					else if ($def[2])
+					{
+						$sql .= ' DEFAULT 1 ';
+					}
+					else
+					{
+						$sql .= ' DEFAULT 0 ';
+					}
+				}
+				return $sql;
+
+			case static::DataType['INTEGER']:
+				$sql = $name . ' int(10) ';
+
+				if (isset($def[2]))
+				{
+					if (is_string($def[2]) && strtolower($def[2]) == 'null')
+					{
+						$sql .= ' DEFAULT NULL ';
+					}
+					else
+					{
+						$sql .= ' DEFAULT ' . (int) $def[2];
+					}
+				}
+				else
+				{
+					$sql .= ' NOT NULL ';
+				}
+				return $sql;
+
+			default:
+				return parent::_generateFieldSchema($name, $def);
+		}
+	}
+
+	protected function _generateCreateTable(string $name, array $arr, $primary = [], array $keys = [], array $uniques = [], bool $if_not_exists = true): array
+	{
+		$arr_sql = parent::_generateCreateTable($name, $arr, $primary, $keys, $uniques, $if_not_exists);
+
+		if (is_array($primary) && count($primary) == 1)
+		{
+			$primary = current($primary);
+		}
+
+		if (is_array($primary))
+		{
+			$arr_sql[] = 'CREATE UNIQUE INDEX IF NOT EXISTS ' . $name . '_pkey ON ' . $name . ' ( ' . implode(', ', $primary) . ' ) ';
+		}
+		else if ($primary)
+		{
+			if ($arr[$primary][0] != static::DataType['SERIAL'])
+			{
+				$arr_sql[] = 'CREATE UNIQUE INDEX IF NOT EXISTS ' . $name . '_pkey ON ' . $name . ' ( ' . $primary . ' ) ';
+			}
+		}
+
+		// Create indexes
+		foreach ($keys as $key)
+		{
+			if (is_array($key))		// compound key
+			{
+				$arr_sql[] = 'CREATE INDEX ' . implode('_', $key) . '_' . $name . '_index ON ' . $name . ' (' . implode(', ', $key) . ')';
+			}
+			else
+			{
+				$arr_sql[] = 'CREATE INDEX ' . $key . '_' . $name . '_index ON ' . $name . ' (' . $key . ')';
+			}
+		}
+
+		return $arr_sql;
+	}
 }

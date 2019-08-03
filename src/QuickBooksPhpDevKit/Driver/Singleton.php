@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks driver singleton
@@ -16,40 +16,25 @@
  * @subpackage Driver
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Driver.php');
+namespace QuickBooksPhpDevKit\Driver;
+
+use QuickBooksPhpDevKit\Driver;
+use QuickBooksPhpDevKit\Driver\Factory;
 
 /**
  *
  */
-QuickBooks_Loader::load('/QuickBooks/Driver/Factory.php');
-
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Utilities.php');
-
-/**
- *
- */
-class QuickBooks_Driver_Singleton
+class Singleton
 {
 	/**
 	 *
-	 *
-	 * @param string $dsn_or_conn
-	 * @param array $options
-	 * @return QuickBooks_Driver
 	 */
-	public static function getInstance($dsn_or_conn = null, $options = array(), $hooks = array(), $log_level = null)
+	public static function getInstance($dsn_or_conn = null, array $options = [], array $hooks = [], ?int $log_level = null): Driver
 	{
 		static $instance = null;
 		if (is_null($instance))
 		{
-			//$instance = QuickBooks_Utilities::driverFactory($dsn_or_conn, $options, $hooks, $log_level);
-			$instance = QuickBooks_Driver_Factory::create($dsn_or_conn, $options, $hooks, $log_level);
+			$instance = Factory::create($dsn_or_conn, $options, $hooks, $log_level);
 		}
 
 		return $instance;
@@ -59,9 +44,9 @@ class QuickBooks_Driver_Singleton
 	 *
 	 *
 	 */
-	public static function initialize($dsn_or_conn, $options = array(), $hooks = array(), $log_level = null)
+	public static function initialize($dsn_or_conn = null, array $options = [], array $hooks = [], ?int $log_level = null): bool
 	{
-		if ($obj = QuickBooks_Driver_Singleton::getInstance($dsn_or_conn, $options, $hooks, $log_level))
+		if ($obj = self::getInstance($dsn_or_conn, $options, $hooks, $log_level))
 		{
 			return true;
 		}

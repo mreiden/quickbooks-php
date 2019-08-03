@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * MySQLi backend for the QuickBooks SOAP server
@@ -10,7 +10,7 @@
  * http://www.opensource.org/licenses/eclipse-1.0.php
  *
  * This backend driver is for a MySQL database, using the PHP MySQLi extension.
- * You can use the {@see QuickBooks_Utilities} class to initalize the tables in
+ * You can use the {@see Utilities} class to initalize the tables in
  * the MySQL database.
  *
  * @author Keith Palmer <keith@consolibyte.com>
@@ -20,170 +20,39 @@
  * @subpackage Driver
  */
 
-/**
- * QuickBooks driver base class
- */
-QuickBooks_Loader::load('/QuickBooks/Driver.php');
+namespace QuickBooksPhpDevKit\Driver\Sql;
+
+use \mysqli as PhpMysqli;
+use QuickBooksPhpDevKit\Driver\Sql;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
 
 /**
- * QuickBooks driver SQL base class
+ * QuickBooks MySQLi back-end driver
  */
-QuickBooks_Loader::load('/QuickBooks/Driver/Sql.php', false);
-
-/**
- * QuickBooks utilities class
- */
-QuickBooks_Loader::load('/QuickBooks/Utilities.php');
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_SALT'))
-{
-	/**
-	 * Salt used when hashing to create ticket values
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_SALT', QUICKBOOKS_DRIVER_SQL_SALT);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX'))
-{
-	/**
-	 *
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX', QUICKBOOKS_DRIVER_SQL_PREFIX);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_QUEUETABLE'))
-{
-	/**
-	 * MySQL table name to store queued requests in
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_QUEUETABLE', QUICKBOOKS_DRIVER_SQL_QUEUETABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_USERTABLE'))
-{
-	/**
-	 * MySQL table name to store usernames/passwords for the QuickBooks SOAP server
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_USERTABLE', QUICKBOOKS_DRIVER_SQL_USERTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_TICKETTABLE'))
-{
-	/**
-	 * The table name to store session tickets in
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_TICKETTABLE', QUICKBOOKS_DRIVER_SQL_TICKETTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_LOGTABLE'))
-{
-	/**
-	 * The table name to store log data in
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_LOGTABLE', QUICKBOOKS_DRIVER_SQL_LOGTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_RECURTABLE'))
-{
-	/**
-	 * The table name to store recurring events in
-	 *
-	 * @var string
-	 */
-	 define('QUICKBOOKS_DRIVER_SQL_MYSQLI_RECURTABLE', QUICKBOOKS_DRIVER_SQL_RECURTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_IDENTTABLE'))
-{
-	/**
-	 * The table name to store identifiers in
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_IDENTTABLE', QUICKBOOKS_DRIVER_SQL_IDENTTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_CONFIGTABLE'))
-{
-	/**
-	 * The table name to store configuration options in
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_CONFIGTABLE', QUICKBOOKS_DRIVER_SQL_CONFIGTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_NOTIFYTABLE'))
-{
-	/**
-	 * The table name to store notifications in
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_NOTIFYTABLE', QUICKBOOKS_DRIVER_SQL_NOTIFYTABLE);
-}
-
-if (!defined('QUICKBOOKS_DRIVER_SQL_MYSQLI_CONNECTIONTABLE'))
-{
-	/**
-	 * The table name to store connection data in
-	 *
-	 * @var string
-	 */
-	define('QUICKBOOKS_DRIVER_SQL_MYSQLI_CONNECTIONTABLE', QUICKBOOKS_DRIVER_SQL_CONNECTIONTABLE);
-}
-
-/**
- * QuickBooks MySQL back-end driver
- */
-class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
+class Mysqli extends Sql
 {
 
 	/**
-	 * MySQL connection resource
+	 * MySQLi connection resource
 	 *
 	 * @var resource
 	 */
 	protected $_conn;
 
 	/**
-	 * MySQL query result
+	 * MySQLi query result
 	 *
 	 * @var result
 	 */
 	protected $_res;
 
 	/**
-	 * Log level (debug, verbose, normal)
-	 *
-	 * @var integer
-	 */
-	protected $_log_level;
-
-	/**
-	 * Last error message that occured
+	 * Last error message that occurred
 	 *
 	 * @var integer
 	 */
 	public $_last_error;
-
-	/**
-	 * User-defined hook functions
-	 *
-	 * @var array
-	 */
-	protected $_hooks;
 
 	/**
 	 * Database name
@@ -193,76 +62,78 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 	/**
 	 * Create a new MySQLi back-end driver
 	 *
-	 * @param string $dsn		A DSN-style connection string (i.e.: "mysql://your-mysql-username:your-mysql-password@your-mysql-host:port/your-mysql-database")
-	 * @param array $config		Configuration options for the driver (not currently supported)
+	 * @param resource|array|string	$dsn	A database connection resource, configuration array, or a DSN-style connection string (i.e.: "mysqli://your-mysql-username:your-mysql-password@your-mysql-host:port/your-mysql-database")
+	 * @param array 					$config	Configuration options for the driver (not currently supported)
 	 */
-	public function __construct($dsn_or_conn, $config)
+	public function __construct($dsn_or_conn, array $config)
 	{
 		$config = $this->_defaults($config);
-		$this->_log_level = (int) $config['log_level'];
 
-		if (is_resource($dsn_or_conn) or ($dsn_or_conn instanceof mysqli))
+		// Use the log level if it was provided in config
+		if (isset($config['log_level']))
+		{
+			$this->setLogLevel($config['log_level']);
+		}
+
+		if (is_resource($dsn_or_conn) || ($dsn_or_conn instanceof PhpMysqli))
 		{
 			$this->_conn = $dsn_or_conn;
 		}
 		else
 		{
-			$defaults = array(
-				'scheme' => 'mysqli',
+			$defaults = [
+				'backend' => 'mysqli',
 				'host' => 'localhost',
 				'port' => 3306,
-				'user' => 'root',
-				'pass' => '',
-				'path' => '/quickbooks',
-				);
+				'username' => 'root',
+				'password' => '',
+				'database' => 'quickbooks',
+			];
 
-			$parse = QuickBooks_Utilities::parseDSN($dsn_or_conn, $defaults);
+			$parse = Utilities::parseDSN($dsn_or_conn, $defaults);
 
 			// Store this for debugging
-			$this->_dbname = $parse['path'];
+			$this->_dbname = $parse['database'];
 
-			$this->_connect($parse['host'], $parse['port'], $parse['user'], $parse['pass'], substr($parse['path'], 1), $config['new_link'], $config['client_flags']);
+			$this->_connect($parse['host'], $parse['port'], $parse['username'], $parse['password'], $parse['database'], $config['new_link'], $config['client_flags']);
 		}
 
+		// Call the parent constructor too
 		parent::__construct($dsn_or_conn, $config);
 	}
 
 	/**
 	 * Merge an array of configuration options with the defaults
-	 *
-	 * @param array $config
-	 * @return array
 	 */
-	protected function _defaults($config)
+	protected function _defaults(array $config): array
 	{
-		$defaults = array(
-			'log_level' => QUICKBOOKS_LOG_NORMAL,
+		$defaults = [
+			'log_level' => PackageInfo::LogLevel['NORMAL'],
 			'client_flags' => 0,
 			'new_link' => true,
-			);
+		];
 
 		return array_merge($defaults, $config);
 	}
 
 	/**
-	 * Tell whether or not the SQL driver has been initialized
-	 *
-	 * @return boolean
+	 * Tell whether or not the SQL database has been initialized
 	 */
-	protected function _initialized()
+	protected function _initialized(): bool
 	{
-		$required = array(
-			//$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_IDENTTABLE) => false,
-			$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_TICKETTABLE) => false,
-			$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_USERTABLE) => false,
-			$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_RECURTABLE) => false,
-			$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_QUEUETABLE) => false,
-			$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_LOGTABLE) => false,
-			$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_CONFIGTABLE) => false,
-			//$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_NOTIFYTABLE) => false,
-			//$this->_mapTableName(QUICKBOOKS_DRIVER_SQL_CONNECTIONTABLE) => false,
-			);
+		$required = [
+			//$this->_mapTableName(static::$Table['IDENT']) => false,
+			$this->_mapTableName(static::$Table['TICKET']) => false,
+			$this->_mapTableName(static::$Table['USER']) => false,
+			$this->_mapTableName(static::$Table['RECUR']) => false,
+			$this->_mapTableName(static::$Table['QUEUE']) => false,
+			$this->_mapTableName(static::$Table['LOG']) => false,
+			$this->_mapTableName(static::$Table['CONFIG']) => false,
+			//$this->_mapTableName(static::$Table['NOTIFY']) => false,
+			//$this->_mapTableName(static::$Table['CONNECTION']) => false,
+		];
 
+		$numRequiredTables = count($required);
 		$errnum = 0;
 		$errmsg = '';
 		$res = $this->_query("SHOW TABLES ", $errnum, $errmsg);
@@ -272,19 +143,11 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 
 			if (isset($required[$table]))
 			{
-				$required[$table] = true;
+				$numRequiredTables--;
 			}
 		}
 
-		foreach ($required as $table => $exists)
-		{
-			if (!$exists)
-			{
-				return false;
-			}
-		}
-
-		return true;
+		return 0 === $numRequiredTables;
 	}
 
 	/**
@@ -296,33 +159,26 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 	 * @param string $pass				Password for connecting
 	 * @param string $db				The database name
 	 * @param boolean $new_link			TRUE for establishing a new link to the database, FALSE to re-use an existing one
-	 * @param integer $client_flags		Database connection flags (see the PHP/MySQL documentation)
+	 * @param integer $client_flags		Database connection flags (see the PHP/MySQLi documentation)
 	 * @return boolean
 	 */
-	protected function _connect($host, $port, $user, $pass, $db, $new_link, $client_flags)
+	protected function _connect(string $host, $port, string $user, string $pass, string $db, bool $new_link, ?int $client_flags = null): bool
 	{
-		if ($port)
+		$port = filter_var($port, FILTER_VALIDATE_INT);
+		$port = $port !== false ? $port : 3306;
+
+		// Throw errors for all errors except for missing index warnings
+		$report_mode = MYSQLI_REPORT_ALL & ~MYSQLI_REPORT_INDEX;
+		\mysqli_report($report_mode);
+
+		$this->_conn = new PhpMysqli($host, $user, $pass, $db, $port);
+		if (!$this->_conn)
 		{
-			$this->_conn = new mysqli($host, $user, $pass, $db, $port) or die('host: ' . $host . ', user: ' . $user . ', pass: ' . $pass . ' mysqli_error(): ' . mysqli_connect_error());
+			throw new \Exception('Mysqli Connection Failure using host: ' . $host . ', user: ' . $user . ', pass: ' . $pass . ' mysqli_error: ' . $this->_conn->connect_error);
 		}
-		else
-		{
-			$this->_conn = new mysqli($host, $user, $pass, $db)  or die('host: ' . $host . ', user: ' . $user . ', pass: ' . $pass . ' mysqli_error(): ' . mysqli_connect_error());
-		}
+		$this->_conn->report_mode = $report_mode;
 
 		return true;
-	}
-
-	/**
-	 * Fetch an array from a database result set
-	 *
-	 * @param resource $res
-	 * @return array
-	 */
-	protected function _fetch($res)
-	{
-		return $res->fetch_assoc();
-		// $res->fetch_assoc();
 	}
 
 	/**
@@ -331,9 +187,20 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 	 * @param resource $res
 	 * @return array
 	 */
-	public function fetch($res)
+	public function fetch($res): array
 	{
 		return $this->_fetch($res);
+	}
+
+	/**
+	 * Fetch an array from a database result set
+	 */
+	protected function _fetch($res): array
+	{
+		// returns [] if no rows are fetched
+		$arr = $res->fetch_assoc();
+
+		return $arr ?? [];
 	}
 
 	/**
@@ -342,7 +209,7 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 	 * @param string $sql
 	 * @return resource
 	 */
-	protected function _query($sql, &$errnum, &$errmsg, $offset = 0, $limit = null)
+	protected function _query(string $sql, ?int &$errnum, ?string &$errmsg, ?int $offset = 0, ?int $limit = null)
 	{
 		if ($limit)
 		{
@@ -371,7 +238,7 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 
 			//print($sql);
 
-			trigger_error('Error Num.: ' . $errnum . "\n" . 'Error Msg.:' . $errmsg . "\n" . 'SQL: ' . $sql . "\n" . 'Database: ' . $this->_dbname, E_USER_ERROR);
+			throw new \Exception('Error Num.: ' . $errnum . "\n" . 'Error Msg.:' . $errmsg . "\n" . 'SQL: ' . $sql . "\n" . 'Database: ' . $this->_dbname);
 			return false;
 		}
 
@@ -393,70 +260,57 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 
 	/**
 	 * Tell the number of rows the last run query affected
-	 *
-	 * @return integer
 	 */
-	public function affected()
+	public function affected(): int
 	{
 		return $this->_conn->affected_rows;
 	}
 
 	/**
 	 * Tell the last inserted AUTO_INCREMENT value
-	 *
-	 * @return integer
 	 */
-	public function last()
+	public function last(): int
 	{
 		return $this->_conn->insert_id;
 	}
 
 	/**
-	 * Escape a string
-	 *
-	 * @param string $str
-	 * @return string
+	 * Escape a string for the database
 	 */
-	public function escape($str)
+	public function escape(string $str): string
 	{
 		return $this->_escape($str);
 	}
 
 	/**
 	 * Escape a string for the database
-	 *
-	 * @param string $str
-	 * @return string
 	 */
-	protected function _escape($str)
+	protected function _escape(string $str): string
 	{
-		if (is_array($str))
-		{
-			error_log('Param passed to _escape($str) was an array: ' . print_r($str, true));
-			$str = '';
-		}
-
 		return $this->_conn->real_escape_string($str);
+	}
+
+
+	/**
+	 * Tell the number of records in a result resource
+	 */
+	public function count($res): int
+	{
+		return $this->_count($res);
 	}
 
 	/**
 	 * Count the number of rows returned from the database
-	 *
-	 * @param resource $res
-	 * @return integer
 	 */
-	protected function _count($res)
+	protected function _count($res): int
 	{
 		return $res->num_rows;
 	}
 
 	/**
 	 * Rewind the result set
-	 *
-	 * @param resource $res
-	 * @return boolean
 	 */
-	public function rewind($res)
+	public function rewind($res): bool
 	{
 		if ($res and $res->num_rows > 0)
 		{
@@ -467,26 +321,13 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 	}
 
 	/**
-	 * Tell the number of records in a result resource
-	 *
-	 * @param resource $res
-	 * @return integer
-	 */
-	public function count($res)
-	{
-		return $this->_count($res);
-	}
-
-	/**
-	 *
-	 *
 	 *
 	 */
-	protected function _fields($table)
+	protected function _fields(string $table): array
 	{
-		$sql = "SHOW FIELDS FROM " . $table;
+		$sql = 'SHOW FIELDS FROM ' . $table;
 
-		$list = array();
+		$list = [];
 
 		$errnum = 0;
 		$errmsg = '';
@@ -500,39 +341,35 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 	}
 
 	/**
-	 * Override for the default SQL generation functions, MySQL-specific field generation function
-	 *
-	 * @param string $name
-	 * @param array $def
-	 * @return string
+	 * Override for the default SQL generation functions, MySQLi-specific field generation function
 	 */
-	protected function _generateFieldSchema($name, $def)
+	protected function _generateFieldSchema(string $name, array $def): string
 	{
 		switch ($def[0])
 		{
-			case QUICKBOOKS_DRIVER_SQL_SERIAL:
-
+			case static::DataType['SERIAL']:
 				$sql = $name . ' INT(10) UNSIGNED NOT NULL '; // AUTO_INCREMENT
 				return $sql;
-			case QUICKBOOKS_DRIVER_SQL_TIMESTAMP:
-			case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_INSERT_OR_UPDATE:
 
+			case static::DataType['TIMESTAMP']:
+			case static::DataType['TIMESTAMP_ON_INSERT_OR_UPDATE']:
 				$sql = $name . ' TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ';
 				return $sql;
-			case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_UPDATE:
 
+			case static::DataType['TIMESTAMP_ON_UPDATE']:
 				$sql = $name . ' TIMESTAMP DEFAULT 0 ON UPDATE CURRENT_TIMESTAMP ';
 				return $sql;
-			case QUICKBOOKS_DRIVER_SQL_TIMESTAMP_ON_INSERT:
 
+			case static::DataType['TIMESTAMP_ON_INSERT']:
 				$sql = $name . ' TIMESTAMP DEFAULT CURRENT_TIMESTAMP ';
 				return $sql;
-			case QUICKBOOKS_DRIVER_SQL_BOOLEAN:
+
+			case static::DataType['BOOLEAN']:
 				$sql = $name . ' tinyint(1) ';
 
 				if (isset($def[2]))
 				{
-					if (strtolower($def[2]) == 'null')
+					if (is_string($def[2]) && strtolower($def[2]) == 'null')
 					{
 						$sql .= ' DEFAULT NULL ';
 					}
@@ -545,14 +382,14 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 						$sql .= ' DEFAULT 0 ';
 					}
 				}
-
 				return $sql;
-			case QUICKBOOKS_DRIVER_SQL_INTEGER:
+
+			case static::DataType['INTEGER']:
 				$sql = $name . ' int(10) unsigned ';
 
 				if (isset($def[2]))
 				{
-					if (strtolower($def[2]) == 'null')
+					if (is_string($def[2]) && strtolower($def[2]) == 'null')
 					{
 						$sql .= ' DEFAULT NULL ';
 					}
@@ -565,59 +402,17 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 				{
 					$sql .= ' NOT NULL ';
 				}
-
 				return $sql;
-			default:
 
+			default:
 				return parent::_generateFieldSchema($name, $def);
 		}
 	}
 
 	/**
-	 * Map a default SQL table name to a MySQL table name
-	 *
-	 * @param string
-	 * @return string
+	 * Override for the default SQL generation functions, MySQL-specific field generation function
 	 */
-	protected function _mapTableName($table)
-	{
-		switch ($table)
-		{
-			case QUICKBOOKS_DRIVER_SQL_LOGTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_LOGTABLE;
-			case QUICKBOOKS_DRIVER_SQL_QUEUETABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_QUEUETABLE;
-			case QUICKBOOKS_DRIVER_SQL_RECURTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_RECURTABLE;
-			case QUICKBOOKS_DRIVER_SQL_TICKETTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_TICKETTABLE;
-			case QUICKBOOKS_DRIVER_SQL_USERTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_USERTABLE;
-			case QUICKBOOKS_DRIVER_SQL_CONFIGTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_CONFIGTABLE;
-			case QUICKBOOKS_DRIVER_SQL_IDENTTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_IDENTTABLE;
-			case QUICKBOOKS_DRIVER_SQL_NOTIFYTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_NOTIFYTABLE;
-			case QUICKBOOKS_DRIVER_SQL_CONNECTIONTABLE:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . QUICKBOOKS_DRIVER_SQL_MYSQLI_CONNECTIONTABLE;
-			default:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_PREFIX . $table;
-		}
-	}
-
-	protected function _mapSalt($salt)
-	{
-		switch ($salt)
-		{
-			case QUICKBOOKS_DRIVER_SQL_SALT:
-				return QUICKBOOKS_DRIVER_SQL_MYSQLI_SALT;
-			default:
-				return $salt;
-		}
-	}
-
-	protected function _generateCreateTable($name, $arr, $primary = array(), $keys = array(), $uniques = array(), $if_not_exists = true)
+	protected function _generateCreateTable(string $name, array $arr, $primary = [], array $keys = [], array $uniques = [], bool $if_not_exists = true): array
 	{
 		$arr_sql = parent::_generateCreateTable($name, $arr, $primary, $keys, $uniques, $if_not_exists);
 
@@ -635,7 +430,7 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 		{
 			$arr_sql[] = 'ALTER TABLE ' . $name . ' ADD PRIMARY KEY(' . $primary . '); ';
 
-			if ($arr[$primary][0] == QUICKBOOKS_DRIVER_SQL_SERIAL)
+			if ($arr[$primary][0] == static::DataType['SERIAL'])
 			{
 				// add the auto-increment
 				$arr_sql[] = 'ALTER TABLE ' . $name . ' CHANGE ' . $primary . ' ' . $primary . ' INT(10) UNSIGNED NOT NULL AUTO_INCREMENT;';
@@ -656,5 +451,4 @@ class QuickBooks_Driver_Sql_Mysqli extends QuickBooks_Driver_Sql
 
 		return $arr_sql;
 	}
-
 }

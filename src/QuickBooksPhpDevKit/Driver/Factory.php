@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,17 +16,18 @@
  * @subpackage Driver
  */
 
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Utilities.php');
+namespace QuickBooksPhpDevKit\Driver;
+
+use QuickBooksPhpDevKit\Driver;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
 
 /**
  *
  *
  *
  */
-class QuickBooks_Driver_Factory
+class Factory
 {
 	/**
 	 * Create an instance of a driver class from a DSN connection string *or* a connection resource
@@ -39,85 +40,77 @@ class QuickBooks_Driver_Factory
 	 * @param array $config			An array of configuration options for the driver
 	 * @param array $hooks			An array mapping hooks to user-defined hook functions to call
 	 * @param integer $log_level
-	 * @return object				A class instance, a child class of QuickBooks_Driver
+	 * @return object				An instance of a child class of Driver
 	 */
-	static public function create($dsn_or_conn, $config = array(), $hooks = array(), $log_level = QUICKBOOKS_LOG_NORMAL)
+	static public function create($dsn_or_conn, array $config = [], array $hooks = [], ?int $log_level = null): Driver
 	{
-		static $instances = array();
+		static $instances = [];
 
-		if (!is_array($hooks))
+		// Set the logging level. Prefer in order: function parameter $log_level, log_level in $config parameter, static PackageInfo variable, NORMAL
+		$log_level = $log_level ?? $config['log_level'] ?? PackageInfo::$LOGLEVEL ?? PackageInfo::LogLevel['NORMAL'];
+
+		if (!empty($config['new_link']))
 		{
-			$hooks = array();
+			// Force a new database connection
+			unset($config['new_link']);
+			$instances = [];
 		}
 
 		// Do not serialize the $hooks because they might contain non-serializeable objects
 		if (is_object($dsn_or_conn))
 		{
-			$key = get_class($dsn_or_conn) . serialize($config) . $log_level;
+			$key = get_class($dsn_or_conn) . json_encode($config) . $log_level;
 		}
 		else
 		{
-			$key = (string) $dsn_or_conn . serialize($config) . $log_level;
+			$key = json_encode($dsn_or_conn) . json_encode($config) . $log_level;
 		}
 
 		if (!isset($instances[$key]))
 		{
-			if (is_resource($dsn_or_conn))
-			{
-				$scheme = current(explode(' ', get_resource_type($dsn_or_conn)));
-			}
-			elseif (is_object($dsn_or_conn))
-			{
-				$scheme = get_class($dsn_or_conn);
-			}
-			else
-			{
-				$scheme = QuickBooks_Utilities::parseDSN($dsn_or_conn, array(), 'scheme');
-			}
+			$driver_namespace = __NAMESPACE__ . "\\Sql\\";
 
-			if (false !== strpos($scheme, 'sql'))		// SQL drivers are subclassed... change class/scheme name
+			if ($dsn_or_conn instanceof Driver)
 			{
-				$scheme = 'Sql_' . ucfirst(strtolower($scheme));
+				// This is already a Driver object
+				$Driver = $dsn_or_conn;
 			}
 			else
 			{
+				if (is_resource($dsn_or_conn))
+				{
+					$scheme = current(explode(' ', get_resource_type($dsn_or_conn)));
+				}
+				else if (is_object($dsn_or_conn))
+				{
+					$scheme = get_class($dsn_or_conn);
+				}
+				else
+				{
+					$scheme = Utilities::parseDSN($dsn_or_conn, [], 'scheme');
+				}
+
 				$scheme = ucfirst(strtolower($scheme));
-			}
+				if ($scheme == 'Mysql')
+				{
+					// MySQL was removed in PHP 7.0, so use MySQLi
+					$scheme = 'Mysqli';
+				}
+				else if ($scheme == 'Sqlite')
+				{
+					// SQLite was removed in PHP 5.4, so use SQLite3
+					$scheme = 'Sqlite3';
+				}
 
-			$class = 'QuickBooks_Driver_' . $scheme;
-			$file = '/QuickBooks/Driver/' . str_replace(' ', '/', ucwords(str_replace('_', ' ', strtolower($scheme)))) . '.php';
-
-			//print('class: ' . $class . "\n");
-			//print('file: ' . $file . "\n");
-
-			QuickBooks_Loader::load($file);
-
-			if (class_exists($class))
-			{
+				$class = $driver_namespace . $scheme;
+				//echo "class: $class\n";
 				$Driver = new $class($dsn_or_conn, $config);
-				$Driver->registerHooks($hooks);
-				$Driver->setLogLevel($log_level);
-
-				/*
-				static $static = 0;
-				$static++;
-				print('Constructed new instance ' . $static . ' [' . $key . ']' . "\n");
-				mysql_query("INSERT INTO quickbooks_log ( msg, log_datetime ) VALUES ( 'Here is my " . $static . " key: " . $key . "', NOW() )");
-				//print_r($hooks);
-				*/
-
-				// @todo Ugh this is really ugly... maybe have $log_level passed in as a parameter? Not really a driver option at all?
-				//if (isset($config['log_level']))
-				//{
-				//	$driver->setLogLevel($config['log_level']);
-				//}
-
-				$instances[$key] = $Driver;
 			}
-			else
-			{
-				$instances[$key] = null;
-			}
+
+			$Driver->registerHooks($hooks);
+			$Driver->setLogLevel($log_level);
+
+			$instances[$key] = $Driver;
 		}
 
 		return $instances[$key];

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks driver base class
@@ -20,293 +20,111 @@
  * @subpackage Driver
  */
 
-/**
- * Hook called by the ->authCheck() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHCHECK', 'QuickBooks_Driver::authCheck');
+namespace QuickBooksPhpDevKit;
 
-/**
- * Hook called by the ->authCreate() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHCREATE', 'QuickBooks_Driver::authCreate');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHDEFAULT', 'QuickBooks_Driver::authDefault');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHLOGIN', 'QuickBooks_Driver::authLogin');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHLOGOUT', 'QuickBooks_Driver::authLogout');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE', 'QuickBooks_Driver::authResolve');
-
-/**
- * Hook called by the ->authDisable() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHDISABLE', 'QuickBooks_Driver::authDisable');
-
-/**
- * Hook called by the ->authEnable() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHENABLE', 'QuickBooks_Driver::authEnable');
-
-/**
- *
- */
-define('QUICKBOOKS_DRIVER_HOOK_AUTHLAST', 'QuickBooks_Driver::authLast');
-
-/**
- * Hook called by the ->authView() method
- * @var string
- */
-//define('QUICKBOOKS_DRIVER_HOOK_AUTHVIEW', 'QuickBooks_Driver::authView');
-
-/**
- * Hook called by the ->authSize() method
- * @var string
- */
-//define('QUICKBOOKS_DRIVER_HOOK_AUTHSIZE', 'QuickBooks_Driver::authSize');
-
-/**
- * Hook called by the ->noop() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_NOOP', 'QuickBooks_Driver::noop');
-
-/**
- * Hook called by the ->errorLog() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_ERRORLOG', 'QuickBooks_Driver::errorLog');
-
-/**
- * Hook called by the ->errorLast() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_ERRORLAST', 'QuickBooks_Driver::errorLast');
-
-/**
- * Hook called by the ->log() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_LOG', 'QuickBooks_Driver::log');
-
-/**
- * Hook called by the ->logSize() method
- * @var string
- */
-//define('QUICKBOOKS_DRIVER_HOOK_LOGSIZE', 'QuickBooks_Driver::logSize');
-
-/**
- * Hook called by the ->logView() method
- * @var string
- */
-//define('QUICKBOOKS_DRIVER_HOOK_LOGVIEW', 'QuickBooks_Driver::logView');
-
-/**
- *
- * @var string
- */
-//define('QUICKBOOKS_DRIVER_HOOK_IDENTFETCH', 'QuickBooks_Driver::identFetch');
-
-/**
- * Hook called by the ->identToApplication() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_IDENTTOAPPLICATION', 'QuickBooks_Driver::identToApplication');
-
-/**
- * Hook called by the ->identToQuickBooks() method
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_IDENTTOQUICKBOOKS', 'QuickBooks_Driver::identToQuickBooks');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_IDENTMAP', 'QuickBooks_Driver::identMap');
-
-//define('QUICKBOOKS_DRIVER_HOOK_IDENTVIEW', 'QuickBooks_Driver::identView');
-
-//define('QUICKBOOKS_DRIVER_HOOK_IDENTSIZE', 'QuickBooks_Driver::identSize');
-
-define('QUICKBOOKS_DRIVER_HOOK_QUEUELEFT', 'QuickBooks_Driver::queueLeft');
-
-//define('QUICKBOOKS_DRIVER_HOOK_QUEUEVIEW', 'QuickBooks_Driver::queueView');
-
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEEXISTS', 'QuickBooks_Driver::queueExists');
-
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEREMOVE', 'QuickBooks_Driver::queueRemove');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEACTIONLAST', 'QuickBooks_Driver::queueActionLast');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEACTIONIDENTLAST', 'QuickBooks_Driver::queueActionIdentLast');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEDEQUEUE', 'QuickBooks_Driver::queueDequeue');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEENQUEUE', 'QuickBooks_Driver::queueEnqueue');
-
-/**
- *
- * @var string
- */
-/*
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEFETCH', 'QuickBooks_Driver::queueFetch');
-*/
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEPROCESSED', 'QuickBooks_Driver::queueProcessed');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_QUEUEPROCESSING', 'QuickBooks_Driver::queueProcessing');
-
-/**
- *
- * @var string
- */
-//define('QUICKBOOKS_DRIVER_HOOK_QUEUESIZE', 'QuickBooks_Driver::queueSize');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_QUEUESTATUS', 'QuickBooks_Driver::queueStatus');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_RECURDEQUEUE', 'QuickBooks_Driver::recurDequeue');
-
-/**
- *
- * @var string
- */
-define('QUICKBOOKS_DRIVER_HOOK_RECURENQUEUE', 'QuickBooks_Driver::recurEnqueue');
-
-/**
- *
- */
-//define('QUICKBOOKS_DRIVER_HOOK_RECURVIEW', 'QuickBooks_Driver::recurView');
-
-/**
- *
- */
-define('QUICKBOOKS_DRIVER_HOOK_INITIALIZED', 'QuickBooks_Driver::initialized');
-
-/**
- *
- */
-define('QUICKBOOKS_DRIVER_HOOK_INITIALIZE', 'QuickBooks_Driver::initialize');
-
-/**
- *
- */
-define('QUICKBOOKS_DRIVER_HOOK_CONFIGREAD', 'QuickBooks_Driver::configRead');
-
-/**
- *
- */
-define('QUICKBOOKS_DRIVER_HOOK_CONFIGWRITE', 'QuickBooks_Driver::configWrite');
-
-/**
- *
- */
-define('QUICKBOOKS_DRIVER_HOOK_CONNECTIONLOAD', 'QuickBooks_Driver::connectionLoad');
-
-/**
- *
- */
-QuickBooks_Loader::load('/QuickBooks/Encryption.php');
+use QuickBooksPhpDevKit\Encryption\Factory as EncryptionFactory;
+use QuickBooksPhpDevKit\PackageInfo;
 
 /**
  * QuickBooks driver base class
  */
-abstract class QuickBooks_Driver
+abstract class Driver
 {
-	const HOOK_QUEUEREPORT = 'QuickBooks_Driver::queueReport';
+	public const HOOK_NOOP = 'Driver::noop';  // Hook called by the ->noop() method
+	public const HOOK_CONNECTIONLOAD = 'Driver::connectionLoad';
 
-	const HOOK_QUEUEGET = 'QuickBooks_Driver::queueGet';
+	//// Error related hooks
+	public const HOOK_ERRORLOG  = 'Driver::errorLog';	// Hook called by the ->errorLog() method
+	public const HOOK_ERRORLAST = 'Driver::errorLast';  // Hook called by the ->errorLast() method
+
+	//// Log related hooks
+	public const HOOK_LOG = 'Driver::log';				// Hook called by the ->log() method
+	//public const HOOK_LOGSIZE = 'Driver::logSize';	// Hook called by the ->logSize() method
+	//public const HOOK_LOGVIEW = 'Driver::logView';	// Hook called by the ->logView() method
+
+	//// Ident related hooks
+	//public const HOOK_IDENTFETCH = 'Driver::identFetch';
+//	public const HOOK_IDENTTOAPPLICATION = 'Driver::identToApplication';  // Hook called by the ->identToApplication() method
+//	public const HOOK_IDENTTOQUICKBOOKS = 'Driver::identToQuickBooks';	// Hook called by the ->identToQuickBooks() method
+//	public const HOOK_IDENTMAP = 'Driver::identMap';
+	//public const HOOK_IDENTVIEW = 'Driver::identView';
+	//public const HOOK_IDENTSIZE = 'Driver::identSize';
+
+	//// Authentication related hooks
+	public const HOOK_AUTHCHECK   = 'Driver::authCheck';		// Hook called by the ->authCheck() method
+	public const HOOK_AUTHCREATE  = 'Driver::authCreate';		// Hook called by the ->authCreate() method
+	public const HOOK_AUTHDEFAULT = 'Driver::authDefault';
+	public const HOOK_AUTHLOGIN   = 'Driver::authLogin';
+	public const HOOK_AUTHLOGOUT  = 'Driver::authLogout';
+	public const HOOK_AUTHRESOLVE = 'Driver::authResolve';
+	public const HOOK_AUTHDISABLE = 'Driver::authDisable';		// Hook called by the ->authDisable() method
+	public const HOOK_AUTHENABLE  = 'Driver::authEnable';		// Hook called by the ->authEnable() method
+	public const HOOK_AUTHLAST	  = 'Driver::authLast';
+	//public const HOOK_AUTHVIEW	= 'Driver::authView';		// Hook called by the ->authView() method
+	//public const HOOK_AUTHSIZE	= 'Driver::authSize';		// Hook called by the ->authSize() method
+
+	//// Queue related hooks
+	public const HOOK_QUEUELEFT            = 'Driver::queueLeft';
+	//public const HOOK_QUEUESIZE            = 'Driver::queueSize';
+	public const HOOK_QUEUEREPORT          = 'Driver::queueReport';
+	//public const HOOK_QUEUEVIEW            = 'Driver::queueView';
+	public const HOOK_QUEUEACTIONLAST      = 'Driver::queueActionLast';
+	public const HOOK_QUEUEACTIONIDENTLAST = 'Driver::queueActionIdentLast';
+	public const HOOK_QUEUEEXISTS          = 'Driver::queueExists';
+	public const HOOK_QUEUESTATUS          = 'Driver::queueStatus';
+	public const HOOK_QUEUEGET             = 'Driver::queueGet';
+	//public const HOOK_QUEUEFETCH           = 'Driver::queueFetch';
+	public const HOOK_QUEUEENQUEUE         = 'Driver::queueEnqueue';
+	public const HOOK_QUEUEDEQUEUE         = 'Driver::queueDequeue';
+	public const HOOK_QUEUEREMOVE          = 'Driver::queueRemove';
+	public const HOOK_QUEUEPROCESSING      = 'Driver::queueProcessing';
+	public const HOOK_QUEUEPROCESSED       = 'Driver::queueProcessed';
+
+	//// Recurring Action Hooks
+	public const HOOK_RECURENQUEUE = 'Driver::recurEnqueue';
+	public const HOOK_RECURDEQUEUE = 'Driver::recurDequeue';
+	//public const HOOK_RECURVIEW    = 'Driver::recurView';
+
+	//// Database Initialization Hooks
+	public const HOOK_INITIALIZE  = 'Driver::initialize';
+	public const HOOK_INITIALIZED = 'Driver::initialized';
+
+	//// Config Table Hooks
+	public const HOOK_CONFIGREAD  = 'Driver::configRead';
+	public const HOOK_CONFIGWRITE = 'Driver::configWrite';
+
 
 	/**
-	 * An array of hooks (map of hook-types => array( 'userdef1', 'userdef2', ... )
+	 * An array of hooks (map of hook-types => ['userdef1', 'userdef2', ... ]
 	 * @var array
 	 */
-	protected $_hooks;
+	// Hooks only get set when WebConnector\Server is constructed and causes Driver initialization to fail because it is not an array
+	protected $_hooks = [];
 
 	/**
 	 *
 	 * @var integer
 	 */
-	protected $_loglevel;
+	protected $_loglevel = PackageInfo::LogLevel['NORMAL'];
 
 	/**
 	 * Constructor
 	 *
-	 * @param string $dsn		A DSN-style connection string
-	 * @param array $config		An array of configuration information
+	 * @param string|array|resource $dsn	A DSN-style connection string, configuration array, or a database connection
+	 * @param array $config					An array of configuration information
 	 */
-	abstract public function __construct($dsn, $config);
+	abstract public function __construct($dsn, array $config);
 
 	/**
 	 * Register the set of user-defined hook functions
-	 *
-	 * @param array $hooks
-	 * @return void
 	 */
-	final public function registerHooks($hooks)
+	final public function registerHooks(array $hooks): void
 	{
-		if (!is_array($hooks))
-		{
-			$hooks = array();
-		}
-
 		foreach ($hooks as $hook => $funcs)
 		{
 			if (!is_array($funcs))
 			{
-				$funcs = array( $funcs );
+				$funcs = [$funcs];
 			}
 
 			$this->_hooks[$hook] = $funcs;
@@ -314,19 +132,19 @@ abstract class QuickBooks_Driver
 	}
 
 	/*
-	final public function connectionLoad($user)
+	final public function connectionLoad(string $user)
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_CONNECTIONLOAD, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_CONNECTIONLOAD, null, $hookerr, $hookdata);
 
 		$arr = $this->_connectionLoad($user);
 
 		if (!empty($arr['connection_ticket']))
 		{
-			$crypt = QuickBooks_Encryption_Factory::determine($arr['connection_ticket']);
+			$crypt = EncryptionFactory::determine($arr['connection_ticket']);
 
 			if ($crypt)
 			{
@@ -339,190 +157,39 @@ abstract class QuickBooks_Driver
 	*/
 
 	/**
-	 * Set the logging level for the driver class
-	 *
-	 * @param integer $lvl
-	 * @return void
+	 * Set the logging level for the driver class and return the old log level.
 	 */
-	final public function setLogLevel($lvl)
+	final public function setLogLevel(int $lvl): int
 	{
+		$old_lvl = $this->getLogLevel();
+
+		if (!in_array($lvl, PackageInfo::LogLevel, true))
+		{
+			throw new \Exception('Log Level ' . $lvl . ' is not valid.  See PackageInfo::LogLevel for valid options.');
+		}
 		$this->_loglevel = $lvl;
+
+		return $old_lvl;
+	}
+	/**
+	 * Get the logging level for the driver class
+	 */
+	final public function getLogLevel(): int
+	{
+		return $this->_loglevel;
 	}
 
-	final public function noop()
+	final public function noop(): bool
 	{
-		$hookdata = array(
-			);
+		$hookdata = [];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_NOOP, null, $hookerr, $hookdata);
+
+		$this->_callHook(static::HOOK_NOOP, null, $hookerr, $hookdata);
 
 		return $this->_noop();
 	}
 
-	abstract protected function _noop();
-
-	/**
-	 * Tell the number of records in the idents mapping table
-	 *
-	 * @param string $match
-	 * @return integer
-	 */
-	/*final public function identSize($match = '')
-	{
-		$hookdata = array(
-			'match' => $match,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_IDENTSIZE, null, $hookerr, $hookdata);
-
-		return $this->_identSize($match);
-	}*/
-
-	/**
-	 * @see QuickBooks_Driver::identSize()
-	 */
-	/*abstract protected function _identSize($match);*/
-
-	/**
-	 * Map an application identifier to a QuickBooks identifier
-	 *
-	 * @param string $action
-	 * @param mixed $ident
-	 * @return string
-	 */
-	/*
-	final public function identToQuickBooks($user, $type, $uniqueid, &$editsequence, &$extra)
-	{
-		$hookdata = array(
-			'username' => $user,
-			'type' => $type,
-			'uniqueid' => $uniqueid,
-			'webapp_ID' => $uniqueid,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_IDENTTOQUICKBOOKS, null, $hookerr, $hookdata);
-
-		switch ($type)
-		{
-			case QUICKBOOKS_OBJECT_ITEM:
-				// The problem with this is it's generic... ServiceItems, InventoryItem, NonInventoryItem, etc...
-				//	We'll try to look up the others if we can't find the generic one
-
-				$arr = array(
-					QUICKBOOKS_OBJECT_ITEM,
-					QUICKBOOKS_OBJECT_INVENTORYITEM,
-					QUICKBOOKS_OBJECT_GROUPITEM,
-					QUICKBOOKS_OBJECT_NONINVENTORYITEM,
-					QUICKBOOKS_OBJECT_DISCOUNTITEM,
-					QUICKBOOKS_OBJECT_FIXEDASSETITEM,
-					QUICKBOOKS_OBJECT_PAYMENTITEM,
-					QUICKBOOKS_OBJECT_SERVICEITEM,
-					QUICKBOOKS_OBJECT_SALESTAXITEM,
-					QUICKBOOKS_OBJECT_OTHERCHARGEITEM,
-					QUICKBOOKS_OBJECT_INVENTORYASSEMBLYITEM,
-					// QUICKBOOKS_OBJECT_RECEIPTITEM, 		// This is *not* a type of item, it's a type of transaction!
-					);
-
-				foreach ($arr as $type)
-				{
-					if ($ident = $this->_identToQuickBooks($user, $type, $uniqueid, $editsequence, $extra))
-					{
-						return $ident;
-					}
-				}
-
-				break;
-			default:
-				return $this->_identToQuickBooks($user, $type, $uniqueid, $editsequence, $extra);
-		}
-
-		return null;
-	}
-	*/
-
-	/**
-	 * @see QuickBooks_Driver::identFetch()
-	 */
-	/*
-	abstract protected function _identToQuickBooks($user, $action, $uniqueid, &$editsequence, &$extra);
-
-	final public function identToApplication($user, $type, $qbid, &$extra)
-	{
-		$hookdata = array(
-			'username' => $user,
-			'type' => $type,
-			'ident' => $qbid,
-			'ListID_or_TxnID' => $qbid,
-			'extra' => $extra,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_IDENTTOAPPLICATION, null, $hookerr, $hookdata);
-
-		return $this->_identToApplication($user, $type, $qbid, $extra);
-	}
-
-	abstract protected function _identToApplication($user, $action, $qbid, &$extra);
-	*/
-
-	/**
-	 *
-	 *
-	 *
-	 */
-	/*
-	final public function identMap($user, $type, $uniqueid, $qb_ident, $editsequence = '', $extra = null)
-	{
-		$hookdata = array(
-			'username' => $user,
-			'action' => $type,
-			'type' => $type,
-			'uniqueid' => $uniqueid,
-			'webapp_ID' => $uniqueid,
-			'ident' => $qb_ident,
-			'ListID_or_TxnID' => $qb_ident,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_IDENTMAP, null, $hookerr, $hookdata);
-
-		return $this->_identMap($user, $type, $uniqueid, $qb_ident, $editsequence);
-	}
-	*/
-
-	/**
-	 * @see QuickBooks_Driver::identMap()
-	 */
-	/*
-	abstract protected function _identMap($user, $action, $uniqueid, $qb_ident, $editsequence = '', $extra = null);
-	*/
-
-	/**
-	 *
-	 *
-	 * @param integer $offset
-	 * @param integer $limit
-	 * @param string $match
-	 * @return QuickBooks_Iterator
-	 */
-	/*final public function identView($offset, $limit, $match = '')
-	{
-		$offset = max(0, (int) $offset);
-		$limit = max(1, (int) $limit);
-
-		$hookdata = array(
-			'offset' => $offset,
-			'limit' => $limit,
-			'match' => $match,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_IDENTVIEW, null, $hookerr, $hookdata);
-
-		return $this->_identView($offset, $limit, $match);
-	}*/
-
-	/**
-	 * @see QuickBooks_Driver::identView()
-	 */
-	/*abstract protected function _identView($offset, $limit, $match);*/
+	abstract protected function _noop(): bool;
 
 	/**
 	 * Place an action into the queue, along with a unique identifier (if neccessary)
@@ -532,22 +199,28 @@ abstract class QuickBooks_Driver
 	 * 	$driver->queueEnqueue('CustomerAdd', 1234); // Push customer #1234 over to QuickBooks
 	 * </code>
 	 *
-	 * @param string $action	The QuickBooks action to do
-	 * @param mixed $ident		A unique identifier
-	 * @return boolean
 	 */
-	final public function queueEnqueue($user, $action, $ident, $replace = true, $priority = 0, $extra = null, $qbxml = null)
+	final public function queueEnqueue(string $user, string $action, $ident, bool $replace = true, ?int $priority = null, ?array $extra = null, ?string $qbxml = null): bool
 	{
+		// Make strict typing happy and convert numbers to string
+		if (is_int($ident) || is_float($ident))
+		{
+			$ident = (string) $ident;
+		}
+
 		if (!strlen($ident))
 		{
 			// If they didn't provide an $ident, generate a random, unique one
-
-			$tmp = array_merge(range('a', 'z'), range(0, 9));
-			shuffle($tmp);
-			$ident = substr(implode('', $tmp), 0, 8);
+			$ident = Utilities::GUID();
 		}
 
-		$hookdata = array(
+		// Use a reasonable queue priority if none was provided
+		$priority = $priority ?? Utilities::priorityForAction($action);
+
+		// Set $extra to an empty array if no array was provided
+		$extra = $extra ?? [];
+
+		$hookdata = [
 			'username' => $user,
 			'action' => $action,
 			'ident' => $ident,
@@ -555,76 +228,80 @@ abstract class QuickBooks_Driver
 			'priority' => $priority,
 			'extra' => $extra,
 			'qbxml' => $qbxml,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUEENQUEUE, null, $hookerr, $hookdata);
 
 		return $this->_queueEnqueue($user, $action, $ident, $replace, $priority, $extra, $qbxml);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueEnqueue()
+	 * @see Driver::queueEnqueue()
 	 */
-	abstract protected function _queueEnqueue($user, $action, $ident, $replace = true, $priority = 0, $extra = null, $qbxml = null);
+	abstract protected function _queueEnqueue(string $user, string $action, string $ident, bool $replace, int $priority, array $extra, ?string $qbxml);
 
 	/**
 	 * Remove an item from the queue
 	 *
+	 * @param string $user			The user who we want to dequeue an item for
 	 * @param boolean $by_priority	If TRUE, remove the item with the highest priority next
-	 * @return boolean
+	 * @return array|null
 	 */
-	final public function queueDequeue($user, $by_priority = false)
+	final public function queueDequeue(string $user, bool $by_priority = false): ?array
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUEDEQUEUE, null, $hookerr, $hookdata);
 
 		return $this->_queueDequeue($user, $by_priority);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueDequeue()
+	 * @see Driver::queueDequeue()
 	 */
-	abstract protected function _queueDequeue($user, $by_priority = false);
+	abstract protected function _queueDequeue(string $user, bool $by_priority = false): ?array;
 
 	/**
-	 * Fetch the item currently being processed by QuickBooks
-	 *
-	 * @param string $user
-	 * @return array
+	 * Fetch the item (database row) currently being processed by QuickBooks
 	 */
-	final public function queueProcessing($user)
+	final public function queueProcessing(string $user): ?array
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUEPROCESSING, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUEPROCESSING, null, $hookerr, $hookdata);
 
 		return $this->_queueProcessing($user);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueProcessing()
+	 * @see Driver::queueProcessing()
 	 */
-	abstract protected function _queueProcessing($user);
+	abstract protected function _queueProcessing(string $user): ?array;
 
 	/**
 	 * Create a recurring event which will be queued up every so often...
-	 *
-	 * @param integer $run_every
-	 * @param string $action
-	 * @param mixed $ident
-	 * @param boolean $replace
-	 * @param integer $priority
-	 * @param mixed $extra
-	 * @return boolean
 	 */
-	final public function recurEnqueue($user, $run_every, $action, $ident, $replace = true, $priority = 0, $extra = null, $qbxml = null)
+	final public function recurEnqueue(string $user, $run_every, string $action, ?string $ident, bool $replace = true, ?int $priority = null, ?array $extra = null, ?string $qbxml = null): bool
 	{
-		$hookdata = array(
+		// Change string time intervals into seconds (e.g. '15 minutes')
+		$run_every_original = $run_every;
+		$run_every = Utilities::intervalToSeconds($run_every);
+		if (null === $run_every)
+		{
+			throw new \Exception('Cannot convert $run_every interval "' . $run_every_original .'" into seconds in ' . __METHOD__);
+		}
+
+		// Use a reasonable queue priority if none was provided
+		$priority = $priority ?? Utilities::priorityForAction($action);
+
+		// Set $extra to an empty array if no array was provided
+		$extra = $extra ?? [];
+
+		$hookdata = [
 			'username' => $user,
 			'interval' => $run_every,
 			'action' => $action,
@@ -633,92 +310,89 @@ abstract class QuickBooks_Driver
 			'priority' => $priority,
 			'extra' => $extra,
 			'qbxml' => $qbxml,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_RECURENQUEUE, null, $hookerr, $hookdata);
 
 		return $this->_recurEnqueue($user, $run_every, $action, $ident, $replace, $priority, $extra, $qbxml);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::recurEnqueue()
+	 * @see Driver::recurEnqueue()
 	 */
-	abstract protected function _recurEnqueue($user, $run_every, $action, $ident, $replace = true, $priority = 0, $extra = null, $qbxml = null);
+	abstract protected function _recurEnqueue(string $user, int $run_every, string $action, ?string $ident, bool $replace, int $priority, array $extra, ?string $qbxml): bool;
 
 	/**
 	 * Fetch the next recurring event from the recurring event queue
-	 *
-	 * @param boolean $by_priority
-	 * @return boolean
 	 */
-	final public function recurDequeue($user, $by_priority = false)
+	final public function recurDequeue(string $user, bool $by_priority = false)
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_RECURDEQUEUE, null, $hookerr, $hookdata);
 
 		return $this->_recurDequeue($user, $by_priority);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::recurDequeue()
+	 * @see Driver::recurDequeue()
 	 */
-	abstract protected function _recurDequeue($user, $by_priority = false);
+	abstract protected function _recurDequeue(string $user, bool $by_priority = false);
 
 	/**
 	 *
 	 *
 	 *
 	 */
-	final public function configWrite($user, $module, $key, $value, $type = null, $opts = null)
+	final public function configWrite(string $user, string $module, string $key, $value, ?string $type = null, ?array $opts = null): bool
 	{
 		//$module = strtolower($module);
 
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
 			'module' => $module,
 			'key' => $key,
 			'value' => $value,
 			'type' => $type,
 			'opts' => $opts,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_CONFIGWRITE, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_CONFIGWRITE, null, $hookerr, $hookdata);
 
 		return $this->_configWrite($user, $module, $key, $value, $type, $opts);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::configWrite()
+	 * @see Driver::configWrite()
 	 */
-	abstract protected function _configWrite($user, $module, $key, $value, $type, $opts);
+	abstract protected function _configWrite(string $user, string $module, string $key, $value, ?string $type, ?array $opts): bool;
 
 	/**
 	 *
 	 *
 	 *
 	 */
-	final public function configRead($user, $module, $key, &$type, &$opts)
+	final public function configRead(string $user, string $module, string $key, ?string &$type, ?array &$opts)
 	{
 		//$module = strtolower($module);
 
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
 			'module' => $module,
 			'key' => $key,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_CONFIGREAD, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_CONFIGREAD, null, $hookerr, $hookdata);
 
 		return $this->_configRead($user, $module, $key, $type, $opts);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::configRead()
+	 * @see Driver::configRead()
 	 */
-	abstract protected function _configRead($user, $module, $key, &$type, &$opts);
+	abstract protected function _configRead(string $user, string $module, string $key, ?string &$type, ?array &$opts);
 
 	/**
 	 * Forcibly remove an item from the queue
@@ -728,368 +402,202 @@ abstract class QuickBooks_Driver
 	 * @param mixed $ident
 	 * @return boolean
 	 */
-	final public function queueRemove($user, $action, $ident)
+	final public function queueRemove(string $user, string $action, string $ident)
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
 			'action' => $action,
 			'ident' => $ident
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUEREMOVE, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUEREMOVE, null, $hookerr, $hookdata);
 
 		return $this->_queueRemove($user, $action, $ident);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueRemove()
+	 * @see Driver::queueRemove()
 	 */
-	abstract protected function _queueRemove($user, $action, $ident);
+	abstract protected function _queueRemove(string $user, string $action, string $ident);
 
 	/**
 	 * Update the status of a particular item in the queue
 	 *
 	 * @param string $ticket		The ticket of the process which is updating the status
-	 * @param string $action		The action
-	 * @param mixed $ident			The ident string
-	 * @param char $new_status		The new status code (QUICKBOOKS_STATUS_SUCCESS, QUICKBOOKS_STATUS_ERROR, etc.)
-	 * @param string $msg			An error message (if an error message occured)
+	 * @param int $requestID		The requestID (QUEUE.quickbooks_queue_id)
+	 * @param string $new_status		The new status code (PackageInfo::Status['SUCCESS'], PackageInfo::Status['ERROR'], etc.)
+	 * @param string $msg			An error message (if an error message occurred)
 	 * @return boolean
 	 */
-	//final public function queueStatus($ticket, $action, $ident, $new_status, $msg = '')
-	final public function queueStatus($ticket, $requestID, $new_status, $msg = '')
+	final public function queueStatus(string $ticket, int $requestID, string $new_status, string $msg = ''): bool
 	{
 		$user = $this->_authResolve($ticket);
 
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
 			//'action' => $action,
 			//'ident' => $ident,
 			'requestID' => $requestID,
 			'status' => $new_status,
 			'message' => $msg,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUESTATUS, $ticket, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUESTATUS, $ticket, $hookerr, $hookdata);
 
 		//return $this->_queueStatus($ticket, $action, $ident, $new_status, $msg);
 		return $this->_queueStatus($ticket, $requestID, $new_status, $msg);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueStatus()
+	 * @see Driver::queueStatus()
 	 */
-	//abstract protected function _queueStatus($ticket, $action, $ident, $new_status, $msg = '');
-	abstract protected function _queueStatus($ticket, $requestID, $new_status, $msg = '');
+	abstract protected function _queueStatus(string $ticket, int $requestID, string $new_status, string $msg = ''): bool;
 
-	final public function queueGet($user, $requestID, $status = QUICKBOOKS_STATUS_QUEUED)
+	final public function queueGet(string $user, int $requestID, ?string $status = PackageInfo::Status['QUEUED']): ?array
 	{
 		//$user = $this->_authResolve($ticket);
 
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
 			//'action' => $action,
 			//'ident' => $ident,
 			'requestID' => $requestID,
 			'status' => $status,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QuickBooks_Driver::HOOK_QUEUEGET, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUEGET, null, $hookerr, $hookdata);
 
 		//return $this->_queueStatus($ticket, $action, $ident, $new_status, $msg);
 		return $this->_queueGet($user, $requestID, $status);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueStatus()
+	 * @see Driver::queueStatus()
 	 */
-	//abstract protected function _queueStatus($ticket, $action, $ident, $new_status, $msg = '');
-	abstract protected function _queueGet($user, $requestID, $status = QUICKBOOKS_STATUS_QUEUED);
-
-	/**
-	 * Tell the number of items left in the queue
-	 *
-	 * @todo For consistency, this should *not* accept a user parameter, maybe use queueLeft() instead?
-	 *
-	 * @return integer
-	 */
-	/*final public function queueSize($match = '')
-	{
-		$hookdata = array(
-			'match' => $match,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUESIZE, null, $hookerr, $hookdata);
-
-		return $this->_queueSize($match);
-	}*/
-
-	/**
-	 * @see QuickBooks_Driver::queueSize()
-	 */
-	/*abstract protected function _queueSize($match = '');*/
+	abstract protected function _queueGet(string $user, int $requestID, ?string $status = PackageInfo::Status['QUEUED']): ?array;
 
 	/**
 	 * Tell the number of queued items left in the queue for a given user
-	 *
-	 * @param string $user
-	 * @param boolean $queued
-	 * @return integer
 	 */
-	final public function queueLeft($user, $queued = true)
+	final public function queueLeft(string $user, bool $queued = true): int
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $user,
 			'queued' => $queued,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUELEFT, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUELEFT, null, $hookerr, $hookdata);
 
 		return $this->_queueLeft($user, $queued);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueLeft()
+	 * @see Driver::queueLeft()
 	 */
-	abstract protected function _queueLeft($user, $queued = true);
+	abstract protected function _queueLeft(string $user, bool $queued = true): int;
 
 	/**
 	 * Get a list of records from the queue for use in a report
-	 *
-	 * @param string $date_from
-	 * @param string $date_to
-	 * @param integer $offset
-	 * @param integer $limit
-	 * @return array
 	 */
-	final public function queueReport($user, $date_from, $date_to, $offset = 0, $limit = null)
+	final public function queueReport(string $user, ?string $date_from, ?string $date_to, int $offset = 0, int $limit = 0): array
 	{
-		$offset = max(0, (int) $offset);
-		$limit = min(999999999, (int) $limit);
+		$offset = max(0, $offset);
+		$limit = min(999999999, $limit);
 
-		$hookdata = array(
+		$hookdata = [
 			'offset' => $offset,
 			'limit' => $limit,
 			'from' => $date_from,
 			'to' => $date_to,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QuickBooks_Driver::HOOK_QUEUEREPORT, null, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUEREPORT, null, $hookerr, $hookdata);
 
-		return $this->_queueReport($user, $date_from, $date_to, $offset, $limit);
+		return $this->_queueReport(string, $date_from, $date_to, $offset, $limit);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueReport()
+	 * @see Driver::queueReport()
 	 */
-	abstract protected function _queueReport($user, $date_from, $date_to, $offset, $limit);
-
-	/**
-	 *
-	 *
-	 * @param integer $offset
-	 * @param integer $limit
-	 * @param string $match
-	 * @return QuickBooks_Iterator
-	 */
-	/*final public function queueView($offset, $limit, $match = '')
-	{
-		$offset = max(0, (int) $offset);
-		$limit = max(1, (int) $limit);
-
-		$hookdata = array(
-			'offset' => $offset,
-			'limit' => $limit,
-			'match'=> $match
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUEVIEW, null, $hookerr, $hookdata);
-
-		return $this->_queueView($offset, $limit, $match);
-	}*/
-
-	/**
-	 * @see QuickBooks_Driver::queueView()
-	 */
-	/*abstract protected function _queueView($offset, $limit, $match);*/
-
-	/**
-	 * Fetch a specific item from the queue
-	 *
-	 * @param string $action
-	 * @param mixed $ident
-	 * @param char $status
-	 * @return array
-	 */
-	/*
-	final public function queueFetch($user, $action, $ident, $status = QUICKBOOKS_STATUS_QUEUED)
-	{
-		$hookdata = array(
-			'username' => $user,
-			'action' => $action,
-			'ident' => $ident,
-			'status' => $status,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUEFETCH, null, $hookerr, $hookdata);
-
-		return $this->_queueFetch($user, $action, $ident, $status);
-	}
-	*/
-
-	/**
-	 * @see QuickBooks_Driver::queueFetch()
-	 */
-	/*
-	abstract protected function _queueFetch($user, $action, $ident, $status = QUICKBOOKS_STATUS_QUEUED);
-	*/
+	abstract protected function _queueReport(string $user, ?string $date_from, ?string $date_to, int $offset, int $limit): array;
 
 	/**
 	 * Tell how many commands have been processed during this login session
-	 *
-	 * @param string $ticket		The ticket for the login session
-	 * @return integer				The number of commands processed so far
 	 */
-	final public function queueProcessed($ticket)
+	final public function queueProcessed(string $ticket): ?int
 	{
-		$hookdata = array();
+		$hookdata = [];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUEPROCESSED, $ticket, $hookerr, $hookdata);
+		$this->_callHook(static::HOOK_QUEUEPROCESSED, $ticket, $hookerr, $hookdata);
 
 		return $this->_queueProcessed($ticket);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueProcessed()
+	 * @see Driver::queueProcessed()
 	 */
-	abstract protected function _queueProcessed($ticket);
+	abstract protected function _queueProcessed(string $ticket): ?int;
 
 	/**
 	 * Tell whether or not an item exists in the queue
-	 *
-	 * @param string $action
-	 * @param mixed $ident
-	 * @return boolean
 	 */
-	final public function queueExists($user, $action, $ident)
+	final public function queueExists(string $user, string $action, $ident): ?array
 	{
-		$hookdata = array(
+		$ident = (string) $ident;
+
+		$hookdata = [
 			'username' => $user,
 			'action' => $action,
 			'ident' => $ident,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_QUEUEEXISTS, null, $hookerr, $hookdata);
+
+		$this->_callHook(static::HOOK_QUEUEEXISTS, null, $hookerr, $hookdata);
 
 		return $this->_queueExists($user, $action, $ident);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::queueExists()
+	 * @see Driver::queueExists()
 	 */
-	abstract protected function _queueExists($user, $action, $ident);
+	abstract protected function _queueExists(string $user, string $action, string $ident): ?array;
+
 
 	/**
-	 * Tell when the last time an action of this type was dequeued
-	 *
-	 * @param string $user		Username of the user
-	 * @param string $action	The action to find the last dequeue time for
-	 * @return integer			A UNIX timestamp
+	 * Log an error that occurred for a specific ticket
 	 */
-	/*
-	final public function queueActionLast($user, $action)
+	final public function errorLog(string $ticket, ?int $errno, ?string $errstr): bool
 	{
-		$hookdata = array(
-			'username' => $user,
-			'action' => $action,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, null, $hookerr, $hookdata);
-
-		return $this->_queueActionLast($user, $action);
-	}
-	*/
-
-	/**
-	 * @see QuickBooks_Driver::queueActionLast()
-	 */
-	/*
-	abstract protected function _queueActionLast($user, $action);
-	*/
-
-	/**
-	 * Tell when the last time this combination of action/ident was dequeued
-	 *
-	 * @param string $user		Username of the user to look at
-	 * @param string $action	The action to find the last dequeue time for
-	 * @param mixed $ident		The ident string/integer to find the last dequeue time for
-	 * @return integer			An UNIX timestamp indicating the last time this combo was dequeued
-	 */
-	/*
-	final public function queueActionIdentLast($user, $action, $ident)
-	{
-		$hookdata = array(
-			'username' => $user,
-			'action' => $action,
-			'ident' => $ident,
-			);
-		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, null, $hookerr, $hookdata);
-
-		return $this->_queueActionIdentLast($user, $action, $ident);
-	}
-	*/
-
-	/**
-	 * @see QuickBooks_Driver::queueActionIdentLast()
-	 */
-	/*
-	abstract protected function _queueActionIdentLast($user, $action, $ident);
-	*/
-
-	/**
-	 * Log an error that occured for a specific ticket
-	 *
-	 * @param string $ticket
-	 * @param string $errno
-	 * @param string $errstr
-	 * @return boolean
-	 */
-	final public function errorLog($ticket, $errno, $errstr)
-	{
-		$hookdata = array(
+		$hookdata = [
 			'errno' => $errno,
 			'errstr' => $errstr,
-			);
+		];
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, $ticket, $hookerr, array());
+		$this->_callHook(static::HOOK_ERRORLOG, $ticket, $hookerr, $hookdata);
 
 		return $this->_errorLog($ticket, $errno, $errstr);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::errorLog()
+	 * @see Driver::errorLog()
 	 */
-	abstract protected function _errorLog($ticket, $errno, $errstr);
+	abstract protected function _errorLog(string $ticket, int $errno, string $errstr): bool;
 
 	/**
-	 * Get the last error that occured
-	 *
-	 * @param string $ticket
-	 * @return string
+	 * Get the last error that occurred
 	 */
-	final public function errorLast($ticket)
+	final public function errorLast(string $ticket): string
 	{
 		$hookerr = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, $ticket, $hookerr, array());
+		$this->_callHook(static::HOOK_ERRORLAST, $ticket, $hookerr, []);
 
 		return $this->_errorLast($ticket);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::errorLast()
+	 * @see Driver::errorLast()
 	 */
-	abstract protected function _errorLast($ticket);
+	abstract protected function _errorLast(string $ticket): string;
 
 	/**
 	 * Establish a session for a user (log that user in)
@@ -1103,60 +611,55 @@ abstract class QuickBooks_Driver
 	 * @param boolean $override		If set to TRUE, a correct password will not be required
 	 * @return string				The ticket for the login session
 	 */
-	final public function authLogin($username, $password, &$company_file, &$wait_before_next_update, &$min_run_every_n_seconds, $override = false)
+	final public function authLogin(string $username, string $password, &$company_file, &$wait_before_next_update, &$min_run_every_n_seconds, bool $override = false): ?string
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $username,
 			'password' => $password,
 			'override' => $override,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHLOGIN, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_AUTHLOGIN, null, $err, $hookdata);
 
 		return $this->_authLogin($username, $password, $company_file, $wait_before_next_update, $min_run_every_n_seconds, $override);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authLogin()
+	 * @see Driver::authLogin()
 	 */
-	abstract protected function _authLogin($username, $password, &$company_file, &$wait_before_next_update, &$min_run_every_n_seconds, $override = false);
+	abstract protected function _authLogin(string $username, string $password, &$company_file, &$wait_before_next_update, &$min_run_every_n_seconds, bool $override = false): ?string;
 
 	/**
 	 * Return the default QuickBooks user's username
-	 *
-	 * @return string
 	 */
-	final public function authDefault()
+	final public function authDefault(): string
 	{
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHDEFAULT, null, $err, array());
+		$this->_callHook(static::HOOK_AUTHDEFAULT, null, $err, []);
 
 		return $this->_authDefault();
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authDefault()
+	 * @see Driver::authDefault()
 	 */
-	abstract protected function _authDefault();
+	abstract protected function _authDefault(): string;
 
 	/**
 	 * Resolve a ticket string to a QuickBooks username
-	 *
-	 * @param string $ticket
-	 * @return string
 	 */
-	final public function authResolve($ticket)
+	final public function authResolve(string $ticket): ?string
 	{
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHRESOLVE, $ticket, $err, array());
+		$this->_callHook(static::HOOK_AUTHRESOLVE, $ticket, $err, []);
 
 		return $this->_authResolve($ticket);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authResolve()
+	 * @see Driver::authResolve()
 	 */
-	abstract protected function _authResolve($ticket);
+	abstract protected function _authResolve(string $ticket): ?string;
 
 	/**
 	 * Get the last date/time stamp the user logged in
@@ -1164,65 +667,19 @@ abstract class QuickBooks_Driver
 	 * @param string $username		The username of the user
 	 * @return array				An array containing two date/time stamps in YYYY-MM-DD HH:II:SS format, one to indicate login time, and one to indicate log out time
 	 */
-	final public function authLast($username)
+	final public function authLast(string $username)
 	{
 		$ticket = null;
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHLAST, $ticket, $err, array());
+		$this->_callHook(static::HOOK_AUTHLAST, $ticket, $err, []);
 
 		return $this->_authLast($username);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authLast()
+	 * @see Driver::authLast()
 	 */
-	abstract protected function _authLast($username);
-
-	/**
-	 * Get a list of users
-	 *
-	 * @param string $match
-	 * @return QuickBooks_Iterator
-	 */
-	/*final public function authView($offset, $limit, $match = '')
-	{
-		$offset = max(0, (int) $offset);
-		$limit = max(1, (int) $limit);
-
-		$hookdata = array(
-			'offset' => $offset,
-			'limit' => $limit,
-			'match' => $match,
-			);
-		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHVIEW, null, $err, $hookdata);
-
-		return $this->_authView($offset, $limit, $match);
-	}*/
-
-	/**
-	 * @see QuickBooks_Driver::authView()
-	 */
-	/*abstract protected function _authView($offset, $limit, $match = '');*/
-
-	/**
-	 * Get a count of the number of QuickBooks Web Connector users
-	 *
-	 * @return integer
-	 */
-	/*final public function authSize()
-	{
-		$hookdata = array();
-		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHSIZE, null, $err, $hookdata);
-
-		return $this->_authSize();
-	}*/
-
-	/**
-	 * $see QuickBooks_Driver::authSize()
-	 */
-	/*abstract protected function _authSize();*/
+	abstract protected function _authLast(string $username);
 
 	/**
 	 * Check to see whether or not a ticket is for a valid, unexpired login session
@@ -1230,157 +687,160 @@ abstract class QuickBooks_Driver
 	 * @param string $ticket	The login session ticket to check
 	 * @return boolean 			Whether or not the ticket is valid
 	 */
-	final public function authCheck($ticket)
+	final public function authCheck(string $ticket): bool
 	{
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHCHECK, $ticket, $err, array());
+		$this->_callHook(static::HOOK_AUTHCHECK, $ticket, $err, []);
 
 		return $this->_authCheck($ticket);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authCheck()
+	 * @see Driver::authCheck()
 	 */
-	abstract protected function _authCheck($ticket);
+	abstract protected function _authCheck(string $ticket): bool;
 
 	/**
 	 * End a log-in session
-	 *
-	 * @param string $ticket	The ticket for the session
-	 * @return boolean
 	 */
-	final public function authLogout($ticket)
+	final public function authLogout(string $ticket): bool
 	{
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHLOGOUT, $ticket, $err, array());
+		$this->_callHook(static::HOOK_AUTHLOGOUT, $ticket, $err, []);
 
 		return $this->_authLogout($ticket);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authLogout()
+	 * @see Driver::authLogout()
 	 */
-	abstract protected function _authLogout($ticket);
+	abstract protected function _authLogout(string $ticket): bool;
+
+	/**
+	 * Check if a user exists for the SOAP server.
+	 *
+	 * @return array|null	Returns null if the user does not exist and the USER table record as an array if it does
+	 */
+	public function authExists(string $username, array $restrict = []): ?array
+	{
+		return $this->_authExists($username, $restrict);
+	}
+
+	/**
+	 * @see Driver::authExists()
+	 */
+	abstract protected function _authExists(string $username, array $restrict = []): ?array;
 
 	/**
 	 * Create a user account with the given username and password
-	 *
-	 * @param string $username	The desired username
-	 * @param string $password	The desired password
-	 * @return boolean 			Whether or not the user was created
 	 */
-	final public function authCreate($username, $password, $company_file = null, $wait_before_next_update = null, $min_run_every_n_seconds = null)
+	final public function authCreate(string $username, string $password, ?string $company_file = '', ?int $wait_before_next_update = 0, ?int $min_run_every_n_seconds = 0): bool
 	{
-		$hookdata = array(
+		// Use default '' and 0 for null arguments to appease declare(strict_types=1)
+		$company_file = $company_file ?? '';
+		$wait_before_next_update = $wait_before_next_update ?? 0;
+		$min_run_every_n_seconds = $min_run_every_n_seconds ?? 0;
+
+		$hookdata = [
 			'username' => $username,
 			'password' => $password,
 			'qb_company_file' => $company_file,
 			'qbwc_wait_before_next_update' => $wait_before_next_update,
 			'qbwc_min_run_every_n_seconds' => $min_run_every_n_seconds,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHCREATE, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_AUTHCREATE, null, $err, $hookdata);
 
 		return $this->_authCreate($username, $password, $company_file, $wait_before_next_update, $min_run_every_n_seconds);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authCreate()
+	 * @see Driver::authCreate()
 	 */
-	abstract protected function _authCreate($username, $password, $company_file = null, $wait_before_next_update = null, $min_run_every_n_seconds = null);
-
-	/**
-	 * @see QuickBooks_Driver::authEnable()
-	 */
-	abstract protected function _authEnable($username);
+	abstract protected function _authCreate(string $username, string $password, string $company_file, int $wait_before_next_update, int $min_run_every_n_seconds): bool;
 
 	/**
 	 * Enable a username
-	 *
-	 * @param string $username
-	 * @return boolean
 	 */
-	final public function authEnable($username)
+	final public function authEnable(string $username): bool
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $username,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHENABLE, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_AUTHENABLE, null, $err, $hookdata);
 
 		return $this->_authEnable($username);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::authDisable()
+	 * @see Driver::authEnable()
 	 */
-	abstract protected function _authDisable($username);
+	abstract protected function _authEnable(string $username): bool;
 
 	/**
 	 * Disable a username
-	 *
-	 * @param string $username
-	 * @return boolean
 	 */
-	final public function authDisable($username)
+	final public function authDisable(string $username): bool
 	{
-		$hookdata = array(
+		$hookdata = [
 			'username' => $username,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_AUTHDISABLE, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_AUTHDISABLE, null, $err, $hookdata);
 
 		return $this->_authDisable($username);
 	}
 
 	/**
-	 * Initialize the driver class
-	 *
-	 * @param array $options
-	 * @return boolean
+	 * @see Driver::authDisable()
 	 */
-	public function initialize($options)
+	abstract protected function _authDisable(string $username);
+
+	/**
+	 * Initialize the driver class
+	 */
+	public function initialize(array $options): bool
 	{
-		$hookdata = array(
+		$hookdata = [
 			'options' => $options,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_INITIALIZE, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_INITIALIZE, null, $err, $hookdata);
 
 		return $this->_initialize($options);
 	}
 
 	/**
-	 * @see QuickBooks_Driver::initialize()
+	 * @see Driver::initialize()
 	 */
-	abstract protected function _initialize($options = array());
+	abstract protected function _initialize(array $options = []): bool;
 
 	/**
 	 * Tell whether or not the driver class has been initialized
-	 *
-	 * @return boolean
 	 */
-	public function initialized()
+	public function initialized(): bool
 	{
-		$hookdata = array();
+		$hookdata = [];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_INITIALIZED, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_INITIALIZED, null, $err, $hookdata);
 
 		return $this->_initialized();
 	}
 
 	/**
-	 * @see QuickBooks_Driver::initialized()
+	 * @see Driver::initialized()
 	 */
-	abstract protected function _initialized();
+	abstract protected function _initialized(): bool;
 
+/*
 	public function oauthLoadV1($key, $app_tenant)
 	{
 		if ($data = $this->_oauthLoadV1($app_tenant))
 		{
 			if (strlen($data['oauth_access_token']) > 0)
 			{
-				$AES = QuickBooks_Encryption_Factory::create('aes');
+				$AES = EncryptionFactory::create('aes');
 
 				$data['oauth_access_token'] = $AES->decrypt($key, $data['oauth_access_token']);
 				$data['oauth_access_token_secret'] = $AES->decrypt($key, $data['oauth_access_token_secret']);
@@ -1393,17 +853,18 @@ abstract class QuickBooks_Driver
 	}
 
 	abstract protected function _oauthLoadV1($app_tenant);
-
-	public function oauthLoadV2($key, $app_tenant)
+*/
+	public function oauthLoadV2(string $key, string $app_tenant)
 	{
-		if ($data = $this->_oauthLoadV2($app_tenant))
+		$data = $this->_oauthLoadV2($app_tenant);
+		if ($data)
 		{
 			if (strlen($data['oauth_access_token']) > 0)
 			{
-				$AES = QuickBooks_Encryption_Factory::create('aes');
+				$Encryption = EncryptionFactory::create('sodium');
 
-				$data['oauth_access_token'] = $AES->decrypt($key, $data['oauth_access_token']);
-				$data['oauth_refresh_token'] = $AES->decrypt($key, $data['oauth_refresh_token']);
+				$data['oauth_access_token'] = $Encryption->decrypt($key, $data['oauth_access_token']);
+				$data['oauth_refresh_token'] = $Encryption->decrypt($key, $data['oauth_refresh_token']);
 			}
 
 			return $data;
@@ -1412,11 +873,11 @@ abstract class QuickBooks_Driver
 		return false;
 	}
 
-	abstract protected function _oauthLoadV2($app_tenant);
-
+	abstract protected function _oauthLoadV2(string $app_tenant);
+/*
 	public function oauthAccessWriteV1($key, $request_token, $token, $token_secret, $realm, $flavor)
 	{
-		$AES = QuickBooks_Encryption_Factory::create('aes');
+		$AES = EncryptionFactory::create('aes');
 
 		$encrypted_token = $AES->encrypt($key, $token);
 		$encrypted_token_secret = $AES->encrypt($key, $token_secret);
@@ -1425,46 +886,46 @@ abstract class QuickBooks_Driver
 	}
 
 	abstract protected function _oauthAccessWriteV1($request_token, $token, $token_secret, $realm, $flavor);
-
-	public function oauthAccessWriteV2($encryption_key, $state, $access_token, $refresh_token, $access_expiry, $refresh_expiry, $qb_realm)
+*/
+	public function oauthAccessWriteV2(string $encryption_key, string $state, string $access_token, string $refresh_token, $access_expiry, $refresh_expiry, string $qb_realm)
 	{
-		$AES = QuickBooks_Encryption_Factory::create('aes');
+		$Encryption = EncryptionFactory::create('sodium');
 
-		$encrypted_access_token = $AES->encrypt($encryption_key, $access_token);
-		$encrypted_refresh_token = $AES->encrypt($encryption_key, $refresh_token);
+		$encrypted_access_token = $Encryption->encrypt($encryption_key, $access_token);
+		$encrypted_refresh_token = $Encryption->encrypt($encryption_key, $refresh_token);
 
 		return $this->_oauthAccessWriteV2($state, $encrypted_access_token, $encrypted_refresh_token, $access_expiry, $refresh_expiry, $qb_realm);
 	}
 
-	abstract protected function _oauthAccessWriteV2($state, $access_token, $refresh_token, $access_expiry, $refresh_expiry, $qb_realm);
+	abstract protected function _oauthAccessWriteV2(string $state, string $access_token, string $refresh_token, $access_expiry, $refresh_expiry, string $qb_realm);
 
 
-	public function oauthAccessRefreshV2($encryption_key, $oauthv2_id, $access_token, $refresh_token, $access_expiry, $refresh_expiry)
+	public function oauthAccessRefreshV2(string $encryption_key, $oauthv2_id, string $access_token, string $refresh_token, $access_expiry, $refresh_expiry)
 	{
-		$AES = QuickBooks_Encryption_Factory::create('aes');
+		$Encryption = EncryptionFactory::create('sodium');
 
-		$encrypted_access_token = $AES->encrypt($encryption_key, $access_token);
-		$encrypted_refresh_token = $AES->encrypt($encryption_key, $refresh_token);
+		$encrypted_access_token = $Encryption->encrypt($encryption_key, $access_token);
+		$encrypted_refresh_token = $Encryption->encrypt($encryption_key, $refresh_token);
 
 		return $this->_oauthAccessRefreshV2($oauthv2_id, $encrypted_access_token, $encrypted_refresh_token, $access_expiry, $refresh_expiry);
 	}
 
-	abstract protected function _oauthAccessRefreshV2($oauthv2_id, $access_token, $refresh_token, $access_expiry, $refresh_expiry);
+	abstract protected function _oauthAccessRefreshV2($oauthv2_id, string $access_token, string $refresh_token, $access_expiry, $refresh_expiry);
 
-	public function oauthAccessDelete($app_username, $app_tenant)
+	public function oauthAccessDelete(string $app_username, $app_tenant)
 	{
 		return $this->_oauthAccessDelete($app_username, $app_tenant);
 	}
 
-	abstract protected function _oauthAccessDelete($app_username, $app_tenant);
+	abstract protected function _oauthAccessDelete(string $app_username, string $app_tenant);
 
-	public function oauthRequestWriteV2($app_tenant, $state)
+	public function oauthRequestWriteV2(string $app_tenant, string $state)
 	{
 		return $this->_oauthRequestWriteV2($app_tenant, $state);
 	}
 
-	abstract protected function _oauthRequestWriteV2($app_tenant, $state);
-
+	abstract protected function _oauthRequestWriteV2(string $app_tenant, string $state);
+/*
 	public function oauthRequestWriteV1($app_tenant, $token, $token_secret)
 	{
 		return $this->_oauthRequestWriteV1($app_tenant, $token, $token_secret);
@@ -1478,13 +939,13 @@ abstract class QuickBooks_Driver
 	}
 
 	abstract protected function _oauthRequestResolveV1($token);
-
-	public function oauthRequestResolveV2($state)
+*/
+	public function oauthRequestResolveV2(string $state)
 	{
 		return $this->_oauthRequestResolveV2($state);
 	}
 
-	abstract protected function _oauthRequestResolveV2($state);
+	abstract protected function _oauthRequestResolveV2(string $state);
 
 	/**
 	 * Log a message to the QuickBooks log
@@ -1494,18 +955,17 @@ abstract class QuickBooks_Driver
 	 * @param integer $lvl
 	 * @return boolean 			Whether or not the message was logged successfully
 	 */
-	final public function log($msg, $ticket = null, $lvl = QUICKBOOKS_LOG_NORMAL)
+	final public function log(string $msg, ?string $ticket = null, int $lvl = PackageInfo::LogLevel['NORMAL']): bool
 	{
 		/*
-		$hookdata = array(
+		$hookdata = [
 			'message' => $msg,
 			'level' => $lvl,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_LOG, $ticket, $err, $hookdata);
+		$this->_callHook(static::HOOK_LOG, $ticket, $err, $hookdata);
 		*/
-
-		if (is_null($lvl) or $this->_loglevel >= $lvl)
+		if (is_null($lvl) || $this->_loglevel >= $lvl)
 		{
 			return $this->_log($msg, $ticket, $lvl);
 		}
@@ -1514,9 +974,9 @@ abstract class QuickBooks_Driver
 	}
 
 	/**
-	 * @see QuickBooks_Driver::log()
+	 * @see Driver::log()
 	 */
-	abstract protected function _log($msg, $ticket = null, $lvl = QUICKBOOKS_LOG_NORMAL);
+	abstract protected function _log(string $msg, ?string $ticket = null, int $lvl = PackageInfo::LogLevel['NORMAL']);
 
 	/**
 	 *
@@ -1531,29 +991,29 @@ abstract class QuickBooks_Driver
 		$offset = max(0, (int) $offset);
 		$limit = max(1, (int) $limit);
 
-		$hookdata = array(
+		$hookdata = [
 			'offset' => $offset,
 			'limit' => $limit,
 			'match' => $match,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_LOGVIEW, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_LOGVIEW, null, $err, $hookdata);
 
 		return $this->_logView($offset, $limit, $match);
 	}*/
 
 	/**
-	 * @see QuickBooks_Utilities::logView()
+	 * @see Utilities::logView()
 	 */
 	/*abstract protected function _logView($offset, $limit, $match);*/
 
 	/*final public function logSize($match = '')
 	{
-		$hookdata = array(
+		$hookdata = [
 			'match' => $match,
-			);
+		];
 		$err = '';
-		$this->_callHook(QUICKBOOKS_DRIVER_HOOK_LOGSIZE, null, $err, $hookdata);
+		$this->_callHook(static::HOOK_LOGSIZE, null, $err, $hookdata);
 
 		return $this->_logSize($match);
 	}*/
@@ -1562,14 +1022,10 @@ abstract class QuickBooks_Driver
 
 	/**
 	 * One-way hash a password for storage in the database
-	 *
-	 * @param string $password
-	 * @return string
 	 */
-	final protected function _hash($password)
+	final protected function _hash(string $password): string
 	{
-		$func = QUICKBOOKS_HASH;
-		return $func($password . QUICKBOOKS_SALT);
+		return password_hash($password, PASSWORD_DEFAULT);
 	}
 
 	/**
@@ -1586,21 +1042,27 @@ abstract class QuickBooks_Driver
 	 * @param array $hook_data		An array of hook data
 	 * @return boolean
 	 */
-	final protected function _callHook($hook, $ticket, &$err, $hook_data)
+	final protected function _callHook(string $hook, ?string $ticket, string &$err, array $hook_data): bool
 	{
 		$user = '';
-		if ($ticket)
+		$ticket = $ticket ?? '';
+		if (strlen($ticket) > 0)
 		{
 			$user = (string) $this->_authResolve($ticket);
 		}
 
+		// Use a null requestID since this was a server generated request and not due to a request from WebConnector
+		$requestID = null;
+
 		// Call the hook
-		QuickBooks_Callbacks::callHook($this, $this->_hooks, $hook, null, $user, $ticket, $err, $hook_data, null, __FILE__, __LINE__);
+		$called = Callbacks::callHook($this, $this->_hooks, $hook, $requestID, $user, $ticket, $err, $hook_data);
 
 		if ($err)
 		{
-			// Log errors reporting by hooks
-			$this->errorLog($ticket, QUICKBOOKS_ERROR_HOOK, $err);
+			// Log errors reported by hook
+			$this->errorLog($ticket, PackageInfo::Error['HOOK'], $err);
+
+			return false;
 		}
 
 		return true;
