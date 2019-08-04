@@ -14,12 +14,27 @@
         }
     ],
     "require": {
-        "php": ">=7.1.0",
-        "symfony/polyfill-php72": "^1.11",
-        "symfony/polyfill-php73": "^1.11"
+        "php": ">=7.2.0",
+        "symfony/polyfill-php73": "^1.11",
+        "ramsey/uuid": "^3.8",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-SimpleXML": "*"
     },
     "optimize-autoloader": true,
     "autoload": {
-        "psr-4": { "QuickBooksPhpDevKit\\": "src/QuickBooksPhpDevKit/" }
+        "psr-4": {
+            "QuickBooksPhpDevKit\\": "src/QuickBooksPhpDevKit/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "QuickBooksPhpDevKit_UnitTesting\\": "src/UnitTesting/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8",
+        "symfony/process": "^4.3",
+        "guzzlehttp/guzzle": "^6.3"
     }
 }
