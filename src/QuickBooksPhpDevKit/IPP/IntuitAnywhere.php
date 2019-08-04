@@ -83,25 +83,23 @@ class IntuitAnywhere
 	 * @param string $this_url			The URL of your QuickBooks_IntuitAnywhere class instance
 	 * @param string $that_url			The URL the user should be sent to after being authenticated
 	 */
-	public function __construct(string $IGNORED_oauth_version, bool $sandbox, string $scope, $dsn, string $encryption_key, string $consumer_key_or_client_id, string $consumer_secret_or_client_secret, ?string $this_url = null, ?string $that_url = null)
+	public function __construct(string $IGNORED_oauth_version, bool $sandbox, string $scope, $dsn, string $encryption_key, string $consumer_key_or_client_id, string $consumer_secret_or_client_secret, string $this_url = null, string $that_url = null)
 	{
 		$this->_dsn = $dsn;
 		$this->_driver = Factory::create($dsn);
 
-		$this->_key = $encryption_key;
+		$this->_key = trim($encryption_key);
 
-		$this->_this_url = $this_url;
-		$this->_that_url = $that_url;
+		$this->_this_url = trim($this_url);
+		$this->_that_url = trim($that_url);
 
 		$this->_oauth_version = IPP::AUTHMODE_OAUTHV2;
-		$this->_oauth_scope = $scope;
+		$this->_oauth_scope = trim($scope);
 
 		$this->_sandbox = $sandbox;
 
-		//$this->_consumer_key = $this->_client_id = $consumer_key_or_client_id;
-		//$this->_consumer_secret = $this->_client_secret = $consumer_secret_or_client_secret;
-		$this->_client_id = $consumer_key_or_client_id;
-		$this->_client_secret = $consumer_secret_or_client_secret;
+		$this->_client_id = trim($consumer_key_or_client_id);
+		$this->_client_secret = trim($consumer_secret_or_client_secret);
 
 		$this->_debug = false;
 	}
@@ -248,11 +246,17 @@ class IntuitAnywhere
 	 */
 	public function expiry(string $app_username, string $app_tenant, int $within = 2592000): string
 	{
+		if ($this->_oauth_version == self::OAUTH_V2)
+		{
+			return $this->expiryV2($app_tenant);
+		}
+
+		// OAuthv1
 		$lifetime = 15552000;
 
 		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) &&
-			strlen($arr['oauth_access_token']) > 0 &&
-			strlen($arr['oauth_access_token_secret']) > 0)
+			!empty($arr['oauth_access_token']) &&
+			!empty($arr['oauth_access_token_secret']))
 		{
 			$expires = $lifetime + strtotime($arr['access_datetime']);
 
@@ -274,6 +278,37 @@ class IntuitAnywhere
 		return static::EXPIRY_UNKNOWN;
 	}
 
+	public function expiryV2(string $app_tenant, int $within = 2592000): string
+	{
+		$app_tenant = (string) $app_tenant;
+
+		$creds = $this->load($app_tenant);
+		if (null === $creds || empty($creds['oauth_access_token']) || empty($creds['oauth_access_expiry']))
+		{
+			return static::EXPIRY_UNKNOWN;
+		}
+
+		$expires = strtotime($creds['oauth_access_expiry']);
+		if (false === $expires)
+		{
+			return static::EXPIRY_UNKNOWN;
+		}
+
+		$diff = $expires - time();
+		if ($diff < 0)
+		{
+			// Already expired
+			return static::EXPIRY_EXPIRED;
+		}
+		else if ($diff < $within)
+		{
+			return static::EXPIRY_SOON;
+		}
+
+		return static::EXPIRY_NOTYET;
+	}
+
+
 	/**
 	 * Reconnect/refresh the OAuth tokens
 	 *
@@ -284,6 +319,13 @@ class IntuitAnywhere
 	 */
 	public function reconnect(string $app_username, string $app_tenant): ?bool
 	{
+		if ($this->_oauth_version == self::OAUTH_V2)
+		{
+			return $this->reconnectV2($app_tenant);
+		}
+
+
+		// OAuthv1 (This should be removed)
 		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) &&
 			strlen($arr['oauth_access_token']) > 0 &&
 			strlen($arr['oauth_access_token_secret']) > 0)
@@ -328,6 +370,62 @@ class IntuitAnywhere
 		return null;
 	}
 
+	public function reconnectV2($app_tenant): bool
+	{
+		$app_tenant = (string) $app_tenant;
+
+		$creds = $this->load($app_tenant);
+		if (null === $creds || empty($creds['oauth_refresh_token']))
+		{
+			// A Refresh Token is Mandatory
+			return false;
+		}
+
+		$discover = $this->_discover();
+		if ((null !== $discover) && !empty($discover['token_endpoint']))
+		{
+			$ch = curl_init($discover['token_endpoint']);
+			curl_setopt_array($ch, [
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_FOLLOWLOCATION => false,  // Do not follow; security risk here
+
+				CURLOPT_USERPWD => $this->_client_id . ':' . $this->_client_secret,
+				CURLOPT_HTTPHEADER => [
+					'Accept: application/json',
+				],
+				CURLOPT_POST => true,
+				CURLOPT_POSTFIELDS => http_build_query([
+					'grant_type' => 'refresh_token',
+					'refresh_token' => $creds['oauth_refresh_token'],
+				]),
+
+				//CURLINFO_HEADER_OUT => true,
+			]);
+			$retr = curl_exec($ch);
+			$info = curl_getinfo($ch);
+
+			if ($info['http_code'] == 200)
+			{
+				$json = json_decode($retr, true);
+				if (!empty($json['access_token']))
+				{
+					$this->_driver->oauthAccessRefreshV2(
+						$this->_key,
+						(int) $creds['quickbooks_oauthv2_id'],
+						$json['access_token'],
+						$json['refresh_token'],
+						date('Y-m-d H:i:s', time() + (int) $json['expires_in']),
+						date('Y-m-d H:i:s', time() + (int) $json['x_refresh_token_expires_in'])
+					);
+				}
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public function disconnect(string $UNUSED_INVALID_IN_OAUTHV2_app_username, string $app_tenant, bool $force = false): bool
 	{
 		if ($this->_oauth_version == self::OAUTH_V2)
@@ -338,13 +436,10 @@ class IntuitAnywhere
 				// Already disconnected
 				return true;
 			}
-//			var_dump($creds);
 
 			$discover = $this->_discover();
 			if (null !== $discover)
 			{
-//				var_dump($discover);
-
 				$ch = curl_init($discover['revocation_endpoint']);
 				curl_setopt_array($ch, [
 					CURLOPT_RETURNTRANSFER => true,
@@ -355,9 +450,9 @@ class IntuitAnywhere
 						'Accept: application/json',
 						'Content-Type: application/json',
 					],
-					CURLOPT_CUSTOMREQUEST => 'POST',
+					CURLOPT_POST => true,
 					CURLOPT_POSTFIELDS => json_encode([
-						'token' => 'BOGUS'.$creds['oauth_refresh_token'],
+						'token' => $creds['oauth_refresh_token'],
 					]),
 
 					//CURLOPT_HEADER => true,
@@ -366,11 +461,6 @@ class IntuitAnywhere
 				]);
 				$retr = curl_exec($ch);
 				$info = curl_getinfo($ch);
-
-//				echo "<hr>";
-//				var_dump($retr);
-//				$json = json_decode($retr, true);
-//				exit;
 
 				if ($force === true || in_array($info['http_code'], [200, 400]))
 				{
@@ -386,34 +476,6 @@ class IntuitAnywhere
 		throw new \Exception('Cannot disconnect using '. $this->_oauth_version);
 
 		return false;
-
-		/*
-		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) &&
-			strlen($arr['oauth_access_token']) > 0 &&
-			strlen($arr['oauth_access_token_secret']) > 0)
-		{
-			$arr['oauth_consumer_key'] = $this->_consumer_key;
-			$arr['oauth_consumer_secret'] = $this->_consumer_secret;
-
-			$retr = $this->_request(OAuthv1::METHOD_GET,
-				static::URL_CONNECT_DISCONNECT,
-				[],
-				$arr['oauth_access_token'],
-				$arr['oauth_access_token_secret']);
-
-			// Extract the error code
-			$code = (int) XML::extractTagContents('ErrorCode', $retr);
-
-			if ($code == 0 ||
-				$code == 270 || 	// Sometimes it returns "270: OAuth Token rejected" for some reason?
-				$force)
-			{
-				return $this->_driver->oauthAccessDelete($arr['app_username'], $arr['app_tenant']);
-			}
-		}
-
-		return false;
-		*/
 	}
 
 	public function fudge(string $request_token, string $access_token, string $access_token_secret, $realm, $flavor): void
@@ -461,6 +523,7 @@ class IntuitAnywhere
 						CURLOPT_FOLLOWLOCATION => false,  // Do not follow; security risk here
 
 						CURLOPT_USERPWD => $this->_client_id . ':' . $this->_client_secret,
+						CURLOPT_POST => true,
 						CURLOPT_POSTFIELDS => http_build_query([
 							'code' => $_GET['code'],
 							'redirect_uri' => $this->_this_url,

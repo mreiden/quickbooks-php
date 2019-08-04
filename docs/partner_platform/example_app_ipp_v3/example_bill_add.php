@@ -1,8 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Bill as ObjBill;
+use QuickBooksPhpDevKit\IPP\Object\Line as ObjLine;
+use QuickBooksPhpDevKit\IPP\Object\AccountBasedExpenseLineDetail as ObjAccountBasedExpenseLineDetail;
+use QuickBooksPhpDevKit\IPP\Service\Bill;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,19 +15,19 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$BillService = new QuickBooks_IPP_Service_Bill();
+$BillService = new Bill();
 
-$Bill = new QuickBooks_IPP_Object_Bill();
+$Bill = new ObjBill();
 
 $Bill->setDocNumber('abc123');
 $Bill->setTxnDate('2014-07-12');
-$Bill->setVendorRef('{-9}');
+$Bill->setVendorRef('{-39}');
 
-$Line = new QuickBooks_IPP_Object_Line();
+$Line = new ObjLine();
 $Line->setAmount(650);
 $Line->setDetailType('AccountBasedExpenseLineDetail');
 
-$AccountBasedExpenseLineDetail = new QuickBooks_IPP_Object_AccountBasedExpenseLineDetail();
+$AccountBasedExpenseLineDetail = new ObjAccountBasedExpenseLineDetail();
 $AccountBasedExpenseLineDetail->setAccountRef('{-17}');
 
 $Line->setAccountBasedExpenseLineDetail($AccountBasedExpenseLineDetail);
@@ -50,8 +55,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

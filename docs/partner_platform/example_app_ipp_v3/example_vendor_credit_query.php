@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\VendorCredit;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,11 +12,12 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$VendorCreditService = new QuickBooks_IPP_Service_VendorCredit();
+$VendorCreditService = new VendorCredit();
 
 $vcs = $VendorCreditService->query($Context, $realm, "SELECT * FROM VendorCredit");
 
-//print_r($terms);
+print('Found '. count($vcs) . ' Vendor Credits<br>');
+print_r($vcs);
 
 foreach ($vcs as $Vc)
 {
@@ -33,8 +36,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

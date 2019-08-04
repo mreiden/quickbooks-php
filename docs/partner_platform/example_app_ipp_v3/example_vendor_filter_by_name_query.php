@@ -1,8 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Vendor;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
+
+//$VendorDisplayName = 'Shannon Palmer';
+$VendorDisplayName = '%Palmer%';
 
 ?>
 
@@ -10,15 +15,16 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$VendorService = new QuickBooks_IPP_Service_Vendor();
+$VendorService = new Vendor();
 
-$vendors = $VendorService->query($Context, $realm, "SELECT * FROM Vendor WHERE DisplayName = 'Shannon Palmer' ");
+$vendors = $VendorService->query($Context, $realm, "SELECT * FROM Vendor WHERE DisplayName LIKE '$VendorDisplayName' ");
 
-//print_r($terms);
+print 'Found '. count($vendors) .' vendors with DisplayName LIKE "' . $VendorDisplayName .'"<br>';
+//print_r($vendors);
 
 foreach ($vendors as $Vendor)
 {
-	//print_r($Term);
+	//print_r($Vendor);
 
 	print('Vendor Id=' . $Vendor->getId() . ' is named: ' . $Vendor->getDisplayName() . '<br>');
 }
@@ -35,8 +41,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

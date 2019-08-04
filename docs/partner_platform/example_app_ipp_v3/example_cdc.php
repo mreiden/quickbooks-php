@@ -1,8 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\ChangeDataCapture;
+use QuickBooksPhpDevKit\Utilities;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,16 +13,16 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$CDCService = new QuickBooks_IPP_Service_ChangeDataCapture();
+$CDCService = new ChangeDataCapture();
 
 // What types of objects do you want to get?
-$objects = array(
+$objects = [
 	'Customer',
 	'Invoice',
-	);
+];
 
 // The date they should have been updated after
-$timestamp = QuickBooks_Utilities::datetime('-5 years');
+$timestamp = Utilities::datetime('-5 years');
 
 $cdc = $CDCService->cdc($Context, $realm,
 	$objects,
@@ -60,8 +63,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

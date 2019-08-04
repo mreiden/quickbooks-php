@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Entitlements;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -25,7 +27,7 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$EntitlementsService = new QuickBooks_IPP_Service_Entitlements();
+$EntitlementsService = new Entitlements();
 
 // This gets the entitlements/features of a QBO install
 $es = $EntitlementsService->entitlements($Context, $realm);
@@ -60,8 +62,6 @@ else
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

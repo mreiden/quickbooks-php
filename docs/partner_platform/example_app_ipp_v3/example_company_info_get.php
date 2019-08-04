@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\CompanyInfo;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,7 +12,7 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$CompanyInfoService = new QuickBooks_IPP_Service_CompanyInfo();
+$CompanyInfoService = new CompanyInfo();
 
 $Info = $CompanyInfoService->get($Context, $realm);
 
@@ -28,7 +30,7 @@ $country = $Info->getCountry();
 print('Country: ' . $country . "\n");
 
 $email = $Info->getEmail()->getAddress();
-print('Address: ' . $email . "\n");
+print('Email Address: ' . $email . "\n");
 
 $count = $Info->countNameValue();
 for ($i = 0; $i < $count; $i++)
@@ -60,8 +62,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

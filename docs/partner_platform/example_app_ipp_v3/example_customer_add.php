@@ -1,8 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Customer as ObjCustomer;
+use QuickBooksPhpDevKit\IPP\Object\BillAddr as ObjBillAddr;
+use QuickBooksPhpDevKit\IPP\Object\Fax as ObjFax;
+use QuickBooksPhpDevKit\IPP\Object\Mobile as ObjMobile;
+use QuickBooksPhpDevKit\IPP\Object\PrimaryEmailAddr as ObjPrimaryEmailAddr;
+use QuickBooksPhpDevKit\IPP\Object\PrimaryPhone as ObjPrimaryPhone;
+use QuickBooksPhpDevKit\IPP\Service\Customer;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,9 +18,9 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$CustomerService = new QuickBooks_IPP_Service_Customer();
+$CustomerService = new Customer();
 
-$Customer = new QuickBooks_IPP_Object_Customer();
+$Customer = new ObjCustomer();
 $Customer->setTitle('Ms');
 $Customer->setGivenName('Shannon');
 $Customer->setMiddleName('B');
@@ -23,22 +31,22 @@ $Customer->setDisplayName('Shannon B Palmer ' . mt_rand(0, 1000));
 $Customer->setSalesTermRef(4);
 
 // Phone #
-$PrimaryPhone = new QuickBooks_IPP_Object_PrimaryPhone();
+$PrimaryPhone = new ObjPrimaryPhone();
 $PrimaryPhone->setFreeFormNumber('860-532-0089');
 $Customer->setPrimaryPhone($PrimaryPhone);
 
 // Mobile #
-$Mobile = new QuickBooks_IPP_Object_Mobile();
+$Mobile = new ObjMobile();
 $Mobile->setFreeFormNumber('860-532-0089');
 $Customer->setMobile($Mobile);
 
 // Fax #
-$Fax = new QuickBooks_IPP_Object_Fax();
+$Fax = new ObjFax();
 $Fax->setFreeFormNumber('860-532-0089');
 $Customer->setFax($Fax);
 
 // Bill address
-$BillAddr = new QuickBooks_IPP_Object_BillAddr();
+$BillAddr = new ObjBillAddr();
 $BillAddr->setLine1('72 E Blue Grass Road');
 $BillAddr->setLine2('Suite D');
 $BillAddr->setCity('Mt Pleasant');
@@ -47,7 +55,7 @@ $BillAddr->setPostalCode('48858');
 $Customer->setBillAddr($BillAddr);
 
 // Email
-$PrimaryEmailAddr = new QuickBooks_IPP_Object_PrimaryEmailAddr();
+$PrimaryEmailAddr = new ObjPrimaryEmailAddr();
 $PrimaryEmailAddr->setAddress('support@consolibyte.com');
 $Customer->setPrimaryEmailAddr($PrimaryEmailAddr);
 
@@ -73,6 +81,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-ini_set('display_errors', true);
+ini_set('display_errors', '1');
 
-$file = str_replace(array('.', '/', '\\', ':'), '', $_GET['file']);
+// Remove any directory traversal characters
+$file = str_replace(['.', '/', '\\', ':'], '', $_GET['file']);
+// The dot in .php was removed, so replace the ending "php" with ".php"
 $file = substr($file, 0, -3) . '.php';
 
-highlight_file(dirname(__FILE__) . '/' . $file);
+highlight_file(__DIR__ . '/' . $file);

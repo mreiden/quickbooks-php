@@ -1,34 +1,39 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Deposit as ObjDeposit;
+use QuickBooksPhpDevKit\IPP\Object\DepositLineDetail as ObjDepositLineDetail;
+use QuickBooksPhpDevKit\IPP\Object\Line as ObjLine;
+use QuickBooksPhpDevKit\IPP\Service\Deposit;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
-    <pre>
+<pre>
 
 <?php
-$DepositService = new \QuickBooks_IPP_Service_Deposit();
+$DepositService = new Deposit();
 
 // Create deposit object
-$Deposit = new \QuickBooks_IPP_Object_Deposit();
+$Deposit = new ObjDeposit();
 
 // Create line for deposit (this details what it's applied to)
-$Line = new \QuickBooks_IPP_Object_Line();
+$Line = new ObjLine();
 $Line->setAmount(100);
 $Line->setDetailType('DepositLineDetail');
-$DepositLineDetail = new \QuickBooks_IPP_Object_DepositLineDetail();
+$DepositLineDetail = new ObjDepositLineDetail();
 $DepositLineDetail->setEntity(10);
 $DepositLineDetail->setAccountRef(87);
 $Line->setDepositLineDetail($DepositLineDetail);
 
 $Deposit->addLine($Line);
 $Deposit->setGlobalTaxCalculation('NotApplicable');
-$Deposit->setDepositToAccountRef('{-87}');
+$Deposit->setDepositToAccountRef('{-35}');
 
 
-// Send payment to QBO
+// Send Deposit to QBO
 
 if ($resp = $DepositService->add($Context, $realm, $Deposit))
 {
@@ -52,6 +57,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

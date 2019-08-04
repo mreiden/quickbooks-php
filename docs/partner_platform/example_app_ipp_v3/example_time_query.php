@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\TimeActivity;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,9 +12,9 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$TimeActivityService = new QuickBooks_IPP_Service_TimeActivity();
+$TimeActivityService = new TimeActivity();
 
-$time = $TimeActivityService->query($Context, $realm, "SELECT * FROM TimeActivity  ");
+$time = $TimeActivityService->query($Context, $realm, "SELECT * FROM TimeActivity ");
 
 print_r($time);
 
@@ -22,4 +24,4 @@ print_r($time);
 
 <?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+require_once __DIR__ . '/views/footer.tpl.php';

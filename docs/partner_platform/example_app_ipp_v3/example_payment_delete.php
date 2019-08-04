@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Payment;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,9 +12,9 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$PaymentService = new QuickBooks_IPP_Service_Payment();
+$PaymentService = new Payment();
 
-$the_payment_to_delete = '{-12}';
+$the_payment_to_delete = '{-31}';
 
 $retr = $PaymentService->delete($Context, $realm, $the_payment_to_delete);
 if ($retr)
@@ -38,8 +40,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

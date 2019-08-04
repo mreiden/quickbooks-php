@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Invoice;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,9 +12,16 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$InvoiceService = new QuickBooks_IPP_Service_Invoice();
+$InvoiceService = new Invoice();
 
-$the_invoice_to_delete = '{-10}';
+
+// Find the invoice added with example_invoice_add
+$invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice WHERE DocNumber = 'Example-100' ");
+
+
+$the_invoice_to_delete = ($invoices) ? $invoices[0]->getId() : '{-10}';
+print('Trying to delete invoice ID '. $the_invoice_to_delete .'<br>');
+
 
 $retr = $InvoiceService->delete($Context, $realm, $the_invoice_to_delete);
 if ($retr)
@@ -38,8 +47,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

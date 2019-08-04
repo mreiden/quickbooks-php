@@ -1,8 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Purchase as ObjPurchase;
+use QuickBooksPhpDevKit\IPP\Object\AccountBasedExpenseLineDetail as ObjAccountBasedExpenseLineDetail;
+use QuickBooksPhpDevKit\IPP\Object\Line as ObjLine;
+use QuickBooksPhpDevKit\IPP\Service\Purchase;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,17 +15,17 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$PurchaseService = new QuickBooks_IPP_Service_Purchase();
+$PurchaseService = new Purchase();
 
 // Create our Purchase
-$Purchase = new QuickBooks_IPP_Object_Purchase();
+$Purchase = new Purchase();
 
-$Line = new QuickBooks_IPP_Object_Line();
+$Line = new ObjLine();
 $Line->setDescription('Test description');
 $Line->setAmount(29.95);
 $Line->setDetailType('AccountBasedExpenseLineDetail');
 
-$AccountBasedExpenseLineDetail = new QuickBooks_IPP_Object_AccountBasedExpenseLineDetail();
+$AccountBasedExpenseLineDetail = new ObjAccountBasedExpenseLineDetail();
 $AccountBasedExpenseLineDetail->setAccountRef('{-9}');
 $AccountBasedExpenseLineDetail->setBillableStatus('NotBillable');
 
@@ -73,8 +78,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

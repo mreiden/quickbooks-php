@@ -1,16 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
-ini_set('display_errors', true);
+use QuickBooksPhpDevKit\IPP\IntuitAnywhere;
+
+ini_set('display_errors', '1');
 error_reporting(E_ALL);
 
 header('Content-Type: text/plain');
 
-require_once dirname(__FILE__) . '/../../../QuickBooks.php';
 
-$urls = array(
-	QuickBooks_IPP_IntuitAnywhere::URL_REQUEST_TOKEN,
-	QuickBooks_IPP_IntuitAnywhere::URL_CONNECT_RECONNECT,
-	);
+$urls = [
+	IntuitAnywhere::URL_REQUEST_TOKEN,
+	IntuitAnywhere::URL_CONNECT_RECONNECT,
+];
 
 for ($i = 0; $i <= 1; $i++)
 {
@@ -19,15 +20,14 @@ for ($i = 0; $i <= 1; $i++)
 		ob_start();
 		$out = fopen('php://output', 'w');
 
-		$params = array(
+		$params = [
 			CURLOPT_RETURNTRANSFER => true,
-			);
+			CURLOPT_VERBOSE => true,
+			CURLOPT_STDERR => $out,
+		];
 
 		$ch = curl_init($url);
 		curl_setopt_array($ch, $params);
-
-		curl_setopt($ch, CURLOPT_VERBOSE, true);
-		curl_setopt($ch, CURLOPT_STDERR, $out);
 
 		if ($i == 1)
 		{

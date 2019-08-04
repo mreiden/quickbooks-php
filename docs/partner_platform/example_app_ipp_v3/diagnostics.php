@@ -1,17 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
 header('Content-Type: text/plain');
 
-require_once dirname(__FILE__) . '/config.php';
+require_once __DIR__ . '/config_oauthv2.php';
 
-$check = $IntuitAnywhere->check($the_username, $the_tenant);
-$test = $IntuitAnywhere->test($the_username, $the_tenant);
+$check = $IntuitAnywhere->check($the_tenant);
+$test = $IntuitAnywhere->test($the_tenant);
 
-$creds = $IntuitAnywhere->load($the_username, $the_tenant);
+$creds = $IntuitAnywhere->load($the_tenant);
 
-$diagnostics = array_merge(array(
+$diagnostics = array_merge([
 	'check' => $check,
 	'test' => $test,
-	), (array) $creds);
+	], (array) $creds);
 
 print_r($diagnostics);

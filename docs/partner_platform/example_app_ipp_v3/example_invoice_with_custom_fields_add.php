@@ -1,8 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Invoice as ObjInvoice;
+use QuickBooksPhpDevKit\IPP\Object\Line as ObjLine;
+use QuickBooksPhpDevKit\IPP\Object\SalesItemLineDetail as ObjSalesItemLineDetail;
+use QuickBooksPhpDevKit\IPP\Object\CustomField as ObjCustomField;
+use QuickBooksPhpDevKit\IPP\Service\Invoice;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,18 +16,18 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$InvoiceService = new QuickBooks_IPP_Service_Invoice();
+$InvoiceService = new Invoice();
 
-$Invoice = new QuickBooks_IPP_Object_Invoice();
+$Invoice = new ObjInvoice();
 
 $Invoice->setDocNumber('WEB456');
 $Invoice->setTxnDate('2013-12-05');
 
-$Line = new QuickBooks_IPP_Object_Line();
+$Line = new ObjLine();
 $Line->setDetailType('SalesItemLineDetail');
 $Line->setAmount(12.95 * 2);
 
-$SalesItemLineDetail = new QuickBooks_IPP_Object_SalesItemLineDetail();
+$SalesItemLineDetail = new ObjSalesItemLineDetail();
 $SalesItemLineDetail->setItemRef('8');
 $SalesItemLineDetail->setUnitPrice(12.95);
 $SalesItemLineDetail->setQty(2);
@@ -33,7 +39,7 @@ $Invoice->addLine($Line);
 $Invoice->setCustomerRef('67');
 
 // Add a custom field to the invoice (YOU NEED TO DEFINE THIS IN THE QBO PREFERENCES FIRST!!!)
-$CustomField = new QuickBooks_IPP_Object_CustomField();
+$CustomField = new ObjCustomField();
 $CustomField->setName('Test Field');
 $CustomField->setType('StringType');
 $CustomField->setStringValue('Test value here');
@@ -61,6 +67,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

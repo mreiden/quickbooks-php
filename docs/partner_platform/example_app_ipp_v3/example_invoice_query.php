@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Invoice;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,16 +12,16 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$InvoiceService = new QuickBooks_IPP_Service_Invoice();
+$InvoiceService = new Invoice();
 
-$invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice STARTPOSITION 1 MAXRESULTS 10");
+$invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice STARTPOSITION 1 MAXRESULTS 25");
 //$invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice WHERE DocNumber = '1002' ");
 
 //print_r($customers);
 
 foreach ($invoices as $Invoice)
 {
-	print('Invoice # ' . $Invoice->getDocNumber() . ' has a total of $' . $Invoice->getTotalAmt() . "\n");
+	print('Invoice # ' . $Invoice->getDocNumber() . ' of Customer #' . $Invoice->getCustomerRef() . ' has a total of $' . $Invoice->getTotalAmt() . "\n");
 	print('    First line item: ' . $Invoice->getLine(0)->getDescription() . "\n");
 	print('    Internal Id value: ' . $Invoice->getId() . "\n");
 	print("\n");
@@ -41,8 +43,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

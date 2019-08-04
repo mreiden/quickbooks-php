@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -27,31 +27,21 @@
  * @subpackage HTTP
  */
 
-/**
- * QuickBooks utilities class
- */
-QuickBooks_Loader::load('/QuickBooks/Utilities.php');
+namespace QuickBooksPhpDevKit;
 
-define('QUICKBOOKS_HTTP_ERROR_OK', QUICKBOOKS_ERROR_OK);
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
 
-define('QUICKBOOKS_HTTP_ERROR_CERTIFICATE', 1);
-
-define('QUICKBOOKS_HTTP_ERROR_UNSUPPORTED', 2);
-
-define('QUICKBOOKS_HTTP_METHOD_GET', 'GET');
-
-define('QUICKBOOKS_HTTP_METHOD_POST', 'POST');
-
-define('QUICKBOOKS_HTTP_METHOD_DELETE', 'DELETE');
-
-define('QUICKBOOKS_HTTP_METHOD_HEAD', 'HEAD');
-
-class QuickBooks_HTTP
+class HTTP
 {
-	const HTTP_400 = 400;
-	const HTTP_401 = 401;
-	const HTTP_404 = 404;
-	const HTTP_500 = 500;
+	public const HTTP_400 = 400;
+	public const HTTP_401 = 401;
+	public const HTTP_404 = 404;
+	public const HTTP_500 = 500;
+
+	public const ERROR_OK = PackageInfo::Error['OK'];
+	public const ERROR_CERTIFICATE = 1;
+	public const ERROR_UNSUPPORTED = 2;
 
 	protected $_url;
 
@@ -102,7 +92,7 @@ class QuickBooks_HTTP
 	 *
 	 * @param string $url		The URL to make an HTTP request to
 	 */
-	public function __construct($url = null)
+	public function __construct(?string $url = null)
 	{
 		$this->_url = $url;
 
@@ -118,7 +108,7 @@ class QuickBooks_HTTP
 
 		$this->_sync = true;
 
-		$this->_request_headers = array();
+		$this->_request_headers = [];
 		$this->_return_headers = false;
 
 		$this->_last_request = null;
@@ -128,11 +118,8 @@ class QuickBooks_HTTP
 
 	/**
 	 * Set the URL
-	 *
-	 * @param string $url
-	 * @return void
 	 */
-	public function setURL($url)
+	public function setURL(?string $url): void
 	{
 		$this->_url = $url;
 	}
@@ -142,27 +129,27 @@ class QuickBooks_HTTP
 	 *
 	 * @return string
 	 */
-	public function getURL()
+	public function getURL(): ?string
 	{
 		// @TODO Support for query string args from ->setGETValues()
 		return $this->_url;
 	}
 
-	public function verifyPeer($yes_or_no)
+	public function verifyPeer(bool $yes_or_no): void
 	{
-		$this->_verify_peer = (boolean) $yes_or_no;
+		$this->_verify_peer = $yes_or_no;
 	}
 
-	public function verifyHost($yes_or_no)
+	public function verifyHost(bool $yes_or_no): void
 	{
-		$this->_verify_host = (boolean) $yes_or_no;
+		$this->_verify_host = $yes_or_no;
 	}
 
-	public function setHeaders($arr)
+	public function setHeaders(array $arr): void
 	{
 		foreach ($arr as $key => $value)
 		{
-			if (is_numeric($key) and
+			if (is_numeric($key) &&
 				false !== ($pos = strpos($value, ':')))
 			{
 				// 0 => "Header: value" format
@@ -179,25 +166,22 @@ class QuickBooks_HTTP
 
 	/**
 	 * Tell whether or not to return the HTTP response headers
-	 *
-	 * @param boolean $return
-	 * @return void
 	 */
-	public function returnHeaders($return)
+	public function returnHeaders(bool $return): void
 	{
-		$this->_return_headers = (boolean) $return;
+		$this->_return_headers = $return;
 	}
 
-	public function setHeader($key, $value)
+	public function setHeader(string $key, $value): void
 	{
 		$this->_request_headers[$key] = $value;
 	}
 
-	public function getHeaders($as_combined_array = false)
+	public function getHeaders(bool $as_combined_array = false): array
 	{
 		if ($as_combined_array)
 		{
-			$list = array();
+			$list = [];
 			foreach ($this->_request_headers as $key => $value)
 			{
 				$list[] = $key . ': ' . $value;
@@ -209,7 +193,7 @@ class QuickBooks_HTTP
 		return $this->_request_headers;
 	}
 
-	public function getHeader($key)
+	public function getHeader(string $key): ?string
 	{
 		if (isset($this->_request_headers[$key]))
 		{
@@ -219,17 +203,17 @@ class QuickBooks_HTTP
 		return null;
 	}
 
-	public function setRawBody($str)
+	public function setRawBody(?string $str): void
 	{
-		$this->_body = $str;
+		$this->_body = $str ?? '';
 	}
 
-	public function setPOSTValues($arr)
+	public function setPOSTValues($arr): void
 	{
 		$this->_post = $arr;
 	}
 
-	public function setGETValues($arr)
+	public function setGETValues($arr): void
 	{
 		$this->_get = $arr;
 	}
@@ -245,7 +229,7 @@ class QuickBooks_HTTP
 		{
 			return $this->_body;
 		}
-		else if (count($this->_post))
+		else if (is_countable($this->_post) && count($this->_post))
 		{
 			return http_build_query($this->_post);
 		}
@@ -260,95 +244,84 @@ class QuickBooks_HTTP
 
 	public function GET()
 	{
-		return $this->_request(QUICKBOOKS_HTTP_METHOD_GET);
+		return $this->_request('GET');
 	}
 
 	public function POST()
 	{
-		return $this->_request(QUICKBOOKS_HTTP_METHOD_POST);
+		return $this->_request('POST');
 	}
 
 	public function DELETE()
 	{
-		return $this->_request(QUICKBOOKS_HTTP_METHOD_DELETE);
+		return $this->_request('DELETE');
 	}
 
 	public function HEAD()
 	{
-		return $this->_request(QUICKBOOKS_HTTP_METHOD_HEAD);
+		return $this->_request('HEAD');
 	}
 
-	public function useDebugMode($yes_or_no)
+	public function useDebugMode(bool $yes_or_no): bool
 	{
 		$prev = $this->_debug;
-		$this->_debug = (boolean) $yes_or_no;
+		$this->_debug = $yes_or_no;
 
 		return $prev;
 	}
 
 	/**
 	 * If masking is enabled (default) then credit card numbers, connection tickets, and session tickets will be masked when output or logged
-	 *
-	 * @param boolean $yes_or_no
-	 * @return void
 	 */
-	public function useMasking($yes_or_no)
+	public function useMasking(bool $yes_or_no): void
 	{
-		$this->_masking = (boolean) $yes_or_no;
+		$this->_masking = $yes_or_no;
 	}
 
-	public function useTestEnvironment($yes_or_no)
+	public function useTestEnvironment(bool $yes_or_no): bool
 	{
 		$prev = $this->_test;
-		$this->_test = (boolean) $yes_or_no;
+		$this->_test = $yes_or_no;
 
 		return $prev;
 	}
 
-	public function useLiveEnvironment($yes_or_no)
+	public function useLiveEnvironment(bool $yes_or_no): bool
 	{
 		$prev = $this->_test;
-		$this->_test = ! (boolean) $yes_or_no;
+		$this->_test = !$yes_or_no;
 
 		return $prev;
 	}
 
 	/**
-	 * Get the error number of the last error that occured
-	 *
-	 * @return integer
+	 * Get the error number of the last error that occurred
 	 */
-	public function errorNumber()
+	public function errorNumber(): ?int
 	{
 		return $this->_errnum;
 	}
 
 	/**
-	 * Get the error message of the last error that occured
-	 *
-	 * @return string
+	 * Get the error message of the last error that occurred
 	 */
-	public function errorMessage()
+	public function errorMessage(): ?string
 	{
 		return $this->_errmsg;
 	}
 
 	/**
 	 * Get the last raw XML response that was received
-	 *
-	 * @return string
 	 */
-	public function lastResponse()
+	public function lastResponse(): ?string
 	{
 		return $this->_last_response;
 	}
 
 	/**
 	 * Get the last raw XML request that was sent
-	 *
-	 * @return string
 	 */
-	public function lastRequest()
+	public function lastRequest(): ?string
 	{
 		return $this->_last_request;
 	}
@@ -357,7 +330,7 @@ class QuickBooks_HTTP
 	 *
 	 *
 	 */
-	public function lastDuration()
+	public function lastDuration(): float
 	{
 		return $this->_last_duration;
 	}
@@ -374,7 +347,7 @@ class QuickBooks_HTTP
 	 * @param string $errmsg	The text error message
 	 * @return void
 	 */
-	protected function _setError($errnum, $errmsg = '')
+	protected function _setError(int $errnum, string $errmsg = ''): void
 	{
 		$this->_errnum = $errnum;
 		$this->_errmsg = $errmsg;
@@ -382,31 +355,26 @@ class QuickBooks_HTTP
 
 	/**
 	 *
-	 *
-	 *
-	 * @param string $message
-	 * @param integer $level
-	 * @return boolean
 	 */
-	protected function _log($message)
+	protected function _log(string $message): bool
 	{
 		if ($this->_masking)
 		{
-			$message = QuickBooks_Utilities::mask($message);
+			$message = Utilities::mask($message);
 		}
 
 		if ($this->_debug)
 		{
-			print($message . QUICKBOOKS_CRLF);
+			print($message . PackageInfo::$CRLF);
 		}
 
 		//
-		$this->_log .= $message . QUICKBOOKS_CRLF;
+		$this->_log .= $message . PackageInfo::$CRLF;
 
 		return true;
 	}
 
-	public function resetLog()
+	public function resetLog(): void
 	{
 		$this->_log = '';
 	}
@@ -421,32 +389,29 @@ class QuickBooks_HTTP
 	 * @todo Implement support for asynchronous requests
 	 *
 	 */
-	public function setSynchronous($yes_or_no)
+	public function setSynchronous(bool $yes_or_no): void
 	{
-		$this->_sync = (boolean) $yes_or_no;
+		$this->_sync = $yes_or_no;
 	}
 
-	public function setAsynchronous($yes_or_no)
+	public function setAsynchronous(bool $yes_or_no): void
 	{
-		$this->_sync = !( (boolean) $yes_or_no);
+		$this->_sync = !$yes_or_no;
 	}
 
 	/**
 	 * Make an HTTP request
-	 *
-	 * @param string $method
-	 * @return string
 	 */
-	protected function _request($method)
+	protected function _request(string $method): string
 	{
 		$start = microtime(true);
 
 		if (!function_exists('curl_init'))
 		{
-			die('You must have the PHP cURL extension (php.net/curl) enabled to use this (' . QUICKBOOKS_PACKAGE_NAME . ' v' . QUICKBOOKS_PACKAGE_VERSION . ').');
+			die('You must have the PHP cURL extension (php.net/curl) enabled to use this (' . PackageInfo::Package['NAME'] . ' v' . PackageInfo::Package['VERSION'] . ').');
 		}
 
-		$this->_log('Using CURL to send request!', QUICKBOOKS_LOG_DEVELOP);
+		$this->_log('Using CURL to send request!', PackageInfo::LogLevel['DEVELOP']);
 		$return = $this->_requestCurl($method, $errnum, $errmsg);
 
 		if ($errnum)
@@ -460,18 +425,18 @@ class QuickBooks_HTTP
 		return $return;
 	}
 
-	protected function _requestCurl($method, &$errnum, &$errmsg)
+	protected function _requestCurl(string $method, ?int &$errnum, ?string &$errmsg)
 	{
 		$url = $this->getURL();
 		$raw_body = $this->getRawBody();
 
 		$headers = $this->getHeaders(true);
 
-		$this->_log('Opening connection to: ' . $url, QUICKBOOKS_LOG_VERBOSE);
+		$this->_log('Opening connection to: ' . $url, PackageInfo::LogLevel['VERBOSE']);
 
-		$params = array();
+		$params = [];
 
-		if ($method == QUICKBOOKS_HTTP_METHOD_POST)
+		if ($method == 'POST')
 		{
 			$headers[] = 'Content-Length: ' . strlen($raw_body);
 			$params[CURLOPT_POST] = true;
@@ -479,7 +444,7 @@ class QuickBooks_HTTP
 		}
 
 		$query = '';
-		if (count($this->_get))
+		if (is_countable($this->_get) && count($this->_get))
 		{
 			$query = '?' . http_build_query($this->_get);
 		}
@@ -521,15 +486,15 @@ class QuickBooks_HTTP
 		{
 			if (file_exists($this->_certificate))
 			{
-				$this->_log('Using SSL certificate at: ' . $this->_certificate, QUICKBOOKS_LOG_DEBUG);
+				$this->_log('Using SSL certificate at: ' . $this->_certificate, PackageInfo::LogLevel['DEBUG']);
 				$params[CURLOPT_SSLCERT] = $this->_certificate;
 			}
 			else
 			{
 				$msg = 'Specified SSL certificate could not be located: ' . $this->_certificate;
 
-				$this->_log($msg, QUICKBOOKS_LOG_NORMAL);
-				$errnum = QUICKBOOKS_HTTP_ERROR_CERTIFICATE;
+				$this->_log($msg, PackageInfo::LogLevel['NORMAL']);
+				$errnum = self::ERROR_CERTIFICATE;
 				$errmsg = $msg;
 				return false;
 			}
@@ -538,16 +503,16 @@ class QuickBooks_HTTP
 		// Fudge the outgoing request because CURL won't give us it
 		$request = '';
 
-		if ($method == QUICKBOOKS_HTTP_METHOD_POST)
+		if ($method == 'POST')
 		{
 			$request .= 'POST ';
 		}
-		elseif ($method == QUICKBOOKS_HTTP_METHOD_DELETE)
+		elseif ($method == 'DELETE')
 		{
 			$request .= 'DELETE ';
 			$params[CURLOPT_CUSTOMREQUEST] = 'DELETE';
 		}
-		elseif ($method == QUICKBOOKS_HTTP_METHOD_HEAD)
+		elseif ($method == 'HEAD')
 		{
 			$request .= 'HEAD ';
 		}
@@ -564,10 +529,10 @@ class QuickBooks_HTTP
 		$request .= "\r\n";
 		$request .= $this->getRawBody();
 
-		$this->_log('CURL options: ' . print_r($params, true), QUICKBOOKS_LOG_DEBUG);
+		$this->_log('CURL options: ' . print_r($params, true), PackageInfo::LogLevel['DEBUG']);
 
 		$this->_last_request = $request;
-		$this->_log('HTTP request: ' . $request, QUICKBOOKS_LOG_DEBUG);	// Set as DEBUG so that no one accidentally logs all the credit card numbers...
+		$this->_log('HTTP request: ' . $request, PackageInfo::LogLevel['DEBUG']);	// Set as DEBUG so that no one accidentally logs all the credit card numbers...
 
 		$ch = curl_init();
 		curl_setopt_array($ch, $params);
@@ -585,7 +550,7 @@ class QuickBooks_HTTP
 		*/
 
 		$this->_last_response = $response;
-		$this->_log('HTTP response: ' . substr($response, 0, 500) . '...', QUICKBOOKS_LOG_VERBOSE);
+		$this->_log('HTTP response: ' . substr($response, 0, 500) . '...', PackageInfo::LogLevel['VERBOSE']);
 
 		$this->_last_info = curl_getinfo($ch);
 
@@ -594,7 +559,7 @@ class QuickBooks_HTTP
 			$errnum = curl_errno($ch);
 			$errmsg = curl_error($ch);
 
-			$this->_log('CURL error: ' . $errnum . ': ' . $errmsg, QUICKBOOKS_LOG_NORMAL);
+			$this->_log('CURL error: ' . $errnum . ': ' . $errmsg, PackageInfo::LogLevel['NORMAL']);
 
 			return false;
 		}

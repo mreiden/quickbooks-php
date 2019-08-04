@@ -1,8 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\TimeActivity as ObjTimeActivity;
+use QuickBooksPhpDevKit\IPP\Service\TimeActivity;
+use QuickBooksPhpDevKit\Utilities;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,16 +14,16 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$TimeActivityService = new QuickBooks_IPP_Service_TimeActivity();
+$TimeActivityService = new TimeActivity();
 
-$TimeActivity = new QuickBooks_IPP_Object_TimeActivity();
+$TimeActivity = new ObjTimeActivity();
 $TimeActivity->setTxnDate('2013-10-10');
 $TimeActivity->setNameOf('Vendor');
 $TimeActivity->setVendorRef('89');
 $TimeActivity->setItemRef('8');
 $TimeActivity->setHourlyRate('250');
-$TimeActivity->setStartTime(QuickBooks_Utilities::datetime('-5 hours'));
-$TimeActivity->setEndTime(QuickBooks_Utilities::datetime('-1 hour'));
+$TimeActivity->setStartTime(Utilities::datetime('-5 hours'));
+$TimeActivity->setEndTime(Utilities::datetime('-1 hour'));
 $TimeActivity->setDescription('Test entry.');
 
 if ($resp = $TimeActivityService->add($Context, $realm, $TimeActivity))
@@ -42,6 +46,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

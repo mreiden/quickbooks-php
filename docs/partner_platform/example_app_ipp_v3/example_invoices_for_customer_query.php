@@ -1,8 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service\Customer;
+use QuickBooksPhpDevKit\IPP\Service\Invoice;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,8 +14,8 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$CustomerService = new QuickBooks_IPP_Service_Customer();
-$InvoiceService = new QuickBooks_IPP_Service_Invoice();
+$CustomerService = new Customer();
+$InvoiceService = new Invoice();
 
 $customers = $CustomerService->query($Context, $realm, "SELECT * FROM Customer WHERE FamilyName = 'Palmer' ");
 
@@ -23,7 +27,7 @@ if (count($customers))
 	{
 		print('Customer Id=' . $Customer->getId() . ' is named: ' . $Customer->getFullyQualifiedName() . '<br>');
 
-		$invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice WHERE CustomerRef = '" . QuickBooks_IPP_IDS::usableIDType($Customer->getId()) . "' ");
+		$invoices = $InvoiceService->query($Context, $realm, "SELECT * FROM Invoice WHERE CustomerRef = '" . IDS::usableIDType($Customer->getId()) . "' ");
 
 		/*
 		print("\n\n\n\n");
@@ -64,8 +68,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

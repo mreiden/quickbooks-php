@@ -1,8 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Item as ObjItem;
+use QuickBooksPhpDevKit\IPP\Service\Item;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,12 +13,12 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$ItemService = new QuickBooks_IPP_Service_Item();
+$ItemService = new Item();
 
-$Item = new QuickBooks_IPP_Object_Item();
+$Item = new ObjItem();
 
 $Item->setName('My Item');
-$Item->setType('Inventory');
+$Item->setType('Service');
 $Item->setIncomeAccountRef('53');
 
 if ($resp = $ItemService->add($Context, $realm, $Item))
@@ -39,6 +42,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

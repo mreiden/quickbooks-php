@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Test</title>
+		<title>Connection Successful</title>
 	</head>
 	<body>
 
@@ -8,7 +8,7 @@
 			You're connected! Please wait...
 		</div>
 
-		<script type="text/javascript">
+		<script>
 			window.opener.location.reload(false);
 			window.setTimeout('window.close()', 2000);
 		</script>

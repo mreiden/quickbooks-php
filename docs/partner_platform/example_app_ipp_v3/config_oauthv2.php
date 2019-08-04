@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Intuit Partner Platform configuration variables
@@ -9,70 +9,94 @@
  * @subpackage Documentation
  */
 
+// Require Composer Autoloader
+require_once(dirname(__DIR__,3) . '/vendor/autoload.php');
+
+use QuickBooksPhpDevKit\IPP;
+use QuickBooksPhpDevKit\IPP\IntuitAnywhere;
+use QuickBooksPhpDevKit\IPP\Service\CompanyInfo;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
+
+
+
+if (!file_exists(__DIR__ . '/config-private.php'))
+{
+	$random_key = function_exists('sodium_crypto_secretbox_keygen') ? base64_encode(sodium_crypto_secretbox_keygen()) : 'sodium extension is required';
+
+	echo '<html><body><h1>You must copy/rename config-private-example.php to config-private.php</h1>';
+	echo '<p>You can use <span style="font-family:monospace; background-color:#ccc">' . $random_key . '</span> for $encryption_key';
+	echo ' or generate one yourself using <span style="font-family:monospace; background-color:#ccc">sodium_crypto_secretbox_keygen())</span>';
+	echo '<hr>';
+	if (file_exists(__DIR__ . '/config-private-example.php'))
+	{
+		highlight_file(__DIR__ . '/config-private-example.php');
+	}
+	echo '</body></html>';
+	exit;
+}
+require_once(__DIR__ . '/config-private.php');
+
+
+// Make sure there is an encryption key
+if (empty($encryption_key))
+{
+	print("<h1>Missing encryption Key</h1>\n");
+	print('<p>You must save the key in config-private.php</p>' . "\n");
+	exit;
+}
+
+
 // Turn on some error reporting
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 
-// Require the library code
-require_once dirname(__FILE__) . '/../../../QuickBooks.php';
-
-// Your OAuth consumer key and secret (Intuit will give you both of these when you register an Intuit app)
-//
-// IMPORTANT:
-//	To pass your tech review with Intuit, you'll have to AES encrypt these and
-//	store them somewhere safe.
-//
-// The OAuth request/access tokens will be encrypted and stored for you by the
-//	PHP DevKit IntuitAnywhere classes automatically.
-$oauth_client_id = 'Q0x59iTo9LmlBSd4CnfLRUO4ZTzjuuGpnPfZQRfcFIkGnES5no';
-$oauth_client_secret = 'c7PpJ37XjKfJOisVb3hct0KFV8iP3MrGXt8Dy2bw';
-
-// If you're using DEVELOPMENT TOKENS, you MUST USE SANDBOX MODE!!!  If you're in PRODUCTION, then DO NOT use sandbox.
-$sandbox = true;     // When you're using development tokens
-//$sandbox = false;    // When you're using production tokens
+// Guess at the demo app base url
+if (empty($site_base_url))
+{
+	$site_base_url = "{$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+	$site_base_url = substr($site_base_url, 0, strrpos($site_base_url, '/'));
+}
 
 // This is the URL of your OAuth auth handler page
-$quickbooks_oauth_url = 'http://sandbox.com/quickbooks-php/docs/partner_platform/example_app_ipp_v3/oauth.php';
+if (empty($quickbooks_oauth_url))
+{
+	$quickbooks_oauth_url = $site_base_url .'/oauth' . $site_php_extension;
+}
 
 // This is the URL to forward the user to after they have connected to IPP/IDS via OAuth
-$quickbooks_success_url = 'http://sandbox.com/quickbooks-php/docs/partner_platform/example_app_ipp_v3/success.php';
+if (empty($quickbooks_success_url))
+{
+	$quickbooks_success_url = $site_base_url .'/success' . $site_php_extension;
+}
 
 // This is the menu URL script
-$quickbooks_menu_url = 'http://sandbox.com/quickbooks-php/docs/partner_platform/example_app_ipp_v3/menu.php';
+if (empty($quickbooks_menu_url))
+{
+	$quickbooks_menu_url = $site_base_url .'/menu' . $site_php_extension;
+}
 
-// This is a database connection string that will be used to store the OAuth credentials
-// $dsn = 'pgsql://username:password@hostname/database';
-// $dsn = 'mysql://username:password@hostname/database';
-$dsn = 'mysqli://dev:password@localhost/quickbooks';
 
-// You should set this to an encryption key specific to your app
-$encryption_key = 'bcde1234';
-
-// Scope required
-$scope = 'com.intuit.quickbooks.accounting ';
-
-// The tenant that user is accessing within your own app
-$the_tenant = 12345;
 
 // Initialize the database tables for storing OAuth information
-if (!QuickBooks_Utilities::initialized($dsn))
+if (!Utilities::initialized($dsn))
 {
 	// Initialize creates the neccessary database schema for queueing up requests and logging
-	QuickBooks_Utilities::initialize($dsn);
+	Utilities::initialize($dsn);
 }
 
 // Instantiate our Intuit Anywhere auth handler
 //
 // The parameters passed to the constructor are:
-//  $oauth_version          QuickBooks_IPP_IntuitAnywhere::OAUTH_V2 or QuickBooks_IPP_IntuitAnywhere::OAUTH_V1
+//  $oauth_version          QuickBooks_IPP_IntuitAnywhere::OAUTH_V2
 //	$dsn
-//	$oauth_consumer_key		Intuit will give this to you when you create a new Intuit Anywhere application at AppCenter.Intuit.com
-//	$oauth_consumer_secret	Intuit will give this to you too
+//	$oauth_client_id		Intuit will give this to you when you create a new Intuit Anywhere application at AppCenter.Intuit.com
+//	$oauth_client_secret	Intuit will give this to you too
 //	$this_url				This is the full URL (e.g. http://path/to/this/file.php) of THIS SCRIPT
 //	$that_url				After the user authenticates, they will be forwarded to this URL
 //
-$IntuitAnywhere = new QuickBooks_IPP_IntuitAnywhere(
-	QuickBooks_IPP_IntuitAnywhere::OAUTH_V2,
+$IntuitAnywhere = new IntuitAnywhere(
+	IntuitAnywhere::OAUTH_V2,
 	$sandbox,
 	$scope,
 	$dsn,
@@ -82,23 +106,22 @@ $IntuitAnywhere = new QuickBooks_IPP_IntuitAnywhere(
 	$quickbooks_oauth_url,
 	$quickbooks_success_url);
 
+$quickbooks_is_connected = false;
 // Are they connected to QuickBooks right now?
-if ($IntuitAnywhere->check($the_tenant) and
+if ($IntuitAnywhere->check($the_tenant) &&
 	$IntuitAnywhere->test($the_tenant))
 {
 	// Yes, they are
 	$quickbooks_is_connected = true;
 
 	// Set up the IPP instance
-	$IPP = new QuickBooks_IPP($dsn, $encryption_key);
+	$IPP = new IPP($dsn, $encryption_key);
 
 	// Get our OAuth credentials from the database
 	$creds = $IntuitAnywhere->load($the_tenant);
 
 	// Tell the framework to load some data from the OAuth store
-	$IPP->authMode(
-		QuickBooks_IPP::AUTHMODE_OAUTHV2,
-		$creds);
+	$IPP->authMode(IPP::AUTHMODE_OAUTHV2, $creds);
 
 	if ($sandbox)
 	{
@@ -116,11 +139,6 @@ if ($IntuitAnywhere->check($the_tenant) and
 	$Context = $IPP->context();
 
 	// Get some company info
-	$CompanyInfoService = new QuickBooks_IPP_Service_CompanyInfo();
+	$CompanyInfoService = new CompanyInfo();
 	$quickbooks_CompanyInfo = $CompanyInfoService->get($Context, $realm);
-}
-else
-{
-	// No, they are not
-	$quickbooks_is_connected = false;
 }

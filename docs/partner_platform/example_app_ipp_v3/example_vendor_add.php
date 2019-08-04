@@ -1,8 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Vendor as ObjVendor;
+use QuickBooksPhpDevKit\IPP\Service\Vendor;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
+
+$VendorDisplayName = 'Keith R Palmer Jr ' . mt_rand(0, 1000);
 
 ?>
 
@@ -10,18 +15,18 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$VendorService = new QuickBooks_IPP_Service_Vendor();
+$VendorService = new Vendor();
 
-$Vendor = new QuickBooks_IPP_Object_Vendor();
+$Vendor = new ObjVendor();
 $Vendor->setTitle('Mr');
 $Vendor->setGivenName('Keith');
 $Vendor->setMiddleName('R');
 $Vendor->setFamilyName('Palmer');
-$Vendor->setDisplayName('Keith R Palmer Jr ' . mt_rand(0, 1000));
+$Vendor->setDisplayName($VendorDisplayName);
 
 if ($resp = $VendorService->add($Context, $realm, $Vendor))
 {
-	print('Our new Vendor ID is: [' . $resp . ']');
+	print('Our new Vendor ID for "' . $VendorDisplayName .'" is: [' . $resp . ']');
 }
 else
 {
@@ -41,6 +46,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

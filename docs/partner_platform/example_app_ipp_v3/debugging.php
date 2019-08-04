@@ -1,8 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config.php';
+use QuickBooksPhpDevKit\IPP\Object\Bill as ObjBill;
+use QuickBooksPhpDevKit\IPP\Service\Bill;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,9 +13,9 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$BillService = new QuickBooks_IPP_Service_Bill();
+$BillService = new Bill();
 
-$Bill = new QuickBooks_IPP_Object_Bill();
+$Bill = new ObjBill();
 
 $Bill->setDocNumber('abc123');
 $Bill->setTxnDate('2014-07-12');
@@ -51,8 +54,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

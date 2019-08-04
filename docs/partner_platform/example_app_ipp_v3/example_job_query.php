@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Customer;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -11,12 +13,14 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 <?php
 
 // Jobs are really just Customers, so we can use the CustomerService and Customer query methods to do this
-$CustomerService = new QuickBooks_IPP_Service_Customer();
+$CustomerService = new Customer();
 
 // Get all jobs that have a parent customer "Derrick Huckleberry"
-$jobs = $CustomerService->query($Context, $realm, "SELECT * FROM Customer WHERE FullyQualifiedName LIKE 'Derrick Huckleberry:%' ");
+$parentName = 'Derrick Huckleberry';
+$jobs = $CustomerService->query($Context, $realm, "SELECT * FROM Customer WHERE FullyQualifiedName LIKE '$parentName:%' ");
 
-//print_r($customers);
+print('Found '. count($jobs) . ' Customer Jobs under ' . $parentName .'<br>');
+print_r($jobs);
 
 foreach ($jobs as $Job)
 {
@@ -35,8 +39,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

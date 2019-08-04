@@ -1,8 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Qbclass as ObjQbclass;
+use QuickBooksPhpDevKit\IPP\Service\Qbclass;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,9 +13,9 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$ClassService = new QuickBooks_IPP_Service_Class();
+$ClassService = new Qbclass();
 
-$Class = new QuickBooks_IPP_Object_Class();
+$Class = new ObjQbclass();
 
 $Class->setName('My Class');
 
@@ -35,8 +38,9 @@ print("\n\n\n\n\n\n\n\n\n");
 
 ?>
 
+
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

@@ -1,8 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Account as ObjAccount;
+use QuickBooksPhpDevKit\IPP\Service\Account;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,9 +13,9 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$AccountService = new QuickBooks_IPP_Service_Account();
+$AccountService = new Account();
 
-$Account = new QuickBooks_IPP_Object_Account();
+$Account = new ObjAccount();
 
 $Account->setName('My Test Name');
 $Account->setDescription('Here is my description');
@@ -40,6 +43,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

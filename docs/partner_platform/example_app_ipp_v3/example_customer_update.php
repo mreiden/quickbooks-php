@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Customer;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,10 +12,10 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$CustomerService = new QuickBooks_IPP_Service_Customer();
+$CustomerService = new Customer();
 
 // Get the existing customer first (you need the latest SyncToken value)
-$customers = $CustomerService->query($Context, $realm, "SELECT * FROM Customer WHERE Id = '34' ");
+$customers = $CustomerService->query($Context, $realm, "SELECT * FROM Customer WHERE Id = '12' ");
 $Customer = $customers[0];
 
 // Change something
@@ -48,6 +50,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

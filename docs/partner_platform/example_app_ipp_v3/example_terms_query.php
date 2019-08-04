@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Service\Term;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,7 +12,7 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$TermService = new QuickBooks_IPP_Service_Term();
+$TermService = new Term();
 
 $terms = $TermService->query($Context, $realm, "SELECT * FROM Term");
 
@@ -35,8 +37,6 @@ print("\n\n\n\n");
 
 </pre>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

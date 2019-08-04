@@ -1,13 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config.php';
+require_once __DIR__ . '/config_oauthv2.php';
 
-if ($IntuitAnywhere->disconnect($the_username, $the_tenant))
+if ($IntuitAnywhere->disconnect('UNUSED_IN_OAUTHV2', $the_tenant))
 {
-
+    // Do something.  This just redirects to the index page.
 }
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -17,12 +17,10 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 		</div>
 
 
-		<script type="text/javascript">
-			window.setTimeout('window.location = \'./index.php\';', 2000);
+		<script>
+			window.setTimeout("window.location = 'index<?= $site_php_extension ?>';", 2500);
 		</script>
 
+
 <?php
-
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

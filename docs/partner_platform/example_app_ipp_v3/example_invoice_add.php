@@ -1,8 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Invoice as ObjInvoice;
+use QuickBooksPhpDevKit\IPP\Object\Line as ObjLine;
+use QuickBooksPhpDevKit\IPP\Object\SalesItemLineDetail as ObjSalesItemLineDetail;
+use QuickBooksPhpDevKit\IPP\Service\Invoice;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,19 +15,19 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$InvoiceService = new QuickBooks_IPP_Service_Invoice();
+$InvoiceService = new Invoice();
 
-$Invoice = new QuickBooks_IPP_Object_Invoice();
+$Invoice = new ObjInvoice();
 
-$Invoice->setDocNumber('WEB' . mt_rand(0, 10000));
+$Invoice->setDocNumber('Example-100');
 $Invoice->setTxnDate('2013-10-11');
 
-$Line = new QuickBooks_IPP_Object_Line();
+$Line = new ObjLine();
 $Line->setDetailType('SalesItemLineDetail');
 $Line->setAmount(20.0000 * 1.0000 * 0.516129);
 $Line->setDescription('Test description goes here.');
 
-$SalesItemLineDetail = new QuickBooks_IPP_Object_SalesItemLineDetail();
+$SalesItemLineDetail = new ObjSalesItemLineDetail();
 $SalesItemLineDetail->setItemRef('8');
 $SalesItemLineDetail->setUnitPrice(20 * 0.516129);
 $SalesItemLineDetail->setQty(1.00000);
@@ -31,7 +36,7 @@ $Line->addSalesItemLineDetail($SalesItemLineDetail);
 
 $Invoice->addLine($Line);
 
-$Invoice->setCustomerRef('67');
+$Invoice->setCustomerRef('12');
 
 
 if ($resp = $InvoiceService->add($Context, $realm, $Invoice))
@@ -54,6 +59,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';

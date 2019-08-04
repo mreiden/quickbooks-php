@@ -1,55 +1,61 @@
-<?php
+<?php declare(strict_types=1);
 
 // For OAuth2 (all new application, and what you should be migrating to)
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+require_once __DIR__ . '/config_oauthv2.php';
 
-// For old/legacy applications
-//require_once dirname(__FILE__) . '/config_oauthv1.php';
+require_once __DIR__ . '/views/header.tpl.php';
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+$examples = [];
 
-$examples = array();
-
-$dh = opendir(dirname(__FILE__));
-while (false !== ($file = readdir($dh)))
+$files = scandir(__DIR__, SCANDIR_SORT_ASCENDING);
+foreach ($files as $file)
 {
-	if (substr($file, 0, 7) != 'example')
+	// Remove the ending ".php" from filename
+	$file = basename($file, '.php');
+
+	// Split the filename into parts
+	$parts = explode('_', $file);
+
+	// Remove the first word and make sure it is "example" (e.g. example_vendor_query.php)
+	$start = array_shift($parts);
+	if ($start != 'example')
 	{
 		continue;
 	}
 
-	$tmp = explode('_', $file);
-	switch (end($tmp))
+	// Remove the last word to get what kind of example this file is
+	$last = array_pop($parts);
+	switch ($last)
 	{
-		case 'get.php':
-			$examples[$file] = 'Get ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'get':
+			$examples[$file . $site_php_extension] = 'Get ' . implode(' ', $parts);
 			break;
-		case 'add.php':
-			$examples[$file] = 'Add a ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'add':
+			$examples[$file . $site_php_extension] = 'Add a ' . implode(' ', $parts);
 			break;
-		case 'void.php';
-			$examples[$file] = 'Void a ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'void':
+			$examples[$file . $site_php_extension] = 'Void a ' . implode(' ', $parts);
 			break;
-		case 'update.php':
-			$examples[$file] = 'Update a ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'update':
+			$examples[$file . $site_php_extension] = 'Update a ' . implode(' ', $parts);
 			break;
-		case 'query.php':
-			$examples[$file] = 'Query for ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'query':
+			$examples[$file . $site_php_extension] = 'Query for ' . implode(' ', $parts);
 			break;
-		case 'count.php':
-			$examples[$file] = 'Count ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'count':
+			$examples[$file . $site_php_extension] = 'Count ' . implode(' ', $parts);
 			break;
-		case 'cdc.php';
-			$examples[$file] = 'Get objects that have changed since a timestamp';
+		case 'cdc':
+			$examples[$file . $site_php_extension] = 'Get objects that have changed since a timestamp';
 			break;
-		case 'entitlements.php':
-			$examples[$file] = 'Get entitlement values (e.g. find out what features QBO supports)';
+		case 'entitlements':
+			$examples[$file . $site_php_extension] = 'Get entitlement values (e.g. find out what features QBO supports)';
 			break;
-		case 'delete.php';
-			$examples[$file] = 'Delete a ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'delete':
+			$examples[$file . $site_php_extension] = 'Delete a ' . implode(' ', $parts);
 			break;
-		case 'objects.php';
-			$examples[$file] = 'Object ' . implode(' ', array_slice($tmp, 1, -1));
+		case 'objects';
+			$examples[$file . $site_php_extension] = 'Object ' . implode(' ', $parts);
 			break;
 	}
 }
@@ -82,14 +88,13 @@ while (false !== ($file = readdir($dh)))
 	</p>
 	<ul>
 		<li>Post your code.</li>
-		<li>Check that all of your OAuth credentials and URLs match between your code and your Intuit account.</li>
-		<li>Post your XML request/response. <a href="debugging.php">Don't know how to get the request/response?</a></li>
-		<li>Post the results of the <a href="troubleshooting.php">troubleshooting script</a>.</li>
+		<li>Check that all of your OAuth2 credentials and URLs match between your code and your Intuit account.</li>
+		<li>Post your XML request/response. <a href="debugging<?= $site_php_extension ?>">Don't know how to get the request/response?</a></li>
+		<li>Post the results of the <a href="troubleshooting<?= $site_php_extension ?>">troubleshooting script</a>.</li>
 	</ul>
 
-	<p>
-		QuickBooks connection status:
 
+	<h2>QuickBooks connection status:</h2>
 		<?php if ($quickbooks_is_connected): ?>
 			<div style="border: 2px solid green; text-align: center; padding: 8px; color: green;">
 				CONNECTED!<br>
@@ -108,10 +113,10 @@ while (false !== ($file = readdir($dh)))
 				<?php foreach ($examples as $file => $title): ?>
 					<tr>
 						<td>
-							<a href="<?php print($file); ?>"><?php print($title); ?></a>
+							<a href="<?= $file ?>"><?= $title ?></a>
 						</td>
 						<td>
-							<a href="source.php?file=<?php print($file); ?>">(view source)</a>
+							<a href="source<?= $site_php_extension ?>?file=<?= basename($file, $site_php_extension) ?>.php">(view source)</a>
 						</td>
 					</tr>
 				<?php endforeach; ?>
@@ -121,7 +126,7 @@ while (false !== ($file = readdir($dh)))
 				</tr>
 				<tr>
 					<td>
-						<a href="disconnect.php">Disconnect from QuickBooks</a>
+						<a href="disconnect<?= $site_php_extension ?>">Disconnect from QuickBooks</a>
 					</td>
 					<td>
 						(If you do this, you'll have to go back through the authorization/connection process to get connected again)
@@ -133,7 +138,7 @@ while (false !== ($file = readdir($dh)))
 				</tr>
 				<tr>
 					<td>
-						<a href="reconnect.php">Reconnect / refresh connection</a>
+						<a href="reconnect<?= $site_php_extension ?>">Reconnect / refresh connection</a>
 					</td>
 					<td>
 						(QuickBooks connections expire after 6 months, so you have to this roughly every 5 and 1/2 months)
@@ -145,7 +150,7 @@ while (false !== ($file = readdir($dh)))
 				</tr>
 				<tr>
 					<td>
-						<a href="diagnostics.php">Diagnostics about QuickBooks connection</a>
+						<a href="diagnostics<?= $site_php_extension ?>">Diagnostics about QuickBooks connection</a>
 					</td>
 					<td>
 						&nbsp;
@@ -157,7 +162,7 @@ while (false !== ($file = readdir($dh)))
 				</tr>
 				<tr>
 					<td>
-						<a href="debugging.php">Need help debugging/troubleshooting?</a>
+						<a href="debugging<?= $site_php_extension ?>">Need help debugging/troubleshooting?</a>
 					</td>
 					<td>
 						&nbsp;
@@ -172,9 +177,8 @@ while (false !== ($file = readdir($dh)))
 				<ipp:connectToIntuit></ipp:connectToIntuit>
 				<br>
 				<br>
-				You must authenticate to QuickBooks <b>once</b> before you can exchange data with it. <br>
-				<br>
-				<strong>You only have to do this once!</strong> <br><br>
+				<p>You must authenticate to QuickBooks <b>once</b> before you can exchange data with it.</p>
+				<p><strong>You only have to do this once!</strong></p>
 
 				After you've authenticated once, you never have to go
 				through this connection process again. <br>
@@ -183,11 +187,8 @@ while (false !== ($file = readdir($dh)))
 			</div>
 		<?php endif; ?>
 
-	</p>
 </div>
 
 <?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
-
-?>
+require_once __DIR__ . '/views/footer.tpl.php';

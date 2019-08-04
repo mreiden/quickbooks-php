@@ -1,8 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once dirname(__FILE__) . '/config_oauthv2.php';
+use QuickBooksPhpDevKit\IPP\Object\Payment as ObjPayment;
+use QuickBooksPhpDevKit\IPP\Object\Line as ObjLine;
+use QuickBooksPhpDevKit\IPP\Object\LinkedTxn as ObjLinkedTxn;
+use QuickBooksPhpDevKit\IPP\Service\Payment;
 
-require_once dirname(__FILE__) . '/views/header.tpl.php';
+require_once __DIR__ . '/config_oauthv2.php';
+
+require_once __DIR__ . '/views/header.tpl.php';
 
 ?>
 
@@ -10,29 +15,29 @@ require_once dirname(__FILE__) . '/views/header.tpl.php';
 
 <?php
 
-$PaymentService = new QuickBooks_IPP_Service_Payment();
+$PaymentService = new Payment();
 
 // Create payment object
-$Payment = new QuickBooks_IPP_Object_Payment();
+$Payment = new ObjPayment();
 
 $Payment->setPaymentRefNum('WEB123');
 $Payment->setTxnDate('2014-02-11');
 $Payment->setTotalAmt(10);
 
 // Create line for payment (this details what it's applied to)
-$Line = new QuickBooks_IPP_Object_Line();
+$Line = new ObjLine();
 $Line->setAmount(10);
 
 // The line has a LinkedTxn node which links to the actual invoice
-$LinkedTxn = new QuickBooks_IPP_Object_LinkedTxn();
-$LinkedTxn->setTxnId('{-84}');
+$LinkedTxn = new ObjLinkedTxn();
+$LinkedTxn->setTxnId('{-42}');
 $LinkedTxn->setTxnType('Invoice');
 
 $Line->setLinkedTxn($LinkedTxn);
 
 $Payment->addLine($Line);
 
-$Payment->setCustomerRef('{-67}');
+$Payment->setCustomerRef('{-26}');
 
 // Send payment to QBO
 if ($resp = $PaymentService->add($Context, $realm, $Payment))
@@ -57,6 +62,6 @@ print("\n\n\n\n\n\n\n\n\n");
 
 </pre>
 
-<?php
 
-require_once dirname(__FILE__) . '/views/footer.tpl.php';
+<?php
+require_once __DIR__ . '/views/footer.tpl.php';
