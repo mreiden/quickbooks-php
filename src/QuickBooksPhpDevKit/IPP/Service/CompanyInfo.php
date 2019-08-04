@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,10 +16,13 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\Ipp\Context;
+use QuickBooksPhpDevKit\Ipp\Object\CompanyInfo as ObjCompanyInfo;
+use QuickBooksPhpDevKit\Ipp\Service;
 
-class QuickBooks_IPP_Service_CompanyInfo extends QuickBooks_IPP_Service
+class CompanyInfo extends Service
 {
 	/**
 	 * Get a company by realmID
@@ -28,18 +31,18 @@ class QuickBooks_IPP_Service_CompanyInfo extends QuickBooks_IPP_Service
 	 * @param string $realmID
 	 * @return QuickBooks_IPP_Object_Customer	The customer object
 	 */
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, string $query): ?array
 	{
 		return parent::_query($Context, $realm, $query);
 	}
 
-	public function get($Context, $realm)
+	public function get(Context $Context, string $realm): ?ObjCompanyInfo
 	{
 		if ($list = parent::_query($Context, $realm, "SELECT * FROM CompanyInfo"))
 		{
 			return $list[0];
 		}
 
-		return false;
+		return null;
 	}
 }

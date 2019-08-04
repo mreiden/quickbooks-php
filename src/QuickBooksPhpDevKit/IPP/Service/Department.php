@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,45 +16,40 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Department as ObjDepartment;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Department extends QuickBooks_IPP_Service
+class Department extends Service
 {
-	public function findAll($Context, $realmID)
+	public function findAll(Context $Context, string $realmID)
 	{
 		$xml = null;
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_DEPARTMENT, $xml);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_DEPARTMENT, $xml);
 	}
 
 	/**
 	 * Get a department by ID
-	 *
-	 * @param QuickBooks_IPP_Context $Context
-	 * @param string $realmID
-	 * @param $IDType
-	 * @return QuickBooks_IPP_Object_Department The department object
 	 */
-	public function findById($Context, $realmID, $IDType)
+	public function findById(Context $Context, string $realmID, string $IDType): ?ObjDepartment
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_DEPARTMENT, $IDType, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_DEPARTMENT, $IDType, $xml);
 	}
 
 	/**
 	 * Add a new department to QuickBooks
-	 *
-	 * @param QuickBooks_IPP_Context $Context
-	 * @param string $realmID
-	 * @param QuickBooks_IPP_Object_Department
 	 * @return string The new ID of the created department
 	 */
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjDepartment $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_DEPARTMENT, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_DEPARTMENT, $Object);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, string $query)
 	{
 		return parent::_query($Context, $realm, $query);
 	}

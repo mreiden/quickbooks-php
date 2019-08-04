@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,33 +16,37 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Payment as ObjPayment;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Payment extends QuickBooks_IPP_Service
+class Payment extends Service
 {
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjPayment $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PAYMENT, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_PAYMENT, $Object);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, ?string $query)
 	{
 		return parent::_query($Context, $realm, $query);
 	}
 
-	public function update($Context, $realm, $IDType, $Object)
+	public function update(Context $Context, string $realm, string $IDType, ObjPayment $Object)
 	{
-		return parent::_update($Context, $realm, QuickBooks_IPP_IDS::RESOURCE_PAYMENT, $Object, $IDType);
+		return parent::_update($Context, $realm, IDS::RESOURCE_PAYMENT, $Object, $IDType);
 	}
 
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PAYMENT, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_PAYMENT, $IDType);
 	}
 
-	public function void($Context, $realmID, $IDType)
+	public function void(Context $Context, string $realmID, $IDType)
 	{
-		return parent::_void($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PAYMENT, $IDType);
+		return parent::_void($Context, $realmID, IDS::RESOURCE_PAYMENT, $IDType);
 	}
 }

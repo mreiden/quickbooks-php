@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -13,7 +13,9 @@
  *
  */
 
-class QuickBooks_IPP_Role
+namespace QuickBooksPhpDevKit\IPP;
+
+class Role
 {
 	protected $_roleid;
 
@@ -23,7 +25,7 @@ class QuickBooks_IPP_Role
 
 	protected $_access_name;
 
-	public function __construct($roleid, $name, $access_id, $access_name)
+	public function __construct($roleid, string $name, $access_id, $access_name)
 	{
 		$this->_roleid = $roleid;
 		$this->_name = $name;

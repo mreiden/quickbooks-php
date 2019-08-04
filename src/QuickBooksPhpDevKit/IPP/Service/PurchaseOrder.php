@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,28 +16,32 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\PurchaseOrder as ObjPurchaseOrder;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_PurchaseOrder extends QuickBooks_IPP_Service
+class PurchaseOrder extends Service
 {
-	public function findAll($Context, $realmID)
+	public function findAll(Context $Context, string $realmID)
 	{
 		$xml = null;
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PURCHASEORDER, $xml);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_PURCHASEORDER, $xml);
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjPurchaseOrder $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PURCHASEORDER, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_PURCHASEORDER, $Object);
 	}
 
-	public function update($Context, $realmID, $IDType, $Object)
+	public function update(Context $Context, string $realmID, string $IDType, ObjPurchaseOrder $Object)
 	{
-		return parent::_update($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PURCHASEORDER, $Object, $IDType);
+		return parent::_update($Context, $realmID, IDS::RESOURCE_PURCHASEORDER, $Object, $IDType);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, ?string $query)
 	{
 		return parent::_query($Context, $realm, $query);
 	}
@@ -51,9 +55,8 @@ class QuickBooks_IPP_Service_PurchaseOrder extends QuickBooks_IPP_Service
 	 *
 	 * @return boolean
 	 */
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PURCHASEORDER, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_PURCHASEORDER, $IDType);
 	}
-
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,18 +16,22 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\TaxAgency as ObjTaxAgency;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_TaxAgency extends QuickBooks_IPP_Service
+class TaxAgency extends Service
 {
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, ?string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 
-	public function add($Context, $realm, $Object)
+	public function add(Context $Context, string $realmID, ObjTaxAgency $Object)
 	{
-		return parent::_add($Context, $realm, QuickBooks_IPP_IDS::RESOURCE_TAXAGENCY, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_TAXAGENCY, $Object);
 	}
 }

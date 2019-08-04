@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,14 +16,18 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Employee as ObjEmployee;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Employee extends QuickBooks_IPP_Service
+class Employee extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50, $options = array())
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50, array $options = [])
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_EMPLOYEE, $query, null, $page, $size, '', $options);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_EMPLOYEE, $query, null, $page, $size, '', $options);
 	}
 
 	/**
@@ -34,19 +38,19 @@ class QuickBooks_IPP_Service_Employee extends QuickBooks_IPP_Service
 	 * @param string $ID						The ID of the customer (this expects an IdType, which includes the domain)
 	 * @return QuickBooks_IPP_Object_Employee	The employee object
 	 */
-	public function findById($Context, $realmID, $ID)
+	public function findById(Context $Context, string $realmID, $ID): ?ObjEmployee
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_EMPLOYEE, $ID, null, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_EMPLOYEE, $ID, null, $xml);
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjEmployee $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_EMPLOYEE, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_EMPLOYEE, $Object);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, ?string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 }

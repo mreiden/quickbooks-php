@@ -1,12 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Item extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Item extends BaseObject
 {
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Id' => true,
 			'MetaData' => true,
 			'ItemParentId' => true,
@@ -33,6 +35,6 @@ class QuickBooks_IPP_Object_Item extends QuickBooks_IPP_Object
 			'QtyOnSalesOrder' => true,
 			'ReorderPoint' => true,
 			'ManPartNum' => true,
-		);
+		];
 	}
 }

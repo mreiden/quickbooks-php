@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -13,7 +13,9 @@
  *
  */
 
-class QuickBooks_IPP_Entitlement
+namespace QuickBooksPhpDevKit\IPP;
+
+class Entitlement
 {
 	protected $_entitlement_id;
 
@@ -23,8 +25,8 @@ class QuickBooks_IPP_Entitlement
 
 	protected $_term;
 
-	const TERM_ON = 'On';
-	const TERM_OFF = 'Off';
+	public const TERM_ON = 'On';
+	public const TERM_OFF = 'Off';
 
 	public function __construct($entitlement_id, $name, $term)
 	{

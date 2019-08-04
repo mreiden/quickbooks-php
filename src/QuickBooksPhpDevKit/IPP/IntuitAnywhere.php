@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks PHP DevKit
@@ -15,7 +15,17 @@
  * @package QuickBooks
  */
 
-class QuickBooks_IPP_IntuitAnywhere
+namespace QuickBooksPhpDevKit\IPP;
+
+use QuickBooksPhpDevKit\Driver\Factory;
+use QuickBooksPhpDevKit\HTTP;
+use QuickBooksPhpDevKit\IPP;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\OAuthv1;
+use QuickBooksPhpDevKit\IPP\Service\Customer;
+use QuickBooksPhpDevKit\XML;
+
+class IntuitAnywhere
 {
 	protected $_oauth_version;
 	protected $_oauth_scope;
@@ -46,79 +56,76 @@ class QuickBooks_IPP_IntuitAnywhere
 	protected $_last_request;
 	protected $_last_response;
 
-	const URL_REQUEST_TOKEN = 'https://oauth.intuit.com/oauth/v1/get_request_token';
-	const URL_ACCESS_TOKEN = 'https://oauth.intuit.com/oauth/v1/get_access_token';
-	const URL_CONNECT_BEGIN = 'https://appcenter.intuit.com/Connect/Begin';
-	const URL_CONNECT_DISCONNECT = 'https://appcenter.intuit.com/api/v1/Connection/Disconnect';
-	const URL_CONNECT_RECONNECT = 'https://appcenter.intuit.com/api/v1/Connection/Reconnect';
-	const URL_APP_MENU = 'https://appcenter.intuit.com/api/v1/Account/AppMenu';
+	//public const URL_REQUEST_TOKEN = 'https://oauth.intuit.com/oauth/v1/get_request_token';
+	//public const URL_ACCESS_TOKEN = 'https://oauth.intuit.com/oauth/v1/get_access_token';
+	public const URL_CONNECT_BEGIN = 'https://appcenter.intuit.com/Connect/Begin';
+	//public const URL_CONNECT_DISCONNECT = 'https://appcenter.intuit.com/api/v1/Connection/Disconnect';
+	//public const URL_CONNECT_RECONNECT = 'https://appcenter.intuit.com/api/v1/Connection/Reconnect';
+	//public const URL_APP_MENU = 'https://appcenter.intuit.com/api/v1/Account/AppMenu';
 
-	const URL_DISCOVERY_SANDBOX = 'https://developer.api.intuit.com/.well-known/openid_sandbox_configuration';
-	const URL_DISCOVERY_PRODUCTION = 'https://developer.api.intuit.com/.well-known/openid_configuration';
+	public const URL_DISCOVERY_SANDBOX = 'https://developer.api.intuit.com/.well-known/openid_sandbox_configuration';
+	public const URL_DISCOVERY_PRODUCTION = 'https://developer.api.intuit.com/.well-known/openid_configuration';
 
-	const EXPIRY_EXPIRED = 'expired';
-	const EXPIRY_NOTYET = 'notyet';
-	const EXPIRY_SOON = 'soon';
-	const EXPIRY_UNKNOWN = 'unknown';
+	public const EXPIRY_EXPIRED = 'expired';
+	public const EXPIRY_NOTYET = 'notyet';
+	public const EXPIRY_SOON = 'soon';
+	public const EXPIRY_UNKNOWN = 'unknown';
 
-	const OAUTH_V1 = 'oauthv1';
-	const OAUTH_V2 = 'oauthv2';
+	//public const OAUTH_V1 = 'oauthv1';
+	public const OAUTH_V2 = 'oauthv2';
 
 	/**
 	 *
-	 *
+	 * @param string $_oauth_version	The OAuth version.  Either IntuitAnywhere::OAUTH_V1 (oauthv1) or Either IntuitAnywhere::OAUTH_V2 (oauthv2)
+	 * @param bool   $sandbox			Whether or not to use the sandbox
 	 * @param string $consumer_key		The OAuth consumer key Intuit gives you
 	 * @param string $consumer_secret	The OAuth consumer secret Intuit gives you
 	 * @param string $this_url			The URL of your QuickBooks_IntuitAnywhere class instance
-	 * @param string $that_url			The URL the user should be sent to after authenticated
+	 * @param string $that_url			The URL the user should be sent to after being authenticated
 	 */
-	public function __construct($oauth_version, $sandbox, $scope, $dsn, $encryption_key, $consumer_key_or_client_id, $consumer_secret_or_client_secret, $this_url = null, $that_url = null)
+	public function __construct(string $IGNORED_oauth_version, bool $sandbox, string $scope, $dsn, string $encryption_key, string $consumer_key_or_client_id, string $consumer_secret_or_client_secret, ?string $this_url = null, ?string $that_url = null)
 	{
 		$this->_dsn = $dsn;
-		$this->_driver = QuickBooks_Driver_Factory::create($dsn);
+		$this->_driver = Factory::create($dsn);
 
 		$this->_key = $encryption_key;
 
 		$this->_this_url = $this_url;
 		$this->_that_url = $that_url;
 
-		$this->_oauth_version = $oauth_version;
+		$this->_oauth_version = IPP::AUTHMODE_OAUTHV2;
 		$this->_oauth_scope = $scope;
 
-		$this->_sandbox = (bool) $sandbox;
+		$this->_sandbox = $sandbox;
 
-		$this->_consumer_key = $this->_client_id = $consumer_key_or_client_id;
-		$this->_consumer_secret = $this->_client_secret = $consumer_secret_or_client_secret;
+		//$this->_consumer_key = $this->_client_id = $consumer_key_or_client_id;
+		//$this->_consumer_secret = $this->_client_secret = $consumer_secret_or_client_secret;
+		$this->_client_id = $consumer_key_or_client_id;
+		$this->_client_secret = $consumer_secret_or_client_secret;
 
 		$this->_debug = false;
 	}
 
 	/**
 	 * Turn on/off debug mode
-	 *
-	 * @param boolean $true_or_false
 	 */
-	public function useDebugMode($true_or_false)
+	public function useDebugMode(bool $true_or_false): void
 	{
-		$this->_debug = (boolean) $true_or_false;
+		$this->_debug = $true_or_false;
 	}
 
 	/**
 	 * Get the last error number
-	 *
-	 * @return integer
 	 */
-	public function errorNumber()
+	public function errorNumber(): ?int
 	{
 		return $this->_errnum;
 	}
 
 	/**
 	 * Get the last error message
-	 *
-	 * @return string
 	 */
-	public function errorMessage()
+	public function errorMessage(): ?string
 	{
 		return $this->_errmsg;
 	}
@@ -128,20 +135,19 @@ class QuickBooks_IPP_IntuitAnywhere
 	 *
 	 * @param integer $errnum	The error number/code
 	 * @param string $errmsg	The text error message
-	 * @return void
 	 */
-	protected function _setError($errnum, $errmsg = '')
+	protected function _setError(int $errnum, string $errmsg = ''): void
 	{
 		$this->_errnum = $errnum;
 		$this->_errmsg = $errmsg;
 	}
 
-	public function lastRequest()
+	public function lastRequest(): ?string
 	{
 		return $this->_last_request;
 	}
 
-	public function lastResponse()
+	public function lastResponse(): ?string
 	{
 		return $this->_last_response;
 	}
@@ -150,61 +156,43 @@ class QuickBooks_IPP_IntuitAnywhere
 	 * Returns TRUE if an OAuth token exists for this user, FALSE otherwise
 	 *
 	 * @param   string  $app_tenant   The tenant to check to see if they are connected/auth'd
-	 * @return  bool
 	 */
-	public function check($app_tenant)
+	public function check(string $app_tenant): bool
 	{
-		if ($arr = $this->load($app_tenant))
-		{
-			return true;
-		}
+		$arr = $this->load($app_tenant);
 
-		return false;
+		return false !== $arr;
 	}
 
 	/**
 	 * Test to see if a connection actually works (make sure you haven't been disconnected on Intuit's end)
-	 *
-	 * @param string   $app_tenant
-	 *
 	 */
-	public function test($app_tenant)
+	public function test(string $app_tenant): bool
 	{
-		if ($creds = $this->load($app_tenant))
+		$creds = $this->load($app_tenant);
+		if ($creds)
 		{
-			$IPP = new QuickBooks_IPP($this->_dsn, $this->_key);
-
-			if ($this->_oauth_version == self::OAUTH_V1)
-			{
-				$authmode = QuickBooks_IPP::AUTHMODE_OAUTHV1;
-			}
-			else if ($this->_oauth_version == self::OAUTH_V2)
-			{
-				$authmode = QuickBooks_IPP::AUTHMODE_OAUTHV2;
-			}
-
-			$IPP->authMode(
-				$authmode,
-				$creds);
+			$IPP = new IPP($this->_dsn, $this->_key);
+			$IPP->authMode(IPP::AUTHMODE_OAUTHV2, $creds);
 
 			if ($this->_sandbox)
 			{
 				$IPP->sandbox(true);
 			}
 
-			if ($Context = $IPP->context())
+			$Context = $IPP->context();
+			if ($Context)
 			{
 				// Set the IPP flavor
 				$IPP->flavor($creds['qb_flavor']);
 
 				// Get the base URL if it's QBO
-				if ($creds['qb_flavor'] == QuickBooks_IPP_IDS::FLAVOR_ONLINE)
+				if ($creds['qb_flavor'] == IDS::FLAVOR_ONLINE)
 				{
 					$cur_version = $IPP->version();
 
-					$IPP->version(QuickBooks_IPP_IDS::VERSION_3);		// Need v3 for this
-
-					$CustomerService = new QuickBooks_IPP_Service_Customer();
+					$IPP->version(IDS::VERSION_3);		// Need v3 for this
+					$CustomerService = new Customer();
 					$customers = $CustomerService->query($Context, $creds['qb_realm'], "SELECT * FROM Customer MAXRESULTS 1");
 
 					$IPP->version($cur_version);		// Revert back to whatever they set
@@ -215,8 +203,8 @@ class QuickBooks_IPP_IntuitAnywhere
 				}
 
 				// Check the last error code now...
-				if ($IPP->errorCode() == 401 or 			// most calls return this
-					$IPP->errorCode() == 3100 or            // OAuth token error
+				if ($IPP->errorCode() == 401 || 			// most calls return this
+					$IPP->errorCode() == 3100 ||            // OAuth token error
 					$IPP->errorCode() == 3200)				// but for some stupid reason the getAvailableCompanies call returns this
 				{
 					return false;
@@ -231,40 +219,23 @@ class QuickBooks_IPP_IntuitAnywhere
 
 	/**
 	 * Load OAuth credentials from the database
-	 *
-	 * @param string $app_username
-	 * @return array
 	 */
-	public function load($app_tenant)
+	public function load(string $app_tenant): ?array
 	{
-		if ($this->_oauth_version == self::OAUTH_V1)
+		$arr = $this->_driver->oauthLoadV2($this->_key, $app_tenant);
+		if ($arr &&
+			!empty($arr['oauth_access_token']) &&
+			!empty($arr['oauth_refresh_token']))
 		{
-			if ($arr = $this->_driver->oauthLoadV1($this->_key, $app_tenant) and
-				strlen($arr['oauth_access_token']) > 0 and
-				strlen($arr['oauth_access_token_secret']) > 0)
-			{
-				$arr['oauth_consumer_key'] = $this->_consumer_key;
-				$arr['oauth_consumer_secret'] = $this->_consumer_secret;
+			$arr['oauth_client_id'] = $this->_client_id;
+			$arr['oauth_client_secret'] = $this->_client_secret;
 
-				return $arr;
-			}
-		}
-		else if ($this->_oauth_version == self::OAUTH_V2)
-		{
-			if ($arr = $this->_driver->oauthLoadV2($this->_key, $app_tenant) and
-				strlen($arr['oauth_access_token']) > 0 and
-				strlen($arr['oauth_refresh_token']) > 0)
-			{
-				$arr['oauth_client_id'] = $this->_client_id;
-				$arr['oauth_client_secret'] = $this->_client_secret;
+			$arr['qb_flavor'] = IDS::FLAVOR_ONLINE;
 
-				$arr['qb_flavor'] = QuickBooks_IPP_IDS::FLAVOR_ONLINE;
-
-				return $arr;
-			}
+			return $arr;
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -273,14 +244,14 @@ class QuickBooks_IPP_IntuitAnywhere
 	 * @param string $app_username
 	 * @param string $app_tenant
 	 * @param integer $within
-	 * @return One of the QuickBooks_IPP_IntuitAnywhere::EXPIRY_* constants
+	 * @return One of the static::EXPIRY_* constants
 	 */
-	public function expiry($app_username, $app_tenant, $within = 2592000)
+	public function expiry(string $app_username, string $app_tenant, int $within = 2592000): string
 	{
 		$lifetime = 15552000;
 
-		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) and
-			strlen($arr['oauth_access_token']) > 0 and
+		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) &&
+			strlen($arr['oauth_access_token']) > 0 &&
 			strlen($arr['oauth_access_token_secret']) > 0)
 		{
 			$expires = $lifetime + strtotime($arr['access_datetime']);
@@ -290,17 +261,17 @@ class QuickBooks_IPP_IntuitAnywhere
 			if ($diff < 0)
 			{
 				// Already expired
-				return QuickBooks_IPP_IntuitAnywhere::EXPIRY_EXPIRED;
+				return static::EXPIRY_EXPIRED;
 			}
 			else if ($diff < $within)
 			{
-				return QuickBooks_IPP_IntuitAnywhere::EXPIRY_SOON;
+				return static::EXPIRY_SOON;
 			}
 
-			return QuickBooks_IPP_IntuitAnywhere::EXPIRY_NOTYET;
+			return static::EXPIRY_NOTYET;
 		}
 
-		return QuickBooks_IPP_IntuitAnywhere::EXPIRY_UNKNOWN;
+		return static::EXPIRY_UNKNOWN;
 	}
 
 	/**
@@ -310,39 +281,37 @@ class QuickBooks_IPP_IntuitAnywhere
 	 * date that this method is called (6 months after original token was
 	 * created). This is an Intuit-imposed security restriction. Calls outside
 	 * of that date range will fail with an error.
-	 *
-	 * @param string $app_username
-	 * @param string $app_tenant
 	 */
-	public function reconnect($app_username, $app_tenant)
+	public function reconnect(string $app_username, string $app_tenant): ?bool
 	{
-		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) and
-			strlen($arr['oauth_access_token']) > 0 and
+		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) &&
+			strlen($arr['oauth_access_token']) > 0 &&
 			strlen($arr['oauth_access_token_secret']) > 0)
 		{
 			$arr['oauth_consumer_key'] = $this->_consumer_key;
 			$arr['oauth_consumer_secret'] = $this->_consumer_secret;
 
-			$retr = $this->_request(QuickBooks_IPP_OAuthv1::METHOD_GET,
-				QuickBooks_IPP_IntuitAnywhere::URL_CONNECT_RECONNECT,
-				array(),
+			$retr = $this->_request(OAuthv1::METHOD_GET,
+				static::URL_CONNECT_RECONNECT,
+				[],
 				$arr['oauth_access_token'],
 				$arr['oauth_access_token_secret']);
 
 			// Extract the error code
-			$code = (int) QuickBooks_XML::extractTagContents('ErrorCode', $retr);
-			$message = QuickBooks_XML::extractTagContents('ErrorMessage', $retr);
+			$code = (int) XML::extractTagContents('ErrorCode', $retr);
+			$message = XML::extractTagContents('ErrorMessage', $retr);
 
 			if ($message)
 			{
 				$this->_setError($code, $message);
+
 				return false;
 			}
 			else
 			{
 				// Success! Update the tokens
-				$token = QuickBooks_XML::extractTagContents('OAuthToken', $retr);
-				$secret = QuickBooks_XML::extractTagContents('OAuthTokenSecret', $retr);
+				$token = XML::extractTagContents('OAuthToken', $retr);
+				$secret = XML::extractTagContents('OAuthTokenSecret', $retr);
 
 				$this->_driver->oauthAccessWrite(
 					$this->_key,
@@ -355,28 +324,88 @@ class QuickBooks_IPP_IntuitAnywhere
 				return true;
 			}
 		}
+
+		return null;
 	}
 
-	public function disconnect($app_username, $app_tenant, $force = false)
+	public function disconnect(string $UNUSED_INVALID_IN_OAUTHV2_app_username, string $app_tenant, bool $force = false): bool
 	{
-		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) and
-			strlen($arr['oauth_access_token']) > 0 and
+		if ($this->_oauth_version == self::OAUTH_V2)
+		{
+			$creds = $this->load($app_tenant);
+			if (null === $creds || empty($creds['oauth_refresh_token']))
+			{
+				// Already disconnected
+				return true;
+			}
+//			var_dump($creds);
+
+			$discover = $this->_discover();
+			if (null !== $discover)
+			{
+//				var_dump($discover);
+
+				$ch = curl_init($discover['revocation_endpoint']);
+				curl_setopt_array($ch, [
+					CURLOPT_RETURNTRANSFER => true,
+					CURLOPT_FOLLOWLOCATION => false,  // Do not follow; security risk here
+
+					CURLOPT_USERPWD => $this->_client_id . ':' . $this->_client_secret,
+					CURLOPT_HTTPHEADER => [
+						'Accept: application/json',
+						'Content-Type: application/json',
+					],
+					CURLOPT_CUSTOMREQUEST => 'POST',
+					CURLOPT_POSTFIELDS => json_encode([
+						'token' => 'BOGUS'.$creds['oauth_refresh_token'],
+					]),
+
+					//CURLOPT_HEADER => true,
+					//CURLINFO_HEADER_OUT => true,
+					//CURLOPT_VERBOSE => true,
+				]);
+				$retr = curl_exec($ch);
+				$info = curl_getinfo($ch);
+
+//				echo "<hr>";
+//				var_dump($retr);
+//				$json = json_decode($retr, true);
+//				exit;
+
+				if ($force === true || in_array($info['http_code'], [200, 400]))
+				{
+					// 200: Token was found and disconnected successfully
+					// 400: Token already disabled or invalid (anyway, it is no longer able to be used)
+					$this->_driver->oauthAccessDelete('UNUSED_INVALID_IN_OAUTHV2_app_username', $app_tenant);
+
+					return true;
+				}
+			}
+		}
+
+		throw new \Exception('Cannot disconnect using '. $this->_oauth_version);
+
+		return false;
+
+		/*
+		if ($arr = $this->_driver->oauthLoad($this->_key, $app_username, $app_tenant) &&
+			strlen($arr['oauth_access_token']) > 0 &&
 			strlen($arr['oauth_access_token_secret']) > 0)
 		{
 			$arr['oauth_consumer_key'] = $this->_consumer_key;
 			$arr['oauth_consumer_secret'] = $this->_consumer_secret;
 
-			$retr = $this->_request(QuickBooks_IPP_OAuthv1::METHOD_GET,
-				QuickBooks_IPP_IntuitAnywhere::URL_CONNECT_DISCONNECT,
-				array(),
+			$retr = $this->_request(OAuthv1::METHOD_GET,
+				static::URL_CONNECT_DISCONNECT,
+				[],
 				$arr['oauth_access_token'],
 				$arr['oauth_access_token_secret']);
 
 			// Extract the error code
-			$code = (int) QuickBooks_XML::extractTagContents('ErrorCode', $retr);
+			$code = (int) XML::extractTagContents('ErrorCode', $retr);
 
-			if ($code == 0 or
-				$code == 270 or 	// Sometimes it returns "270: OAuth Token rejected" for some reason?
+			if ($code == 0 ||
+				$code == 270 || 	// Sometimes it returns "270: OAuth Token rejected" for some reason?
 				$force)
 			{
 				return $this->_driver->oauthAccessDelete($arr['app_username'], $arr['app_tenant']);
@@ -384,9 +413,10 @@ class QuickBooks_IPP_IntuitAnywhere
 		}
 
 		return false;
+		*/
 	}
 
-	public function fudge($request_token, $access_token, $access_token_secret, $realm, $flavor)
+	public function fudge(string $request_token, string $access_token, string $access_token_secret, $realm, $flavor): void
 	{
 		$this->_driver->oauthAccessWrite(
 			$this->_key,
@@ -402,9 +432,9 @@ class QuickBooks_IPP_IntuitAnywhere
 	 *
 	 *
 	 */
-	public function handle($app_tenant)
+	public function handle(string $app_tenant): bool
 	{
-		if ($this->check($app_tenant) and 		// We have tokens ...
+		if ($this->check($app_tenant) && 		// We have tokens ...
 			$this->test($app_tenant))			// ... and they are valid
 		{
 			// They are already logged in, send them on to exchange data
@@ -415,63 +445,29 @@ class QuickBooks_IPP_IntuitAnywhere
 		{
 			error_log(print_r($_REQUEST, true));
 
-			if ($this->_oauth_version == self::OAUTH_V1 and
-				isset($_GET['oauth_token']))
-			{
-				// We're in the middle of an OAuth v1 token session
-
-				if ($arr = $this->_driver->oauthRequestResolveV1($_GET['oauth_token']))
-				{
-					$info = $this->_getAccessToken(
-						$arr['oauth_request_token'],
-						$arr['oauth_request_token_secret'],
-						$_GET['oauth_verifier']);
-
-					if ($info)
-					{
-						$this->_driver->oauthAccessWriteV1(
-							$this->_key,
-							$arr['oauth_request_token'],
-							$info['oauth_token'],
-							$info['oauth_token_secret'],
-							$_GET['realmId'],
-							$_GET['dataSource']);
-
-						header('Location: ' . $this->_that_url);
-						exit;
-					}
-					else
-					{
-						// Something went wrong when fetching the user token...?
-						print('something went wrong fetching user token');
-					}
-				}
-				else
-				{
-					print('something went wrong... invalid oauth token?');
-				}
-			}
-			else if ($this->_oauth_version == self::OAUTH_V2 and
-				!empty($_GET['code']) and
-				!empty($_GET['state']) and
-				$info = $this->_driver->oauthRequestResolveV2($_GET['state']))
+			if ($this->_oauth_version == self::OAUTH_V2 &&
+				!empty($_GET['code']) &&
+				!empty($_GET['state']) &&
+				($info = $this->_driver->oauthRequestResolveV2($_GET['state'])))
 			{
 				// Try to get an access/refresh token here
-
-				if ($discover = $this->_discover())
+				$discover = $this->_discover();
+				if ($discover)
 				{
 					$ch = curl_init($discover['token_endpoint']);
 
-					curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array(
-						'code' => $_GET['code'],
-						'redirect_uri' => $this->_this_url,
-						'grant_type' => 'authorization_code',
-						)));
+					curl_setopt_array($ch, [
+						CURLOPT_RETURNTRANSFER => true,
+						CURLOPT_FOLLOWLOCATION => false,  // Do not follow; security risk here
 
-					curl_setopt($ch, CURLOPT_USERPWD, $this->_client_id . ':' . $this->_client_secret);
+						CURLOPT_USERPWD => $this->_client_id . ':' . $this->_client_secret,
+						CURLOPT_POSTFIELDS => http_build_query([
+							'code' => $_GET['code'],
+							'redirect_uri' => $this->_this_url,
+							'grant_type' => 'authorization_code',
+						]),
+					]);
 
-					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);   // Do not follow; security risk here
 					$retr = curl_exec($ch);
 					$info = curl_getinfo($ch);
 
@@ -497,15 +493,10 @@ class QuickBooks_IPP_IntuitAnywhere
 						return false;
 					}
 				}
-
 			}
 			else
 			{
-				if ($this->_oauth_version == self::OAUTH_V1)
-				{
-					$auth_url = $this->_getAuthenticateURLV1($app_tenant, $this->_this_url);
-				}
-				else
+				if ($this->_oauth_version == self::OAUTH_V2)
 				{
 					$auth_url = $this->_getAuthenticateURLV2($app_tenant, $this->_this_url);
 				}
@@ -525,41 +516,43 @@ class QuickBooks_IPP_IntuitAnywhere
 		return true;
 	}
 
-	protected function _getAuthenticateURLV2($app_tenant, $url)
+	public function getAuthenticateUrl(string $app_tenant, string $returnUrl): ?string
 	{
-		if ($discover = $this->_discover())
+		return $this->_getAuthenticateURLV2($app_tenant, $returnUrl);
+	}
+
+	protected function _getAuthenticateURLV2(string $app_tenant, string $url): ?string
+	{
+		$discover = $this->_discover();
+		if (null !== $discover)
 		{
 			// Write the request to the database
 			$state = md5(mt_rand() . microtime(true));
 
 			$this->_driver->oauthRequestWriteV2($app_tenant, $state);
 
-			$url = $discover['authorization_endpoint'] . '?' . http_build_query(array(
+			$url = $discover['authorization_endpoint'] . '?' . http_build_query([
 				'client_id' => $this->_client_id,
 				'scope' => $this->_oauth_scope,
 				'redirect_uri' => $url,
 				'response_type' => 'code',
 				'state' => $state,
-				));
+			]);
 
 			return $url;
 		}
 
-		return false;
+		return null;
 	}
 
-	protected function _discover()
+	protected function _discover(): ?array
 	{
 		return self::discover($this->_sandbox);
 	}
 
-	static public function discover($sandbox)
+	static public function discover(bool $sandbox): ?array
 	{
-		$url = self::URL_DISCOVERY_PRODUCTION;
-		if ($sandbox)
-		{
-			$url = self::URL_DISCOVERY_SANDBOX;
-		}
+		$url = $sandbox ? self::URL_DISCOVERY_SANDBOX : self::URL_DISCOVERY_PRODUCTION;
 
 		// Make a request to the discovery URL
 		$ch = curl_init($url);
@@ -570,12 +563,10 @@ class QuickBooks_IPP_IntuitAnywhere
 
 		if ($info['http_code'] == 200)
 		{
-			$out = json_decode($retr, true);
-
-			return $out;
+			return json_decode($retr, true);
 		}
 
-		return false;
+		return null;
 	}
 
 	/**
@@ -583,32 +574,33 @@ class QuickBooks_IPP_IntuitAnywhere
 	 *
 	 * @param string $url
 	 * @return string
-	 */
-	protected function _getAuthenticateURLV1($app_tenant, $url)
+	 * /
+	protected function _getAuthenticateURLV1(string $app_tenant, string $url): string
 	{
 		// Fetch a request token from the OAuth service
-		$info = $this->_request(QuickBooks_IPP_OAuthv1::METHOD_GET, QuickBooks_IPP_IntuitAnywhere::URL_REQUEST_TOKEN, array( 'oauth_callback' => $url ));
+		$info = $this->_request(OAuthv1::METHOD_GET, static::URL_REQUEST_TOKEN, array( 'oauth_callback' => $url ));
 
-		$vars = array();
+		$vars = [];
 		parse_str($info, $vars);
 
 		// Write the request tokens to the database
 		$this->_driver->oauthRequestWriteV1($app_tenant, $vars['oauth_token'], $vars['oauth_token_secret']);
 
 		// Return the auth URL
-		return QuickBooks_IPP_IntuitAnywhere::URL_CONNECT_BEGIN . '?oauth_callback=' . urlencode($url) . '&oauth_consumer_key=' . $this->_consumer_key . '&oauth_token=' . $vars['oauth_token'];
+		return static::URL_CONNECT_BEGIN . '?oauth_callback=' . urlencode($url) . '&oauth_consumer_key=' . $this->_consumer_key . '&oauth_token=' . $vars['oauth_token'];
 	}
 
-	protected function _getAccessToken($oauth_token, $oauth_token_secret, $verifier)
+	protected function _getAccessToken(string $oauth_token, string $oauth_token_secret, $verifier)
 	{
-		if ($str = $this->_request(QuickBooks_IPP_OAuthv1::METHOD_GET, QuickBooks_IPP_IntuitAnywhere::URL_ACCESS_TOKEN,
-			array(
-				'oauth_token' => $oauth_token,
-				'oauth_secret' => $oauth_token_secret,
-				'oauth_verifier' => $verifier,
-				)))
+		$str = $this->_request(OAuthv1::METHOD_GET, static::URL_ACCESS_TOKEN, [
+			'oauth_token' => $oauth_token,
+			'oauth_secret' => $oauth_token_secret,
+			'oauth_verifier' => $verifier,
+		]);
+
+		if ($str)
 		{
-			$info = array();
+			$info = [];
 			parse_str($str, $info);
 
 			return $info;
@@ -617,10 +609,11 @@ class QuickBooks_IPP_IntuitAnywhere
 		return false;
 	}
 
-	public function widgetConnect()
+	public function widgetConnect(): void
 	{
 
 	}
+	*/
 
 	/**
 	 * This function returns the html for displaying the "Blue Dot" menu
@@ -642,28 +635,29 @@ class QuickBooks_IPP_IntuitAnywhere
 	 * @param string $app_username
 	 * @param string $app_tenant
 	 * @return html string
-	 */
-	public function widgetMenu($app_username, $app_tenant)
+	 * /
+	public function widgetMenu(string $app_username, string $app_tenant): ?string
 	{
 		$token = null;
 		$secret = null;
 
-		if ($creds = $this->load($app_username, $app_tenant))
+		$creds = $this->load($app_username, $app_tenant);
+		if (null !== $creds)
 		{
 			return $this->_request(
-				QuickBooks_IPP_OAuthv1::METHOD_GET,
-				QuickBooks_IPP_IntuitAnywhere::URL_APP_MENU,
-				array(),
+				OAuthv1::METHOD_GET,
+				static::URL_APP_MENU,
+				[],
 				$creds['oauth_access_token'],
 				$creds['oauth_access_token_secret']);
 		}
 
-		return '';
+		return null;
 	}
 
-	protected function _request($method, $url, $params = array(), $token = null, $secret = null, $data = null)
+	protected function _request(string $method, string $url, array $params = [], ?string $token = null, ?string $secret = null, $data = null)
 	{
-		$OAuth = new QuickBooks_IPP_OAuthv1($this->_consumer_key, $this->_consumer_secret);
+		$OAuth = new OAuthv1($this->_consumer_key, $this->_consumer_secret);
 
 		// This returns a signed request
 		//
@@ -676,12 +670,12 @@ class QuickBooks_IPP_IntuitAnywhere
 		//print_r($signed);
 
 		// Create the new HTTP object
-		//$HTTP = new QuickBooks_HTTP($url);
-		$HTTP = new QuickBooks_HTTP($signed[2]);
+		//$HTTP = new HTTP($url);
+		$HTTP = new HTTP($signed[2]);
 
-		$headers = array(
+		$headers = [
 			//'Authorization' => $signed[3],
-			);
+		];
 
 		$HTTP->setHeaders($headers);
 
@@ -703,12 +697,15 @@ class QuickBooks_IPP_IntuitAnywhere
 		if ($errnum)
 		{
 			// An error occurred!
-			$this->_setError(QuickBooks_IPP::ERROR_HTTP, $errnum . ': ' . $errmsg);
+			$this->_setError(IPP::ERROR_HTTP, $errnum . ': ' . $errmsg);
+
 			return false;
 		}
 
 		// Everything is good, return the data!
-		$this->_setError(QuickBooks_IPP::ERROR_OK, '');
+		$this->_setError(IPP::ERROR_OK, '');
+
 		return $return;
 	}
+	*/
 }

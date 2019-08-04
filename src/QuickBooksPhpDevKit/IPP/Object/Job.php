@@ -1,12 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Job extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Job extends BaseObject
 {
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Id' => true,
 			'PartyReferenceId' => true,
 			'TypeOf' => true,
@@ -57,6 +59,6 @@ class QuickBooks_IPP_Object_Job extends QuickBooks_IPP_Object
 			'CustomerName' => true,
 			'JobParentId' => true,
 			'JobParentName' => true,
-			);
+		];
 	}
 }

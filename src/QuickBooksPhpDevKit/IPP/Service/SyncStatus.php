@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,13 +16,17 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+//use QuickBooksPhpDevKit\IPP\Object\SyncStatus as ObjSyncStatus;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_SyncStatus extends QuickBooks_IPP_Service
+class SyncStatus extends Service
 {
-	public function status($Context, $realm, $resource, $IDType)
+	public function status(Context $Context, string $realmID, string $resource, string $IDType)
 	{
-		return parent::_syncStatus($Context, $realm, $resource, $IDType);
+		return parent::_syncStatus($Context, $realmID, $resource, $IDType);
 	}
 }

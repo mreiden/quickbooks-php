@@ -4,7 +4,7 @@ namespace QuickBooksPhpDevKit\IPP\Object;
 
 use QuickBooksPhpDevKit\IPP\BaseObject;
 
-class ShipMethod extends BaseObject
+class CashBack extends BaseObject
 {
 
 }

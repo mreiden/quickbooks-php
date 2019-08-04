@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_ShipAddr extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class ShipAddr extends BaseObject
 {
 	public function setState($state)
 	{
@@ -14,9 +16,9 @@ class QuickBooks_IPP_Object_ShipAddr extends QuickBooks_IPP_Object
 		return $this->getCountrySubDivisionCode();
 	}
 
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Id' => true,
 			'Line1' => true,
 			'Line2' => true,
@@ -30,7 +32,6 @@ class QuickBooks_IPP_Object_ShipAddr extends QuickBooks_IPP_Object
 			'PostalCodeSuffix' => true,
 			'Default' => true,
 			'Tag' => true,
-			);
+		];
 	}
-
 }

@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_CheckPayment extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class CheckPayment extends BaseObject
 {
 
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,13 +16,17 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+//use QuickBooksPhpDevKit\IPP\Object\TaxRate as ObjTaxRate;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_TaxRate extends QuickBooks_IPP_Service
+class TaxRate extends Service
 {
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, ?string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 }

@@ -1,11 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_LinkedTxn extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+use QuickBooksPhpDevKit\IPP\IDS;
+
+class LinkedTxn extends BaseObject
 {
 	public function setTxnId($Id)
 	{
-		return $this->set('TxnId', QuickBooks_IPP_IDS::usableIDType($Id));
+		return $this->set('TxnId', IDS::usableIDType($Id));
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,22 +16,27 @@
  * @subpackage IPP
  */
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Account extends QuickBooks_IPP_Service
+use QuickBooksPhpDevKit\IPP\Object\Account as ObjAccount;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
+
+class Account extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50)
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50)
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ACCOUNT, $query, null, $page, $size);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_ACCOUNT, $query, null, $page, $size);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 
-	public function add($Context, $realm, $Object)
+	public function add(Context $Context, string $realmID, ObjAccount $Object)
 	{
-		return parent::_add($Context, $realm, QuickBooks_IPP_IDS::RESOURCE_ACCOUNT, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_ACCOUNT, $Object);
 	}
 }

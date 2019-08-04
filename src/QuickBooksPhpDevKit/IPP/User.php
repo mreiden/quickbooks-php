@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -13,9 +13,15 @@
  *
  */
 
-class QuickBooks_IPP_User
+namespace QuickBooksPhpDevKit\IPP;
+
+use QuickBooksPhpDevKit\IPP;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\PackageInfo;
+
+class User
 {
-	const ANONYMOUS = 'anonymous';
+	public const ANONYMOUS = 'anonymous';
 
 	protected $_userid;
 
@@ -35,7 +41,7 @@ class QuickBooks_IPP_User
 
 	protected $_authid;
 
-	public function __construct($userid, $email, $firstname, $lastname, $login, $screenname, $is_verified, $external_auth, $authid)
+	public function __construct($userid, string $email, string $firstname, string $lastname, $login, string $screenname, bool $is_verified, $external_auth, $authid)
 	{
 		$this->_userid = $userid;
 		$this->_email = $email;
@@ -53,22 +59,22 @@ class QuickBooks_IPP_User
 		return $this->_userid;
 	}
 
-	public function getEmail()
+	public function getEmail(): ?string
 	{
 		return $this->_email;
 	}
 
-	public function getScreenName()
+	public function getScreenName(): ?string
 	{
 		return $this->_screenname;
 	}
 
-	public function getFirstName()
+	public function getFirstName(): ?string
 	{
 		return $this->_firstname;
 	}
 
-	public function getLastName()
+	public function getLastName(): ?string
 	{
 		return $this->_lastname;
 	}
@@ -78,14 +84,14 @@ class QuickBooks_IPP_User
 		return $this->_login;
 	}
 
-	public function isVerified()
+	public function isVerified(): bool
 	{
-		return (boolean) $this->_is_verified;
+		return true === $this->_is_verified;
 	}
 
-	public function isAnonymous()
+	public function isAnonymous(): bool
 	{
-		return $this->_login == QuickBooks_IPP_User::ANONYMOUS;
+		return $this->_login === static::ANONYMOUS;
 	}
 
 	public function getExternalAuth()

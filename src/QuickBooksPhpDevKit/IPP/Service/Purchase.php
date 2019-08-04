@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,23 +16,27 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Purchase as ObjPurchase;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Purchase extends QuickBooks_IPP_Service
+class Purchase extends Service
 {
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjPurchase $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PURCHASE, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_PURCHASE, $Object);
 	}
 
-	public function update($Context, $realmID, $IDType, $Object)
+	public function update(Context $Context, string $realmID, string $IDType, ObjPurchase $Object)
 	{
-		return parent::_update($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PURCHASE, $Object, $IDType);
+		return parent::_update($Context, $realmID, IDS::RESOURCE_PURCHASE, $Object, $IDType);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, ?string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 }

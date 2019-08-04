@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,20 +16,24 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\BillPaymentCreditCard as ObjBillPaymentCreditCard;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_BillPaymentCreditCard extends QuickBooks_IPP_Service
+class BillPaymentCreditCard extends Service
 {
-	public function findById($Context, $realmID, $IDType, $domain = null)
+	public function findById(Context $Context, string $realmID, string $IDType, ?string $domain = null)
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILLPAYMENTCREDITCARD, $IDType, $domain, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_BILLPAYMENTCREDITCARD, $IDType, $domain, $xml);
 	}
 
-	public function findAll($Context, $realmID)
+	public function findAll(Context $Context, string $realmID)
 	{
 		$xml = null;
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILLPAYMENTCREDITCARD, $xml);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_BILLPAYMENTCREDITCARD, $xml);
 	}
 }

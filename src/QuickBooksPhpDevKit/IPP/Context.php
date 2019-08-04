@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -13,7 +13,11 @@
  *
  */
 
-class QuickBooks_IPP_Context
+namespace QuickBooksPhpDevKit\IPP;
+
+use QuickBooksPhpDevKit\IPP;
+
+class Context
 {
 	protected $_IPP;
 
@@ -21,7 +25,7 @@ class QuickBooks_IPP_Context
 
 	protected $_token;
 
-	public function __construct($IPP, $ticket, $token)
+	public function __construct(IPP $IPP, ?string $ticket, ?string $token)
 	{
 		$this->_IPP = $IPP;
 
@@ -29,7 +33,7 @@ class QuickBooks_IPP_Context
 		$this->_token = $token;
 	}
 
-	public function IPP()
+	public function IPP(): IPP
 	{
 		return $this->_IPP;
 	}
@@ -54,12 +58,12 @@ class QuickBooks_IPP_Context
 		return $this->_IPP->lastError();
 	}
 
-	public function ticket()
+	public function ticket(): string
 	{
 		return $this->_ticket;
 	}
 
-	public function token()
+	public function token(): string
 	{
 		return $this->_token;
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,28 +16,31 @@
  * @subpackage IPP
  */
 
-//
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Discount extends QuickBooks_IPP_Service
+use QuickBooksPhpDevKit\IPP\Object\Discount as ObjDiscount;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
+
+class Discount extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50)
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50)
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_DISCOUNT, $query, null, $page, $size);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_DISCOUNT, $query, null, $page, $size);
 	}
 
 	/**
-	 * Get a customer by ID
+	 * Get a Discount by ID
 	 *
 	 * @param QuickBooks_IPP_Context $Context
 	 * @param string $realmID
 	 * @param string $ID						The ID of the discount (this expects an IdType, which includes the domain)
 	 * @return QuickBooks_IPP_Object_Discount	The Discount object
 	 */
-	public function findById($Context, $realmID, $ID)
+	public function findById(Context $Context, string $realmID, $ID): ?ObjDiscount
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_DISCOUNT, $ID, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_DISCOUNT, $ID, $xml);
 	}
-
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,10 +16,13 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+//use QuickBooksPhpDevKit\IPP\Object\Report as ObjReport;
+//use QuickBooksPhpDevKit\IPP\Context;
+//use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Report extends QuickBooks_IPP_Service
+class Report extends Service
 {
-
 }

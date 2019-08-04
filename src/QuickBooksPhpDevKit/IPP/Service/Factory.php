@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,12 +16,18 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Factory
+class Factory
 {
-	public function newInstance($Context, $which)
+	public function newInstance(Context $Context, string $which)
 	{
-		$class = 'QuickBooks_IPP_Service_' . $which;
+		// Workaround Class being a reserved word in PHP. Class is named Qbclass instead.
+		if ($which == 'Class')
+		{
+			$which = 'Qbclass';
+		}
+		$class = __NAMESPACE__ . "\\$which";
 
 		return new $class($Context->IPP());
 	}

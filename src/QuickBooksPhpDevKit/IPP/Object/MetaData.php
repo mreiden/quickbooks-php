@@ -1,23 +1,25 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_MetaData extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class MetaData extends BaseObject
 {
-	public function getLastUpdatedTime($format = 'Y-m-d H:i:s')
+	public function getLastUpdatedTime(string $format = 'Y-m-d H:i:s'): string
 	{
 		return $this->getDateType('LastUpdatedTime', $format);
 	}
 
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'CreatedBy' => true,
 			'CreatedById' => true,
 			'CreateTime' => true,
 			'LastModifiedBy' => true,
 			'LastModifiedById' => true,
 			'LastUpdatedTime' => true,
-			);
+		];
 	}
 }

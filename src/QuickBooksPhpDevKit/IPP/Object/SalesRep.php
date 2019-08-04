@@ -1,12 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_SalesRep extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class SalesRep extends BaseObject
 {
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Id' => true,
 			'MetaData' => true,
 			'NameOf' => true,
@@ -14,6 +16,6 @@ class QuickBooks_IPP_Object_SalesRep extends QuickBooks_IPP_Object
 			'Vendor' => true,
 			'OtherName' => true,
 			'Initials' => true,
-			);
+		];
 	}
 }

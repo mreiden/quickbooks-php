@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,14 +16,18 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+//use QuickBooksPhpDevKit\IPP\Object\UOM as ObjUOM;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_UOM extends QuickBooks_IPP_Service
+class UOM extends Service
 {
-	public function findAll($Context, $realmID)
+	public function findAll(Context $Context, string $realmID)
 	{
 		$xml = null;
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_UOM, $xml);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_UOM, $xml);
 	}
 }

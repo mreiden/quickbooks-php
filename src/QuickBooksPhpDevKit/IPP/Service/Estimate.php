@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,25 +16,29 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Estimate as ObjEstimate;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Estimate extends QuickBooks_IPP_Service
+class Estimate extends Service
 {
-	public function findAll($Context, $realmID)
+	public function findAll(Context $Context, string $realmID)
 	{
 		$xml = null;
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ESTIMATE, $xml);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_ESTIMATE, $xml);
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjEstimate $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ESTIMATE, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_ESTIMATE, $Object);
 	}
 
-	public function update($Context, $realmID, $IDType, $Object)
+	public function update(Context $Context, string $realmID, string $IDType, ObjEstimate $Object)
 	{
-		return parent::_update($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ESTIMATE, $Object, $IDType);
+		return parent::_update($Context, $realmID, IDS::RESOURCE_ESTIMATE, $Object, $IDType);
 	}
 
 	/**
@@ -45,13 +49,13 @@ class QuickBooks_IPP_Service_Estimate extends QuickBooks_IPP_Service
 	 * @param string $ID						The ID of the estimate (this expects an IdType, which includes the domain)
 	 * @return QuickBooks_IPP_Object_Employee	The estimate object
 	 */
-	public function findById($Context, $realmID, $ID)
+	public function findById(Context $Context, string $realmID, $ID): ?ObjEstimate
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ESTIMATE, $ID, null, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_ESTIMATE, $ID, null, $xml);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, ?string $query)
 	{
 		return parent::_query($Context, $realm, $query);
 	}

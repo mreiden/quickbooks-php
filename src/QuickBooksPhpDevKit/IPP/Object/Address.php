@@ -1,25 +1,27 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Address extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Address extends BaseObject
 {
 	const TAG_BILLING = 'Billing';
 	const TAG_SHIPPING = 'Shipping';
 
-	public function setState($state)
+	public function setState(string $state)
 	{
 		return $this->setCountrySubDivisionCode($state);
 	}
 
-	public function getState()
+	public function getState(): ?string
 	{
 		return $this->getCountrySubDivisionCode();
 	}
 
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Id' => true,
 			'Line1' => true,
 			'Line2' => true,
@@ -33,7 +35,6 @@ class QuickBooks_IPP_Object_Address extends QuickBooks_IPP_Object
 			'PostalCodeSuffix' => true,
 			'Default' => true,
 			'Tag' => true,
-			);
+		];
 	}
-
 }

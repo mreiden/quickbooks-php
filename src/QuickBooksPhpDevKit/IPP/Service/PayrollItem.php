@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,23 +16,27 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\PayrollItem as ObjPayrollItem;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_PayrollItem extends QuickBooks_IPP_Service
+class PayrollItem extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50, $options = array())
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50, array $options = [])
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PAYROLLITEM, $query, null, $page, $size, '', $options);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_PAYROLLITEM, $query, null, $page, $size, '', $options);
 	}
 
-	public function findById($Context, $realmID, $ID)
+	public function findById(Context $Context, string $realmID, $ID)
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PAYROLLITEM, $ID, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_PAYROLLITEM, $ID, $xml);
 	}
 
-	public function findByName($Context, $realmID, $name)
+	public function findByName(Context $Context, string $realmID, string $name)
 	{
 		$list = $this->findAll($Context, $realmID, $name);
 
@@ -47,13 +51,13 @@ class QuickBooks_IPP_Service_PayrollItem extends QuickBooks_IPP_Service
 		return false;
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjPayrollItem $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PAYROLLITEM, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_PAYROLLITEM, $Object);
 	}
 
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_PAYROLLITEM, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_PAYROLLITEM, $IDType);
 	}
 }

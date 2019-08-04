@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,14 +16,18 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\SalesOrder as ObjSalesOrder;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_SalesOrder extends QuickBooks_IPP_Service
+class SalesOrder extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50)
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50)
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_SALESORDER, $query, null, $page, $size);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_SALESORDER, $query, null, $page, $size);
 	}
 
 	/**
@@ -31,19 +35,19 @@ class QuickBooks_IPP_Service_SalesOrder extends QuickBooks_IPP_Service
 	 *
 	 *
 	 */
-	public function findById($Context, $realmID, $ID, $domain = null)
+	public function findById(Context $Context, string $realmID, $ID, ?string $domain = null): ?ObjSalesOrder
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_SALESORDER, $ID, $domain, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_SALESORDER, $ID, $domain, $xml);
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjSalesOrder $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_SALESORDER, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_SALESORDER, $Object);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, ?string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,38 +16,41 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Invoice extends QuickBooks_IPP_Service
+class Invoice extends Service
 {
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_INVOICE, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_INVOICE, $Object);
 	}
 
-	public function update($Context, $realmID, $IDType, $Object)
+	public function update(Context $Context, string $realmID, string $IDType, $Object)
 	{
-		return parent::_update($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_INVOICE, $Object, $IDType);
+		return parent::_update($Context, $realmID, IDS::RESOURCE_INVOICE, $Object, $IDType);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_INVOICE, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_INVOICE, $IDType);
 	}
 
-	public function void($Context, $realmID, $IDType)
+	public function void(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_void($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_INVOICE, $IDType);
+		return parent::_void($Context, $realmID, IDS::RESOURCE_INVOICE, $IDType);
 	}
 
-	public function pdf($Context, $realmID, $IDType)
+	public function pdf(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_pdf($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_INVOICE, $IDType);
+		return parent::_pdf($Context, $realmID, IDS::RESOURCE_INVOICE, $IDType);
 	}
 }

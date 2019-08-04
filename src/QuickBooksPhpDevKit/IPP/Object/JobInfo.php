@@ -1,12 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_JobInfo extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class JobInfo extends BaseObject
 {
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Status' => true,
 			'StartDate' => true,
 			'ProjectedEndDate' => true,
@@ -14,6 +16,6 @@ class QuickBooks_IPP_Object_JobInfo extends QuickBooks_IPP_Object
 			'Description' => true,
 			'JobTypeId' => true,
 			'JobTypeName' => true,
-			);
+		];
 	}
 }

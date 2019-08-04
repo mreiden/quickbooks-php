@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,23 +16,24 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Entitlements extends QuickBooks_IPP_Service
+class Entitlements extends Service
 {
-	public function info($Context, $realmID)
+	public function info(Context $Context, string $realmID)
 	{
 		$list = parent::_entitlements($Context, $realmID);
 
 		return $list['_i'];
 	}
 
-	public function entitlements($Context, $realmID)
+	public function entitlements(Context $Context, string $realmID)
 	{
 		$list = parent::_entitlements($Context, $realmID);
 
 		return $list['_e'];
 	}
-
 }

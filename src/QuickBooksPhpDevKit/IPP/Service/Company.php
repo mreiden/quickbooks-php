@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,23 +16,23 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Company as ObjCompany;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Company extends QuickBooks_IPP_Service
+class Company extends Service
 {
 	/**
 	 * Get a company by realmID
-	 *
-	 * @param QuickBooks_IPP_Context $Context
-	 * @param string $realmID
-	 * @return QuickBooks_IPP_Object_Customer	The customer object
 	 */
-	public function findById($Context, $realmID)
+	public function findById(Context $Context, string $realmID): ?ObjCompany
 	{
 		$xml = null;
 
 		// WATCH OUT!   We pass in the realmID as ID value
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_COMPANY, $realmID, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_COMPANY, $realmID, $xml);
 	}
 }

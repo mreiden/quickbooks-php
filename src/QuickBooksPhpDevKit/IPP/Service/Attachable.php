@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,19 +16,22 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Attachable as ObjAttachable;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Attachable extends QuickBooks_IPP_Service
+class Attachable extends Service
 {
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, string $query)
 	{
 		return parent::_query($Context, $realm, $query);
 	}
 
-	public function download($Context, $realmID, $ID)
+	public function download(Context $Context, string $realmID, string $ID)
 	{
-		return parent::_download($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_DOWNLOAD, $ID);
+		return parent::_download($Context, $realmID, IDS::RESOURCE_DOWNLOAD, $ID);
 	}
-
 }

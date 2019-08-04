@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,34 +16,38 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Bill as ObjBill;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Bill extends QuickBooks_IPP_Service
+class Bill extends Service
 {
-	public function findAll($Context, $realmID)
+	public function findAll(Context $Context, string $realmID): ?array
 	{
 		$xml = null;
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILL, $xml);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_BILL, $xml);
 	}
 
-	public function add($Context, $realm, $Object)
+	public function add(Context $Context, string $realmID, ObjBill $Object)
 	{
-		return parent::_add($Context, $realm, QuickBooks_IPP_IDS::RESOURCE_BILL, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_BILL, $Object);
 	}
 
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILL, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_BILL, $IDType);
 	}
 
-	public function update($Context, $realm, $IDType, $Object)
+	public function update(Context $Context, string $realmID, string $IDType, ObjBill $Object)
 	{
-		return parent::_update($Context, $realm, QuickBooks_IPP_IDS::RESOURCE_BILL, $Object, $IDType);
+		return parent::_update($Context, $realmID, IDS::RESOURCE_BILL, $Object, $IDType);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 }

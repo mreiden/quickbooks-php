@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,14 +16,17 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service\Report;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service/Report.php');
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service\Report;
 
-class QuickBooks_IPP_Service_Report_TopCustomersBySales extends QuickBooks_IPP_Service_Report
+class TopCustomersBySales extends Report
 {
-	public function report($Context, $realmID)
+	public function report(Context $Context, string $realmID)
 	{
 		$xml = null;
-		return parent::_report($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_REPORT_TOPCUSTOMERSBYSALES, $xml);
+		return parent::_report($Context, $realmID, IDS::RESOURCE_REPORT_TOPCUSTOMERSBYSALES, $xml);
 	}
 }

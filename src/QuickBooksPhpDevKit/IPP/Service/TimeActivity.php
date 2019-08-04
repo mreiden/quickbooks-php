@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,25 +16,29 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\TimeActivity as ObjTimeActivity;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_TimeActivity extends QuickBooks_IPP_Service
+class TimeActivity extends Service
 {
 	/*
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50, $options = array())
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50, array $options = [])
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_TIMEACTIVITY, $query, null, $page, $size, '', $options);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_TIMEACTIVITY, $query, null, $page, $size, '', $options);
 	}
 
-	public function findById($Context, $realmID, $IDType, $query = null)
+	public function findById(Context $Context, string $realmID, string $IDType, ?string $query = null)
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_TIMEACTIVITY, $IDType, $xml, $query);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_TIMEACTIVITY, $IDType, $xml, $query);
 	}
 	*/
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, string $query)
 	{
 		return parent::_query($Context, $realm, $query);
 	}
@@ -44,18 +48,18 @@ class QuickBooks_IPP_Service_TimeActivity extends QuickBooks_IPP_Service
 	 *
 	 *
 	 */
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_TIMEACTIVITY, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_TIMEACTIVITY, $IDType);
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjTimeActivity $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_TIMEACTIVITY, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_TIMEACTIVITY, $Object);
 	}
 
-	public function update($Context, $realmID, $IDType, $Object)
+	public function update(Context $Context, string $realmID, string $IDType, ObjTimeActivity $Object)
 	{
-		return parent::_update($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_TIMEACTIVITY, $Object, $IDType);
+		return parent::_update($Context, $realmID, IDS::RESOURCE_TIMEACTIVITY, $Object, $IDType);
 	}
 }

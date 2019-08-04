@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,14 +16,18 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\ItemConsolidated as ObjItemConsolidated;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_ItemConsolidated extends QuickBooks_IPP_Service
+class ItemConsolidated extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50)
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50)
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ITEMCONSOLIDATED, $query, null, $page, $size);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_ITEMCONSOLIDATED, $query, null, $page, $size);
 	}
 
 	/**
@@ -34,10 +38,10 @@ class QuickBooks_IPP_Service_ItemConsolidated extends QuickBooks_IPP_Service
 	 * @param string $ID								The ID of the item (this expects an IdType, which includes the domain)
 	 * @return QuickBooks_IPP_Object_ItemConsolidated	The item object
 	 */
-	public function findById($Context, $realmID, $ID)
+	public function findById(Context $Context, string $realmID, $ID): ?ObjItemConsolidated
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ITEMCONSOLIDATED, $ID, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_ITEMCONSOLIDATED, $ID, $xml);
 	}
 
 	/*
@@ -45,7 +49,7 @@ class QuickBooks_IPP_Service_ItemConsolidated extends QuickBooks_IPP_Service
 	{
 		$IPP = $Context->IPP();
 
-		$resource = QuickBooks_IPP_IDS::RESOURCE_ITEMCONSOLIDATED;
+		$resource = IDS::RESOURCE_ITEMCONSOLIDATED;
 
 		$xml = '';
 		$xml .= '<?xml version="1.0" encoding="UTF-8"?>' . QUICKBOOKS_CRLF;
@@ -82,13 +86,13 @@ class QuickBooks_IPP_Service_ItemConsolidated extends QuickBooks_IPP_Service
 	}
 	*/
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjItemConsolidated $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ITEMCONSOLIDATED, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_ITEMCONSOLIDATED, $Object);
 	}
 
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_ITEMCONSOLIDATED, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_ITEMCONSOLIDATED, $IDType);
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Base QuickBooks IPP/IDS class
@@ -15,10 +15,16 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP;
+
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\XML;
+
 /**
  * This class is the base IPP object class for IPP/IDS objects
  */
-class QuickBooks_IPP_Object
+class BaseObject
 {
 	/**
 	 * Array containing all object data
@@ -31,7 +37,7 @@ class QuickBooks_IPP_Object
 	 *
 	 *
 	 */
-	public function __construct($data = array())
+	public function __construct(array $data = [])
 	{
 		$this->_data = $data;
 	}
@@ -40,17 +46,17 @@ class QuickBooks_IPP_Object
 	 *
 	 *
 	 * NOTE: This only works for SimpleXML... should probably be changed so
-	 * that this calls the QuickBooks_XML_Node class and then calls an XPath
+	 * that this calls XML\Node class and then calls an XPath
 	 * method within that... *sigh*
 	 *
 	 */
-	public function getXPath($xpath)
+	public function getXPath(string $xpath): ?string
 	{
 		$str = $this->asIDSXML();
 
 		//print('[[' . $str . ']]');
 
-		$XML = new SimpleXMLElement($str);
+		$XML = new \SimpleXMLElement($str);
 
 		$retr = $XML->xpath($xpath);
 
@@ -68,7 +74,7 @@ class QuickBooks_IPP_Object
 
 			if (isset($attrs['idDomain']))
 			{
-				return QuickBooks_IPP_IDS::buildIdType($attrs['idDomain'], $cur . '');
+				return IDS::buildIdType($attrs['idDomain'], $cur . '');
 			}
 
 			return $cur . '';
@@ -77,7 +83,7 @@ class QuickBooks_IPP_Object
 		return null;
 	}
 
-	public function get($field)
+	public function get(string $field)
 	{
 		/*
 		if (isset($this->_data[$field]))
@@ -92,26 +98,24 @@ class QuickBooks_IPP_Object
 		return $this->__call('get' . $field, $args);
 	}
 
-	public function set($field, $value)
+	public function set(string $field, $value)
 	{
 		//$this->_data[$field] = $value;
 
-		return $this->__call('set' . $field, array( $value ));
+		return $this->__call('set' . $field, [$value]);
 	}
 
-	public function setDateType($field, $value)
+	public function setDateType(string $field, $value)
 	{
 		if ((string) ((float) $value) == $value)
 		{
 			return $this->set($field, date('Y-m-d', $value));
 		}
-		else
-		{
-			return $this->set($field, date('Y-m-d', strtotime($value)));
-		}
+
+		return $this->set($field, date('Y-m-d', strtotime($value)));
 	}
 
-	public function getDateType($field, $format = 'Y-m-d')
+	public function getDateType(string $field, string $format = 'Y-m-d'): string
 	{
 		// This fixes a problem with PHP interpreting dates in the format "2012-01-02T00:00:00Z" as being from the day previous
 		$value = str_replace('T00:00:00Z', '', $this->get($field));
@@ -124,7 +128,7 @@ class QuickBooks_IPP_Object
 		return $this->set($field, sprintf('%01.2f', $value));
 	}
 
-	public function remove($field)
+	public function remove(string $field): void
 	{
 		if (isset($this->_data[$field]))
 		{
@@ -145,10 +149,6 @@ class QuickBooks_IPP_Object
 			{
 				$tmp = current($args);
 				$this->_data[$field] = $tmp;
-			}
-			else
-			{
-
 			}
 
 			return $tmp;
@@ -213,7 +213,7 @@ class QuickBooks_IPP_Object
 
 			if (!isset($this->_data[$field]))
 			{
-				$this->_data[$field] = array();
+				$this->_data[$field] = [];
 			}
 
 			$tmp = current($args);
@@ -253,33 +253,41 @@ class QuickBooks_IPP_Object
 
 	public function resource()
 	{
-		$split = explode('_', get_class($this));
-		return end($split);
+		$parts = explode("\\", get_class($this));
+		$resource = array_pop($parts);
+
+		// Qbclass is a work-around for Class being a reserved word
+		if ($resource == 'Qbclass')
+		{
+			$resource = 'Class';
+		}
+
+		return $resource;
 	}
 
 	/**
 	 *
 	 *
 	 */
-	protected function _defaults()
+	protected function _defaults(): array
 	{
-		return array();
+		return [];
 	}
 
 	/**
 	 *
 	 *
 	 */
-	protected function _order()
+	protected function _order(): array
 	{
-		return array();
+		return [];
 	}
 
-	protected function _reorder($data, $base = '')
+	protected function _reorder(array $data, string $base = ''): array
 	{
 		$order = $this->_order();
 
-		$retr = array();
+		$retr = [];
 
 		foreach ($order as $path => $null)
 		{
@@ -338,9 +346,9 @@ class QuickBooks_IPP_Object
 		}
 	}
 
-	public function asXML($indent = 0, $parent = null, $optype = null, $flavor = null, $version = QuickBooks_IPP_IDS::VERSION_3)
+	public function asXML(int $indent = 0, $parent = null, $optype = null, $flavor = null, $version = IDS::VERSION_3): string
 	{
-		if ($version == QuickBooks_IPP_IDS::VERSION_3)
+		if ($version == IDS::VERSION_3)
 		{
 			return $this->_asXML_v3($indent, $parent, $optype, $flavor);
 		}
@@ -350,12 +358,12 @@ class QuickBooks_IPP_Object
 		}
 	}
 
-	protected function _asXML_v3($indent, $parent, $optype, $flavor)
+	protected function _asXML_v3(int $indent, $parent, $optype, $flavor)
 	{
 		$data = $this->_data;
 		$data = $this->_reorder($data);
 
-		$xml = str_repeat("\t", $indent) . '<' . $this->resource() . ' xmlns="http://schema.intuit.com/finance/v3">' . QUICKBOOKS_CRLF;
+		$xml = str_repeat("\t", $indent) . '<' . $this->resource() . ' xmlns="http://schema.intuit.com/finance/v3">' . PackageInfo::$CRLF;
 
 		// Go through the data, creating XML out of it
 		foreach ($data as $key => $value)
@@ -379,7 +387,7 @@ class QuickBooks_IPP_Object
 					{
 						$for_qbxml = false;
 
-						$tmp = QuickBooks_IPP_IDS::parseIdType($svalue);
+						$tmp = IDS::parseIdType($svalue);
 
 						if ($tmp[0])
 						{
@@ -390,16 +398,16 @@ class QuickBooks_IPP_Object
 							$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
 						}
 
-						$xml .= QuickBooks_XML::encode($tmp[1], $for_qbxml);
-						$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+						$xml .= XML::encode($tmp[1], $for_qbxml);
+						$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 					}*/
 					else
 					{
 						//$for_qbxml = false;
 						//
 						//$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
-						//$xml .= QuickBooks_XML::encode($value, $for_qbxml);
-						//$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+						//$xml .= XML::encode($value, $for_qbxml);
+						//$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 
 						if (substr($key, -3, 3) == 'Ref' and $svalue{0} == '{')
 						{
@@ -418,7 +426,7 @@ class QuickBooks_IPP_Object
 							$svalue = trim($svalue, '{}-');
 						}
 
-						$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>' . QuickBooks_XML::encode($svalue, false) . '</' . $key . '>' . QUICKBOOKS_CRLF;
+						$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>' . XML::encode((string) $svalue, false) . '</' . $key . '>' . PackageInfo::$CRLF;
 					}
 				}
 			}
@@ -426,7 +434,7 @@ class QuickBooks_IPP_Object
 			{
 				$for_qbxml = false;
 
-				$tmp = QuickBooks_IPP_IDS::parseIdType($value);
+				$tmp = IDS::parseIdType($value);
 
 				if ($tmp[0])
 				{
@@ -437,8 +445,8 @@ class QuickBooks_IPP_Object
 					$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
 				}
 
-				$xml .= QuickBooks_XML::encode($tmp[1], $for_qbxml);
-				$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+				$xml .= XML::encode($tmp[1], $for_qbxml);
+				$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 			}*/
 			else
 			{
@@ -462,17 +470,17 @@ class QuickBooks_IPP_Object
 				}
 
 				$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
-				$xml .= QuickBooks_XML::encode($value, $for_qbxml);
-				$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+				$xml .= XML::encode((string) $value, $for_qbxml);
+				$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 			}
 		}
 
-		$xml .= str_repeat("\t", $indent) . '</' . $this->resource() . '>' . QUICKBOOKS_CRLF;
+		$xml .= str_repeat("\t", $indent) . '</' . $this->resource() . '>' . PackageInfo::$CRLF;
 
 		return $xml;
 	}
 
-	public function asIDSXML($indent = 0, $parent = null, $optype = null, $flavor = null)
+	public function asIDSXML(int $indent = 0, $parent = null, $optype = null, $flavor = null)
 	{
 		// We're not going to actually change the data, just change a copy of it
 		$data = $this->_data;
@@ -482,15 +490,15 @@ class QuickBooks_IPP_Object
 			$parent = $this->resource();
 		}
 
-		if ($optype == QuickBooks_IPP_IDS::OPTYPE_ADD or $optype == QuickBooks_IPP_IDS::OPTYPE_MOD)
+		if ($optype == IDS::OPTYPE_ADD || $optype == IDS::OPTYPE_MOD)
 		{
-			if ($flavor == QuickBooks_IPP_IDS::FLAVOR_ONLINE)
+			if ($flavor == IDS::FLAVOR_ONLINE)
 			{
-				$xml = str_repeat("\t", $indent) . '<' . $this->resource() . ' xmlns="http://www.intuit.com/sb/cdm/v2" xmlns:ns2="http://www.intuit.com/sb/cdm/qbopayroll/v1" xmlns:ns3="http://www.intuit.com/sb/cdm/qbo">' . QUICKBOOKS_CRLF;
+				$xml = str_repeat("\t", $indent) . '<' . $this->resource() . ' xmlns="http://www.intuit.com/sb/cdm/v2" xmlns:ns2="http://www.intuit.com/sb/cdm/qbopayroll/v1" xmlns:ns3="http://www.intuit.com/sb/cdm/qbo">' . PackageInfo::$CRLF;
 			}
 			else
 			{
-				$xml = str_repeat("\t", $indent) . '<Object xsi:type="' . $this->resource() . '">' . QUICKBOOKS_CRLF;
+				$xml = str_repeat("\t", $indent) . '<Object xsi:type="' . $this->resource() . '">' . PackageInfo::$CRLF;
 			}
 
 			// Merge in the defaults for this object type
@@ -498,11 +506,11 @@ class QuickBooks_IPP_Object
 		}
 		else if ($parent == 'CustomField')
 		{
-			$xml = str_repeat("\t", $indent) . '<' . $parent . ' xsi:type="StringTypeCustomField">' . QUICKBOOKS_CRLF;
+			$xml = str_repeat("\t", $indent) . '<' . $parent . ' xsi:type="StringTypeCustomField">' . PackageInfo::$CRLF;
 		}
 		else
 		{
-			$xml = str_repeat("\t", $indent) . '<' . $parent . '>' . QUICKBOOKS_CRLF;
+			$xml = str_repeat("\t", $indent) . '<' . $parent . '>' . PackageInfo::$CRLF;
 		}
 
 		// Re-order is correctly
@@ -530,7 +538,7 @@ class QuickBooks_IPP_Object
 					{
 						$for_qbxml = false;
 
-						$tmp = QuickBooks_IPP_IDS::parseIdType($svalue);
+						$tmp = IDS::parseIdType($svalue);
 
 						if ($tmp[0])
 						{
@@ -541,18 +549,18 @@ class QuickBooks_IPP_Object
 							$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
 						}
 
-						$xml .= QuickBooks_XML::encode($tmp[1], $for_qbxml);
-						$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+						$xml .= XML::encode($tmp[1], $for_qbxml);
+						$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 					}
 					else
 					{
 						//$for_qbxml = false;
 						//
 						//$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
-						//$xml .= QuickBooks_XML::encode($value, $for_qbxml);
-						//$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+						//$xml .= XML::encode($value, $for_qbxml);
+						//$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 
-						$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>' . QuickBooks_XML::encode($svalue, false) . '</' . $key . '>' . QUICKBOOKS_CRLF;
+						$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>' . XML::encode($svalue, false) . '</' . $key . '>' . PackageInfo::$CRLF;
 					}
 				}
 			}
@@ -560,7 +568,7 @@ class QuickBooks_IPP_Object
 			{
 				$for_qbxml = false;
 
-				$tmp = QuickBooks_IPP_IDS::parseIdType($value);
+				$tmp = IDS::parseIdType($value);
 
 				if ($tmp[0])
 				{
@@ -571,33 +579,33 @@ class QuickBooks_IPP_Object
 					$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
 				}
 
-				$xml .= QuickBooks_XML::encode($tmp[1], $for_qbxml);
-				$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+				$xml .= XML::encode($tmp[1], $for_qbxml);
+				$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 			}
 			else
 			{
 				$for_qbxml = false;
 
 				$xml .= str_repeat("\t", $indent + 1) . '<' . $key . '>';
-				$xml .= QuickBooks_XML::encode($value, $for_qbxml);
-				$xml .= '</' . $key . '>' . QUICKBOOKS_CRLF;
+				$xml .= XML::encode($value, $for_qbxml);
+				$xml .= '</' . $key . '>' . PackageInfo::$CRLF;
 			}
 		}
 
-		if ($optype == QuickBooks_IPP_IDS::OPTYPE_ADD or $optype == QuickBooks_IPP_IDS::OPTYPE_MOD)
+		if ($optype == IDS::OPTYPE_ADD or $optype == IDS::OPTYPE_MOD)
 		{
-			if ($flavor == QuickBooks_IPP_IDS::FLAVOR_ONLINE)
+			if ($flavor == IDS::FLAVOR_ONLINE)
 			{
-				$xml .= str_repeat("\t", $indent) . '</' . $this->resource() . '>' . QUICKBOOKS_CRLF;
+				$xml .= str_repeat("\t", $indent) . '</' . $this->resource() . '>' . PackageInfo::$CRLF;
 			}
 			else
 			{
-				$xml .= str_repeat("\t", $indent) . '</Object>' . QUICKBOOKS_CRLF;
+				$xml .= str_repeat("\t", $indent) . '</Object>' . PackageInfo::$CRLF;
 			}
 		}
 		else
 		{
-			$xml .= str_repeat("\t", $indent) . '</' . $parent . '>' . QUICKBOOKS_CRLF;
+			$xml .= str_repeat("\t", $indent) . '</' . $parent . '>' . PackageInfo::$CRLF;
 		}
 
 		return $xml;

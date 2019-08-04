@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,14 +16,19 @@
  * @subpackage IPP
  */
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_BillPayment extends QuickBooks_IPP_Service
+use QuickBooksPhpDevKit\IPP\Object\BillPayment as ObjBillPayment;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
+
+class BillPayment extends Service
 {
-	public function findAll($Context, $realmID)
+	public function findAll(Context $Context, string $realmID)
 	{
 		$xml = null;
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILLPAYMENT, $xml);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_BILLPAYMENT, $xml);
 	}
 
 	/**
@@ -31,30 +36,29 @@ class QuickBooks_IPP_Service_BillPayment extends QuickBooks_IPP_Service
 	 *
 	 *
 	 */
-	public function findById($Context, $realmID, $ID, $domain = null)
+	public function findById(Context $Context, string $realmID, string $ID, ?string $domain = null)
 	{
 		$xml = null;
-		return parent::_findById($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILLPAYMENT, $ID, $domain, $xml);
+		return parent::_findById($Context, $realmID, IDS::RESOURCE_BILLPAYMENT, $ID, $domain, $xml);
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, ObjBillPayment $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILLPAYMENT, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_BILLPAYMENT, $Object);
 	}
 
-	public function update($Context, $realm, $IDType, $Object)
+	public function update(Context $Context, string $realmID, string $IDType, ObjBillPayment $Object)
 	{
-		return parent::_update($Context, $realm, QuickBooks_IPP_IDS::RESOURCE_BILLPAYMENT, $Object, $IDType);
+		return parent::_update($Context, $realmID, IDS::RESOURCE_BILLPAYMENT, $Object, $IDType);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, string $query)
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 
-	public function delete($Context, $realmID, $IDType)
+	public function delete(Context $Context, string $realmID, string $IDType)
 	{
-		return parent::_delete($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_BILLPAYMENT, $IDType);
+		return parent::_delete($Context, $realmID, IDS::RESOURCE_BILLPAYMENT, $IDType);
 	}
-
 }

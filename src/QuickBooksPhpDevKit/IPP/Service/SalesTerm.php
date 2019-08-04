@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,13 +16,17 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+//use QuickBooksPhpDevKit\IPP\Object\SalesTerm as ObjSalesTerm;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_SalesTerm extends QuickBooks_IPP_Service
+class SalesTerm extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50)
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50)
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_SALESTERM, $query, null, $page, $size);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_SALESTERM, $query, null, $page, $size);
 	}
 }

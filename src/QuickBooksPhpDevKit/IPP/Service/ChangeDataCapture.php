@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,14 +16,17 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+//use QuickBooksPhpDevKit\IPP\Object\ChangeDataCapture as ObjChangeDataCapture;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_ChangeDataCapture extends QuickBooks_IPP_Service
+class ChangeDataCapture extends Service
 {
-	public function cdc($Context, $realmID, $entities, $timestamp, $page = 1, $size = null)
+	public function cdc(Context $Context, string $realmID, $entities, $timestamp, int $page = 1, ?int $size = null)
 	{
 		return parent::_cdc($Context, $realmID, $entities, $timestamp, $page, $size);
 	}
-
 }

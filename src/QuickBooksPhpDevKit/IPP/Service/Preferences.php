@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,30 +16,29 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\Preferences as ObjPreferences;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_Preferences extends QuickBooks_IPP_Service
+class Preferences extends Service
 {
 	/**
 	 * Get a company by realmID
-	 *
-	 * @param QuickBooks_IPP_Context $Context
-	 * @param string $realmID
-	 * @return QuickBooks_IPP_Object_Customer	The customer object
 	 */
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realmID, string $query): ?ObjPreferences
 	{
-		return parent::_query($Context, $realm, $query);
+		return parent::_query($Context, $realmID, $query);
 	}
 
-	public function get($Context, $realm)
+	public function get(Context $Context, string $realmID): ?ObjPreferences
 	{
-		if ($list = parent::_query($Context, $realm, "SELECT * FROM Preferences"))
+		if ($list = parent::_query($Context, $realmID, "SELECT * FROM Preferences"))
 		{
 			return $list[0];
 		}
 
-		return false;
+		return null;
 	}
 }

@@ -1,19 +1,21 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Customer extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Customer extends BaseObject
 {
-	protected function _defaults()
+	protected function _defaults(): array
 	{
-		return array(
+		return [
 			'TypeOf' => 'Person',
-			);
+		];
 	}
 
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Id' => true,
 			'SyncToken' => true,
 			'MetaData' => true,
@@ -65,6 +67,6 @@ class QuickBooks_IPP_Object_Customer extends QuickBooks_IPP_Object
 			'TotalRevenue' => true,
 			'TotalExpense' => true,
 			'JobInfo' => true,
-			);
+		];
 	}
 }

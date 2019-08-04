@@ -1,13 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Vendor extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Vendor extends BaseObject
 {
-	protected function _defaults()
+	protected function _defaults(): array
 	{
-		return array(
+		return [
 			'TypeOf' => 'Person',
-			);
+		];
 	}
 }

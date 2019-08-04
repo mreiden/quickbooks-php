@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -13,55 +13,53 @@
  *
  */
 
-class QuickBooks_IPP_Cache
-{
-	const MAP_QBXML = 'qbxml';
+namespace QuickBooksPhpDevKit\IPP;
 
-	const MAP_IPP = 'ipp';
+class Cache
+{
+	public const MAP_QBXML = 'qbxml';
+
+	public const MAP_IPP = 'ipp';
 
 	protected $_context;
 
-	public function __construct($Context, $dsn, $map = QuickBooks_IPP_Cache::MAP_IPP, $map_dsn)
+	public function __construct($Context, $dsn, string $map = static::MAP_IPP, $map_dsn)
 	{
 		$this->_context = $Context;
 	}
 
-	protected function _mapFactory($map)
+	protected function _mapFactory(string $map)
 	{
-		$class = 'QuickBooks_IPP_Cache_Mapper_' . ucfirst(strtolower($map));
-		$file = 'QuickBooks/IPP/Cache/Mapper/' . ucfirst(strtolower($map));
-
-		QuickBooks_Loader::load($file);
-
+		$class = __NAMESPACE__ . "\\Cache\\Mapper\\" . ucfirst(strtolower($map));
 		return new $class($map_dsn);
 	}
 
-	public function refresh($resources = array(), $IDs = null)
+	public function refresh(array $resources = [], ?array $IDs = null)
 	{
 
 	}
 
-	public function add($resources = array(), $IDs = null)
+	public function add(array $resources = [], ?array $IDs = null)
 	{
 
 	}
 
-	public function mod($resources = array(), $IDs = null)
+	public function mod(array $resources = [], ?array $IDs = null)
 	{
 
 	}
 
-	public function query($resources = array(), $IDs = null)
+	public function query(array $resources = [], ?array $IDs = null)
 	{
 
 	}
 
-	public function delete($resources = array(), $IDs = null)
+	public function delete(array $resources = [], array $IDs = null)
 	{
 
 	}
 
-	public function todo($resources = array(), $actions = array())
+	public function todo(array $resources = [], array $actions = [])
 	{
 		foreach ($resources as $resource)
 		{

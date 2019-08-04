@@ -1,24 +1,26 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Report extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Report extends BaseObject
 {
 	protected $_report_name;
 
-	public function __construct($name)
+	public function __construct(string $name)
 	{
 		$this->_report_name = $name;
 		parent::__construct();
 	}
 
-	public function getRowCount()
+	public function getRowCount(): int
 	{
 		$Data = $this->_data['Data'][0];
 		return $Data->getRowCount();
 	}
 
-	public function getColumnCount()
+	public function getColumnCount(): int
 	{
 		return count($this->_data['ColDesc']);
 	}

@@ -1,15 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Header extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Header extends BaseObject
 {
-	public function setTxnDate($value)
+	public function setTxnDate($value): bool
 	{
 		return $this->setDateType('TxnDate', $value);
 	}
 
-	public function getTxnDate($format = 'Y-m-d')
+	public function getTxnDate(string $format = 'Y-m-d'): string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -19,15 +21,15 @@ class QuickBooks_IPP_Object_Header extends QuickBooks_IPP_Object
 		return $this->setAmountType('TotalAmt', $amt);
 	}
 
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'DocNumber' => true,
 			'TxnDate' => true,
 			'Note' => true,
 			'Status' => true,
 			'VendorId' => true,
-            'VendorName' => true,
+			'VendorName' => true,
 			'CustomerId' => true,
 			'CustomerName' => true,
 			'JobId' => true,
@@ -70,6 +72,6 @@ class QuickBooks_IPP_Object_Header extends QuickBooks_IPP_Object
 			'DiscountAccountId' => true,
 			'DiscountAccountName' => true,
 			'DiscountTaxable' => true,
-			);
+		];
 	}
 }

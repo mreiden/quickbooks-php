@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,39 +16,36 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Object\Vendor as ObjVendor;
+use QuickBooksPhpDevKit\IPP\Service;
+use QuickBooksPhpDevKit\PackageInfo;
 
-class QuickBooks_IPP_Service_Vendor extends QuickBooks_IPP_Service
+class Vendor extends Service
 {
-	public function findAll($Context, $realmID, $query = null, $page = 1, $size = 50, $options = array())
+	public function findAll(Context $Context, string $realmID, ?string $query = null, int $page = 1, int $size = 50, array $options = []): ?array
 	{
-		return parent::_findAll($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_VENDOR, $query, null, $page, $size, '', $options);
+		return parent::_findAll($Context, $realmID, IDS::RESOURCE_VENDOR, $query, null, $page, $size, '', $options);
 	}
 
-	public function add($Context, $realmID, $Object)
+	public function add(Context $Context, string $realmID, $Object)
 	{
-		return parent::_add($Context, $realmID, QuickBooks_IPP_IDS::RESOURCE_VENDOR, $Object);
+		return parent::_add($Context, $realmID, IDS::RESOURCE_VENDOR, $Object);
 	}
 
-	public function query($Context, $realm, $query)
+	public function query(Context $Context, string $realm, string $query): ?array
 	{
 		return parent::_query($Context, $realm, $query);
 	}
 
 	/**
 	 * Updates vendor.
-	 *
-	 * @param object $Context Context.
-	 * @param string $realm   Company Id.
-	 * @param string $IDType  Resource.
-	 * @param object $Object  Object.
-	 *
-	 * @return boolean
 	 */
-	public function update($Context, $realm, $IDType, $Object)
+	public function update(Context $Context, string $realm, string $IDType, $Object): bool
 	{
-		return parent::_update($Context, $realm, QuickBooks_IPP_IDS::RESOURCE_VENDOR, $Object, $IDType);
+		return parent::_update($Context, $realm, IDS::RESOURCE_VENDOR, $Object, $IDType);
 	}
-
 }

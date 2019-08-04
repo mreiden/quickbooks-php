@@ -1,16 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_TimeActivity extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class TimeActivity extends BaseObject
 {
-	protected function _defaults()
+	protected function _defaults(): array
 	{
-		return array(
-			);
+		return [
+		];
 	}
 
-	protected function _order()
+	protected function _order(): array
 	{
 		/*
 		return array(
@@ -38,7 +40,7 @@ class QuickBooks_IPP_Object_TimeActivity extends QuickBooks_IPP_Object
 			);
 		*/
 
-		return array(
+		return [
 			'Id' => true,
 			'SyncToken' => true,
 			'MetaData' => true,
@@ -63,6 +65,6 @@ class QuickBooks_IPP_Object_TimeActivity extends QuickBooks_IPP_Object
 			'StartTime' => true,
 			'EndTime' => true,
 			'Description' => true,
-			);
+		];
 	}
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,19 +16,19 @@
  * @subpackage IPP
  */
 
+namespace QuickBooksPhpDevKit\IPP\Service;
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Service.php');
+use QuickBooksPhpDevKit\IPP\Object\CompanyMetaData as ObjCompanyMetaData;
+use QuickBooksPhpDevKit\IPP\Context;
+use QuickBooksPhpDevKit\IPP\IDS;
+use QuickBooksPhpDevKit\IPP\Service;
 
-class QuickBooks_IPP_Service_CompanyMetaData extends QuickBooks_IPP_Service
+class CompanyMetaData extends Service
 {
 	/**
-	 * Get a company by realmID
-	 *
-	 * @param QuickBooks_IPP_Context $Context
-	 * @param string $realmID
-	 * @return QuickBooks_IPP_Object_Customer	The customer object
+	 * Get company meta data by realmID
 	 */
-	public function findById($Context, $realmID)
+	public function findById(Context $Context, string $realmID): ?ObjCompanyMetaData
 	{
 		$xml = null;
 

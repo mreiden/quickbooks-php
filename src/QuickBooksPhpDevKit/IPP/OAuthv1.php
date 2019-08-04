@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks PHP DevKit
@@ -15,7 +15,9 @@
  * @package QuickBooks
  */
 
-class QuickBooks_IPP_OAuthv1
+namespace QuickBooksPhpDevKit\IPP;
+
+class OAuthv1
 {
 	private $_secrets;
 
@@ -32,24 +34,24 @@ class QuickBooks_IPP_OAuthv1
 	/**
 	 *
 	 */
-	const NONCE = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	public const NONCE = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-	const METHOD_POST = 'POST';
-	const METHOD_GET = 'GET';
-	const METHOD_PUT = 'PUT';
-	const METHOD_DELETE = 'DELETE';
+	public const METHOD_POST = 'POST';
+	public const METHOD_GET = 'GET';
+	public const METHOD_PUT = 'PUT';
+	public const METHOD_DELETE = 'DELETE';
 
-	const DEFAULT_VERSION = '1.0';
-	const DEFAULT_SIGNATURE = 'HMAC-SHA1';
+	public const DEFAULT_VERSION = '1.0';
+	public const DEFAULT_SIGNATURE = 'HMAC-SHA1';
 
-	const SIGNATURE_PLAINTEXT = 'PLAINTEXT';
-	const SIGNATURE_HMAC = 'HMAC-SHA1';
-	const SIGNATURE_RSA = 'RSA-SHA1';
+	public const SIGNATURE_PLAINTEXT = 'PLAINTEXT';
+	public const SIGNATURE_HMAC = 'HMAC-SHA1';
+	public const SIGNATURE_RSA = 'RSA-SHA1';
 
 	/**
 	 * Create our OAuth instance
 	 */
-	public function __construct($oauth_consumer_key, $oauth_consumer_secret)
+	public function __construct(string $oauth_consumer_key, string $oauth_consumer_secret)
 	{
 		$this->_oauth_consumer_key = $oauth_consumer_key;
 		$this->_oauth_consumer_secret = $oauth_consumer_secret;
@@ -63,7 +65,7 @@ class QuickBooks_IPP_OAuthv1
 	 *
 	 *
 	 */
-	public function signature($method, $keyfile = null)
+	public function signature(string $method, ?string $keyfile = null)
 	{
 		$this->_signature = $method;
 		$this->_keyfile = $keyfile;
@@ -74,7 +76,7 @@ class QuickBooks_IPP_OAuthv1
 	 *
 	 *
 	 */
-	public function sign($method, $url, $oauth_token = null, $oauth_token_secret = null, $params = array())
+	public function sign($method, $url, $oauth_token = null, $oauth_token_secret = null, $params = [])
 	{
 		/*
 		print('got in: [' . $method . '], ' . $url);
@@ -84,16 +86,16 @@ class QuickBooks_IPP_OAuthv1
 
 		if (!is_array($params))
 		{
-			$params = array();
+			$params = [];
 		}
 
-		$params = array_merge($params, array(
+		$params = array_merge($params, [
 			'oauth_consumer_key' => $this->_oauth_consumer_key,
 			'oauth_signature_method' => $this->_signature,
 			'oauth_nonce' => $this->_nonce(),
 			'oauth_timestamp' => $this->_timestamp(),
 			'oauth_version' => $this->_version,
-			));
+		]);
 
 		// Add in the tokens if they were passed in
 		if ($oauth_token)
@@ -132,12 +134,12 @@ class QuickBooks_IPP_OAuthv1
 
 		$normalized_url = $url . '?' . $normalized;			// normalized URL
 
-		return array (
+		return [
 			0 => $signature_and_basestring[0], 		// signature basestring
 			1 => $signature_and_basestring[1],		// signature
 			2 => $normalized_url,
 			3 => $this->_generateHeader($params, $normalized),	// header string
-			);
+		];
 	}
 
 	protected function _generateHeader($params, $normalized)
@@ -158,26 +160,25 @@ class QuickBooks_IPP_OAuthv1
 		$str .= ' oauth_consumer_key="' . $params['oauth_consumer_key'] . '",
 			oauth_version="' . $params['oauth_version'] . '"';
 
-		return str_replace(array('  ', '   '), ' ', str_replace(array("\r", "\n", "\t"), ' ', $str));
+		// Replace tabs and new lines with a space
+		// Replace 2 or 3 spaces with 1 (should preg just replace multiple spaces with one?)
+		//$str = str_replace(["\r", "\n", "\t"], ' ', $str);
+		//$str = str_replace(['  ', '   '], ' ', );
+		$str = preg_replace('/(\r|\n|\t\ )+/', ' ', $str);
+
+		return $str;
 	}
 
 	/**
 	 *
 	 *
 	 */
-	protected function _escape($str)
+	protected function _escape(?string $str): ?string
 	{
-		if ($str === false)
-		{
-			return $str;
-		}
-		else
-		{
-			return str_replace('+', ' ', str_replace('%7E', '~', rawurlencode($str)));
-		}
+		return null === $str ? null : str_replace('+', ' ', str_replace('%7E', '~', rawurlencode($str)));
 	}
 
-	protected function _timestamp()
+	protected function _timestamp(): int
 	{
 		//return 1326976195;
 
@@ -185,7 +186,7 @@ class QuickBooks_IPP_OAuthv1
 		return time();
 	}
 
-	protected function _nonce($len = 5)
+	protected function _nonce(int $len = 5): string
 	{
 		//return '1234';
 
@@ -196,9 +197,9 @@ class QuickBooks_IPP_OAuthv1
 		return substr(implode('', $tmp), 0, $len);
 	}
 
-	protected function _normalize($params)
+	protected function _normalize(array $params): string
 	{
-		$normalized = array();
+		$normalized = [];
 
 		ksort($params);
 		foreach ($params as $key => $value)
@@ -225,7 +226,7 @@ class QuickBooks_IPP_OAuthv1
 		return implode('&', $normalized);
 	}
 
-	protected function _generateSignature($signature, $method, $url, $params = array())
+	protected function _generateSignature(string $signature, string $method, string $url, array $params = [])
 	{
 		/*
 		print('<pre>params for signing');
@@ -250,7 +251,7 @@ class QuickBooks_IPP_OAuthv1
 
 		if (false !== ($pos = strpos($url, '?')))
 		{
-			$tmp = array();
+			$tmp = [];
 			parse_str(substr($url, $pos + 1), $tmp);
 
 			// Bad hack for magic quotes... *sigh* stupid PHP
@@ -305,7 +306,7 @@ class QuickBooks_IPP_OAuthv1
 	*/
 
 
-	protected function _generateSignature_RSA($sbs, $method, $url, $params = array())
+	protected function _generateSignature_RSA($sbs, $method, $url, $params = [])
 	{
 		// $res = ...
 		$res = openssl_pkey_get_private('file://' . $this->_keyfile);
@@ -322,10 +323,10 @@ class QuickBooks_IPP_OAuthv1
 
 		openssl_free_key($res);
 
-		return array(
+		return [
 			0 => $sbs,
 			1 => base64_encode($signature),
-			);
+		];
 	}
 
 
@@ -334,8 +335,15 @@ class QuickBooks_IPP_OAuthv1
 	$key = $request->urlencode($consumer_secret).'&'.$request->urlencode($token_secret);
 	$signature = base64_encode(hash_hmac("sha1", $base_string, $key, true));
 	*/
-
-	protected function _generateSignature_HMAC($sbs, $method, $url, $params = array())
+	/**
+	 * Generate HMAC signature.
+	 *
+	 * @param $sbs string		Data to encrypt
+	 * @param $method string	Shared secret encryption key
+	 * @param $url string		** Unused **
+	 * @param $params array		Params (OAuth?) for the oauth_secret
+	 */
+	protected function _generateSignature_HMAC(string $sbs, string $method, string $url, array $params = []): array
 	{
 		$secret = $this->_escape($this->_oauth_consumer_secret);
 
@@ -348,9 +356,9 @@ class QuickBooks_IPP_OAuthv1
 
 		//print('generating signature from [' . $secret . ']' . "\n\n");
 
-		return array(
+		return [
 			0 => $sbs,
 			1 => base64_encode(hash_hmac('sha1', $sbs, $secret, true)),
-			);
+		];
 	}
 }

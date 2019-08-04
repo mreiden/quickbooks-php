@@ -1,11 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
-QuickBooks_Loader::load('/QuickBooks/IPP/Object.php');
+namespace QuickBooksPhpDevKit\IPP\Object;
 
-class QuickBooks_IPP_Object_Line extends QuickBooks_IPP_Object
+use QuickBooksPhpDevKit\IPP\BaseObject;
+
+class Line extends BaseObject
 {
 	/*
-	public function setQuantity($quantity)
+	public function setQuantity($quantity): bool
 	{
 		return $this->set('Qty', (float) $quantity);
 	}
@@ -15,20 +17,20 @@ class QuickBooks_IPP_Object_Line extends QuickBooks_IPP_Object
 		return $this->get('Qty');
 	}
 
-	public function setDescription($description)
+	public function setDescription($description): bool
 	{
 		return $this->set('Desc', $description);
 	}
 
-	public function getDescription()
+	public function getDescription(): string
 	{
 		return $this->get('Desc');
 	}
 	*/
 
-	protected function _order()
+	protected function _order(): array
 	{
-		return array(
+		return [
 			'Id' => true,
 			'Desc' => true,
 			'GroupMember' => true,
@@ -55,6 +57,6 @@ class QuickBooks_IPP_Object_Line extends QuickBooks_IPP_Object
 			'Custom1' => true,
 			'Custom2' => true,
 			'ServiceDate' => true,
-		);
+		];
 	}
 }
