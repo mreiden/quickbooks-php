@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Response result for the SOAP ->receiveRequestXML() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * Result base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Response result for the SOAP ->receiveRequestXML() method call
  */
-class QuickBooks_WebConnector_Result_ReceiveResponseXML extends QuickBooks_WebConnector_Result
+class ReceiveResponseXML extends Result
 {
 	/**
 	 * Integer indicating update progress
@@ -36,9 +35,9 @@ class QuickBooks_WebConnector_Result_ReceiveResponseXML extends QuickBooks_WebCo
 	/**
 	 * Create a new ->receiveResponseXML result object
 	 *
-	 * @param integer $complete		An integer between 0 and 100 indicating the percentage complete this update is *OR* a negative integer indicating an error has occured
+	 * @param integer $complete		An integer between 0 and 100 indicating the percentage complete this update is *OR* a negative integer indicating an error has occurred
 	 */
-	public function __construct($complete)
+	public function __construct(int $complete)
 	{
 		$this->receiveResponseXMLResult = $complete;
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Result container object for the SOAP ->connectionError() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * Result interface
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Result container object for the SOAP ->connectionError() method call
  */
-class QuickBooks_WebConnector_Result_ConnectionError extends QuickBooks_WebConnector_Result
+class ConnectionError extends Result
 {
 	/**
 	 * An error message
@@ -38,7 +37,7 @@ class QuickBooks_WebConnector_Result_ConnectionError extends QuickBooks_WebConne
 	 *
 	 * @param string $err		An error message describing the problem
 	 */
-	public function __construct($err)
+	public function __construct(string $err)
 	{
 		$this->connectionErrorResult = $err;
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -15,17 +15,19 @@
  * @package QuickBooks
  */
 
+namespace QuickBooksPhpDevKit;
+
 /**
  *
  *
  *
  */
-class QuickBooks_ErrorHandler
+class ErrorHandler
 {
 	/**
 	 *
 	 */
-	static public function handle($errno, $errstr, $errfile, $errline)
+	static public function handle(int $errno, string $errstr, string $errfile, int $errline)
 	{
 		print('
 			ERROR: [' . $errno . '] ' . $errstr . '

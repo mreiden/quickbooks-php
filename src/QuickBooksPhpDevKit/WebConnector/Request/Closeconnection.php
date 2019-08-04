@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,21 +16,18 @@
  * @subpackage Client
  */
 
-/**
- * QuickBooks request base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Request.php');
+namespace QuickBooksPhpDevKit\WebConnector\Request;
+
+use QuickBooksPhpDevKit\WebConnector\Request;
 
 /**
  *
- *
- *
  */
-class QuickBooks_WebConnector_Request_CloseConnection extends QuickBooks_WebConnector_Request
+class Closeconnection extends Request
 {
 	public $ticket;
 
-	public function __construct($ticket = null)
+	public function __construct(?string $ticket = null)
 	{
 		$this->ticket = $ticket;
 	}

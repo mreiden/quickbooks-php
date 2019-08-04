@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * QuickBooks request base class
+ * QuickBooks WebConnector Request base class
  *
  * Copyright (c) {2010-04-16} {Keith Palmer / ConsoliBYTE, LLC.
  * All rights reserved. This program and the accompanying materials
@@ -16,19 +16,17 @@
  * @subpackage Client
  */
 
+namespace QuickBooksPhpDevKit\WebConnector;
+
 /**
- * QuickBooks result base class
+ * QuickBooks WebConnector Request base class
  */
-abstract class QuickBooks_WebConnector_Request
+abstract class Request
 {
 	/**
 	 *
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return void
 	 */
-	public function set($key, $value)
+	public function set(string $key, $value): void
 	{
 		$this->$key = $value;
 	}

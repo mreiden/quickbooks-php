@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,19 +16,18 @@
  * @subpackage Client
  */
 
-/**
- * QuickBooks request base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Request.php');
+namespace QuickBooksPhpDevKit\WebConnector\Request;
+
+use QuickBooksPhpDevKit\WebConnector\Request;
 
 /**
  *
  */
-class QuickBooks_WebConnector_Request_ClientVersion extends QuickBooks_WebConnector_Request
+class Clientversion extends Request
 {
 	public $strVersion;
 
-	public function __construct($version = null)
+	public function __construct(?string $version = null)
 	{
 		$this->strVersion = $version;
 	}

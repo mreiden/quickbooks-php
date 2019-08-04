@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks response object for responses to the ->interactiveDone() SOAP method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * QuickBooks result base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * QuickBooks response object for responses to the ->interactiveDone() SOAP method call
  */
-class QuickBooks_WebConnector_Result_InteractiveDone extends QuickBooks_WebConnector_Result
+class InteractiveDone extends Result
 {
 	/**
 	 * A string indicating the interactive session is done
@@ -36,9 +35,9 @@ class QuickBooks_WebConnector_Result_InteractiveDone extends QuickBooks_WebConne
 	/**
 	 * Create a new result object
 	 *
-	 * @param string $version
+	 * @param string $str
 	 */
-	public function __construct($str)
+	public function __construct(string $str)
 	{
 		$this->interactiveDoneResult = $str;
 	}

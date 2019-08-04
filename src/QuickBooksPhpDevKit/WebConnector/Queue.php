@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks action queue - A queue of actions to be performed via the QBWC
@@ -40,20 +40,17 @@
  * @package QuickBooks
  */
 
-/**
- * Various QuickBooks-related utilities
- */
-QuickBooks_Loader::load('/QuickBooks/Utilities.php');
+namespace QuickBooksPhpDevKit\WebConnector;
 
-/**
- * Helper singleton class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Queue/Singleton.php');
+use QuickBooksPhpDevKit\Driver;
+use QuickBooksPhpDevKit\Driver\Factory;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
 
 /**
  * QuickBooks queueing class - Queue up actions to be performed in QuickBooks
  */
-class QuickBooks_WebConnector_Queue
+class Queue
 {
 	/**
 	 * The default username to use when queueing items
@@ -62,18 +59,24 @@ class QuickBooks_WebConnector_Queue
 	protected $_user;
 
 	/**
+	 * The database driver
+	 * @var Driver
+	 */
+	protected $_driver;
+
+	/**
 	 * Create a new QuickBooks queue instance
 	 *
-	 * @param mixed $dsn_or_conn	A DSN-style connection string (i.e.: mysq://root:pass@locahost/database) or a database connection (if you wish to re-use an existing database connection)
+	 * @param mixed $dsn_or_conn	A DSN-style connection string (i.e.: mysql://root:pass@locahost/database) or a database connection (if you wish to re-use an existing database connection)
 	 * @param array $config			Configuration array for the driver
 	 */
-	public function __construct($dsn_or_conn, $user = null, $config = array())
+	public function __construct($dsn_or_conn, ?string $user = null, array $config = [])
 	{
-		//$this->_driver = QuickBooks_Utilities::driverFactory($dsn_or_conn, $config);
-		$this->_driver = QuickBooks_Driver_Factory::create($dsn_or_conn, $config);
+		$this->_driver = Factory::create($dsn_or_conn, $config);
 
 		// No default username was provided, fetch the default from the driver
-		if (!$user)
+		$user = trim($user ?? '');
+		if (empty($user))
 		{
 			$user = $this->_driver->authDefault();
 		}
@@ -84,13 +87,10 @@ class QuickBooks_WebConnector_Queue
 
 	/**
 	 * Get or set the username the queue is operating on/for
-	 *
-	 * @param string $user
-	 * @return string
 	 */
-	public function user($user = null)
+	public function user(?string $user = null): ?string
 	{
-		if ($user)
+		if (!empty($user))
 		{
 			$this->_user = $user;
 		}
@@ -102,41 +102,34 @@ class QuickBooks_WebConnector_Queue
 	 * Request to enter "Interactive Mode" with the Web Connector
 	 *
 	 * * This function *does not* work. Please don't use it.
-	 *
-	 * @param integer $priority
-	 * @param string $user
-	 * @return boolean
 	 */
-	public function interactive($priority = 0, $user = null)
+	public function interactive(int $priority = 0, ?string $user = null): bool
 	{
+		throw new \Exception('Interactive mode is not implemented.  Find another way');
+		/*
 		if ($this->_driver)
 		{
 			$tmp = array_merge(range('a', 'z'), range(0, 9));
 			shuffle($tmp);
 			$random = substr(implode('', $tmp), 0, 8);
 
-			/*
-			if (!$user)
-			{
-				$user = $this->_driver->authDefault();
-			}
-			*/
-
-			if (!$user)
+			// Use the default user (provided in __construct) if none is given
+			$user = trim($user ?? '');
+			if (empty($user))
 			{
 				$user = $this->_user;
 			}
 
 			return $this->_driver->queueEnqueue(QUICKBOOKS_INTERACTIVE_MODE, $random, true, $priority, $user);
 		}
-
+		*/
 		return false;
 	}
 
 	/**
 	 * Register a recurring event
 	 *
-	 * Recurring events are actions that get queued up to run once every so
+	 * Recurring events are actions that get queued up to run every so
 	 * often. So, for instance, if you want to make sure you issue a
 	 * CustomerQuery every day, you can register a recurring event that occurs
 	 * every day, and then the SOAP server/Web Connector will try to make sure
@@ -155,36 +148,20 @@ class QuickBooks_WebConnector_Queue
 	 * @param boolean $replace		Whether or not this should replace any other recurring events with this action/ident
 	 * @return boolean
 	 */
-	public function recurring($run_every, $action, $ident = null, $priority = 0, $extra = null, $user = null, $qbxml = null, $replace = true)
+	public function recurring($run_every, string $action, $ident, ?int $priority = null, ?array $extra = null, ?string $user = null, ?string $qbxml = null, bool $replace = true): bool
 	{
-		$run_every = QuickBooks_Utilities::intervalToSeconds($run_every);
+		$ident = $this->validIdent($ident ?? '');
 
-		if (!strlen($ident))
+		$priority = $priority ?? Utilities::priorityForAction($action);
+
+		// Use the default user (provided in __construct) if none is given
+		$user = trim($user ?? '');
+		if (empty($user))
 		{
-			$tmp = array_merge(array('a', 'z'), range(0, 9));
-			shuffle($tmp);
-			$ident = substr(implode('', $tmp), 0, 8);
+			$user = $this->_user;
 		}
 
-		if ($this->_driver)
-		{
-			/*
-			if (!$user)
-			{
-				$user = $this->_driver->authDefault();
-			}
-			*/
-
-			// Use the default user (provided in __construct) if none is given
-			if (!$user)
-			{
-				$user = $this->_user;
-			}
-
-			return $this->_driver->recurEnqueue($user, $run_every, $action, substr($ident, 0, 40), $replace, $priority, $extra, $qbxml);
-		}
-
-		return false;
+		return $this->_driver->recurEnqueue($user, $run_every, $action, $ident, $replace, $priority, $extra, $qbxml);
 	}
 
 	/**
@@ -199,42 +176,24 @@ class QuickBooks_WebConnector_Queue
 	 *
 	 * @param string $action		An action to be performed within QuickBooks (see the qbXML and QuickBooks SDK documentation, i.e.: "CustomerAdd", "InvoiceAdd", "CustomerMod", etc.)
 	 * @param mixed $ident			A unique identifier (if required) for a record being operated on (i.e. if you're doing a "CustomerAdd", you'd probaly put a unique customer ID number here, so you're SOAP handler function knows which customer it is supposed to add)
-	 * @param integer $priority		The priority of the update (higher priority actions will be pushed to QuickBooks before lower priority actions)
+	 * @param integer $priorityForAction	The priority of the update (higher priority actions will be pushed to QuickBooks before lower priority actions)
 	 * @param array $extra			If you need to make additional bits of data available to your request/response functions, you can pass an array of extra data here
 	 * @param string $user			The username of the QuickBooks Web Connector user this item should be queued for
 	 * @param boolean $replace		Whether or not to replace any other currently queued entries with the same action/ident
 	 * @return boolean
 	 */
-	public function enqueue($action, $ident = null, $priority = 0, $extra = null, $user = null, $qbxml = null, $replace = true)
+	public function enqueue(string $action, $ident, ?int $priority = null, ?array $extra = null, ?string $user = null, $qbxml = null, bool $replace = true): bool
 	{
-		if (!strlen($ident))
-		{
-			// If they didn't provide an $ident, generate a random, unique one
+		$ident = $this->validIdent($ident);
 
-			$tmp = array_merge(range('a', 'z'), range(0, 9));
-			shuffle($tmp);
-			$ident = substr(implode('', $tmp), 0, 8);
+		// Use the default user (provided in __construct) if none is given
+		$user = trim($user ?? '');
+		if (empty($user))
+		{
+			$user = $this->_user;
 		}
 
-		if ($this->_driver)
-		{
-			/*
-			if (!$user)
-			{
-				$user = $this->_driver->authDefault();
-			}
-			*/
-
-			// Use the default user (provided in __construct) if none is given
-			if (!$user)
-			{
-				$user = $this->_user;
-			}
-
-			return $this->_driver->queueEnqueue($user, $action, substr($ident, 0, 40), $replace, $priority, $extra, $qbxml);
-		}
-
-		return false;
+		return false !== $this->_driver->queueEnqueue($user, $action, $ident, $replace, $priority, $extra, $qbxml);
 	}
 
 	/**
@@ -245,20 +204,18 @@ class QuickBooks_WebConnector_Queue
 	 * @param string $user		The username of the user to check if the queued item exists for
 	 * @return boolean			Whether or not that action/ident tuple is already in the queue
 	 */
-	public function exists($action, $ident, $user = null)
+	public function exists(string $action, $ident, ?string $user = null): ?array
 	{
-		if ($this->_driver)
-		{
-			// Use the default user (provided in __construct) if none is given
-			if (!$user)
-			{
-				$user = $this->_user;
-			}
+		$ident = $this->validIdent($ident);
 
-			return $this->_driver->queueExists($user, $action, $ident);
+		// Use the default user (provided in __construct) if none is given
+		$user = trim($user ?? '');
+		if (empty($user))
+		{
+			$user = $this->_user;
 		}
 
-		return null;
+		return $this->_driver->queueExists($user, $action, $ident);
 	}
 
 	/**
@@ -267,89 +224,61 @@ class QuickBooks_WebConnector_Queue
 	 * @param string $user		The username of the user to check the queue size for
 	 * @return integer			The number of items in the queue
 	 */
-	public function size($user = null)
+	public function size(?string $user = null): ?int
 	{
-		if ($this->_driver)
-		{
-			// Use the default user (provided in __construct) if none is given
-			if (!$user)
-			{
-				$user = $this->_user;
-			}
+		$queued = true;
 
-			$queued = true;
-			return $this->_driver->queueLeft($user, $queued);
+		// Use the default user (provided in __construct) if none is given
+		$user = trim($user ?? '');
+		if (empty($user))
+		{
+			$user = $this->_user;
 		}
 
-		return null;
+		return $this->_driver->queueLeft($user, $queued);
 	}
 
 	/**
 	 * Forcibly remove an item from the queue
-	 *
-	 * @param string $action
-	 * @param string $ident
-	 * @param string $user
-	 * @return boolean
 	 */
-	public function remove($action, $ident, $user = null)
+	public function remove(string $action, $ident, ?string $user = null): ?bool
 	{
-		if ($this->_driver)
-		{
-			// Use the default user (provided in __construct) if none is given
-			if (!$user)
-			{
-				$user = $this->_user;
-			}
+		$ident = $this->validIdent($ident);
 
-			$ticket = null;
-			$new_status = QUICKBOOKS_STATUS_CANCELLED;
-			return $this->_driver->queueRemove($user, $action, $ident);
+		// Use the default user (provided in __construct) if none is given
+		$user = trim($user ?? '');
+		if (empty($user))
+		{
+			$user = $this->_user;
 		}
 
-		return null;
+		return $this->_driver->queueRemove($user, $action, $ident);
 	}
 
-	/*public function identifier($type, $ident, $user = null)
+	/**
+	 * Convert ident into a string.
+	 */
+	private function validIdent($ident): string
 	{
-		$types = QuickBooks_Utilities::listObjects();
-		//if (
-
-		if ($this->_driver)
+		if (!is_string($ident) && !is_int($ident) && !is_float($ident))
 		{
-			//if (!$user)
-			//{
-			//	$user = $this->_driver->authDefault();
-			//}
-
-			// Use the default user (provided in __construct) if none is given
-			if (!$user)
-			{
-				$user = $this->_user;
-			}
-
-			$editseq = '';
-			return $this->_driver->identFetch($user, $type, $ident, $editseq);
+			throw new \Exception('Ident must be a string, an int, or a float but got (' . gettype($ident) .')');
 		}
+		$ident = (string) $ident;
 
-		return null;
+		// Database is limited to 40 characters
+		$ident = substr($ident, 0, 40);
+
+		return $ident;
 	}
-
-	public function sequence($type, $ident, $user = null)
-	{
-
-	}
-	*/
 
 	/**
 	 * Get debugging information from the queue
-	 *
-	 * @return array
 	 */
-	public function debug()
+	public function debug(): array
 	{
-		return array(
+		return [
 			'driver' => var_export($this->_driver),
-			);
+		];
 	}
 }

@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * QuickBooks result base class
+ * QuickBooks WebConnector Result base class
  *
  * Copyright (c) {2010-04-16} {Keith Palmer / ConsoliBYTE, LLC.
  * All rights reserved. This program and the accompanying materials
@@ -19,9 +19,11 @@
  * @subpackage Server
  */
 
+namespace QuickBooksPhpDevKit\WebConnector;
+
 /**
- * QuickBooks result base class
+ * QuickBooks WebConnector Result base class
  */
-abstract class QuickBooks_WebConnector_Result
+abstract class Result
 {
 }

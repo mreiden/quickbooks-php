@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks SOAP server for interacting with the QuickBooks Web Connector
@@ -18,14 +18,14 @@
  * You should see the docs/example_server.php file for detailed examples of
  * using this!
  *
- * Add items to the QuickBooks queue using the {@see QuickBooks_Queue} class.
+ * Add items to the QuickBooks queue using the {@see QuickBooksPhpDevKit\WebConnector\Queue} class.
  * The next time the QuickBooks Web Connector connects to the SOAP server, it
  * will be instructed to perform commands based on what has been placed in the
  * queue. So if you queued up "CustomerAdd" "1234", #1234,
  * customer_add_request() will generate a qbXML request telling QuickBooks to
  * add that customer, the SOAP server will send that request out, and
  * QuickBooks will send back a qbXML response indicating whether or not that
- * customer was added successfully. .
+ * customer was added successfully.
  *
  * The QuickBooks Web Connector (QBWC) works like this:
  * 	- You create a SOAP server that response to a set of SOAP methods
@@ -51,33 +51,33 @@
  * @subpackage Server
  */
 
-/**
- * Hook which gets called when a request is received
- * @var string
- */
-define('QUICKBOOKS_SERVER_HOOK_PREHANDLE', 'QuickBooks_Server::handle (pre)');
+namespace QuickBooksPhpDevKit\WebConnector;
 
-/**
- * Hook which gets called after a request gets handled
- * @var string
- */
-define('QUICKBOOKS_SERVER_HOOK_POSTHANDLE', 'QuickBooks_Server::handle (post)');
-
-/**
- * Base handlers for each of the methods required by the QuickBooks Web Connector
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Handlers.php');
+use QuickBooksPhpDevKit\Adapter\SOAP\Server\AdapterInterface;
+use QuickBooksPhpDevKit\Callbacks;
+//use QuickBooksPhpDevKit\ErrorHandler;
+use QuickBooksPhpDevKit\Driver\Factory;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\Utilities;
+//use QuickBooksPhpDevKit\WebConnector\Handlers;	// Base handlers for each of the methods required by the QuickBooks Web Connector
 
 /**
  * QuickBooks SOAP Server
  */
-class QuickBooks_WebConnector_Server
+class Server
 {
 	/**
-	 * WSDL location
+	 * Hook which gets called when a request is received
 	 * @var string
 	 */
-	protected $_wsdl;
+	public const HOOK_PREHANDLE = 'Server::handle (pre)';
+
+	/**
+	 * Hook which gets called after a request gets handled
+	 * @var string
+	 */
+	public const HOOK_POSTHANDLE = 'Server::handle (post)';
+
 
 	/**
 	 * The logging level
@@ -98,6 +98,12 @@ class QuickBooks_WebConnector_Server
 	protected $_server;
 
 	/**
+	 * Server version string
+	 * @var string
+	 */
+	protected $_server_version_string;
+
+	/**
 	 * Registered hook functions for the server
 	 * @var array
 	 */
@@ -116,26 +122,36 @@ class QuickBooks_WebConnector_Server
 	protected $_input;
 
 	/**
+	 * The timestamp when the server was created
+	 * @var float
+	 */
+	protected $_timestamp;
+
+	/**
 	 * Create a new QuickBooks SOAP server
 	 *
-	 * @param mixed $dsn_or_conn		Either a DSN-style connection string *or* a database resource (if reusing an existing connection)
-	 * @param array $map				An associative array mapping queued commands to function/method calls
-	 * @param array $onerror			An associative array mapping error codes to function/method calls
-	 * @param array $hooks				An associative array mapping events to hook function/method calls
-	 * @param string $wsdl				The path to the WSDL file to use for the SOAP server methods
-	 * @param array $soap_options		Options to pass to the SOAP server (these mirror the default PHP SOAP server options)
-	 * @param array $handler_options	Options to pass to the handler class
-	 * @param array $driver_options		Options to pass to the driver class (i.e.: MySQL, etc.)
+	 * @param mixed 			$dsn_or_conn		Either a DSN-style connection string *or* a database resource (if reusing an existing connection)
+	 * @param AdapterInterface	$soapAdapter		SOAP server adapter interface (Built-In or PHP Extension)
+	 * @param array 			$map				An associative array mapping queued commands to function/method calls
+	 * @param array 			$onerror			An associative array mapping error codes to function/method calls
+	 * @param array 			$hooks				An associative array mapping events to hook function/method calls
+	 * @param int   			$log_level			PackageInfo::LogLevel['NORMAL'] | NONE, NORMAL, VERBOSE, DEBUG, DEVELOP
+	 * @param array 			$handler_options	Options to pass to the handler class
+	 * @param array 			$driver_options		Options to pass to the driver class (i.e.: MySQLi, etc.)
 	 */
-	public function __construct($dsn_or_conn, $map, $onerror = array(), $hooks = array(), $log_level = QUICKBOOKS_LOG_NORMAL, $soap = QUICKBOOKS_SOAPSERVER_BUILTIN, $wsdl = QUICKBOOKS_WSDL, $soap_options = array(), $handler_options = array(), $driver_options = array(), $callback_options = array())
+	public function __construct($dsn_or_conn, AdapterInterface $soapAdapter, array $map, array $onerror = [], array $hooks = [], int $log_level = PackageInfo::LogLevel['NORMAL'], array $handler_options = [], array $driver_options = [], array $callback_options = [])
 	{
-		$soap_options = $this->_defaults($soap_options);
+		// Not sure what this is actually for
+		$this->_timestamp = microtime(true);
+
+		// Set the default time zone.  Should be set to the WebConnect client's time zone if possible.
+		$this->setDefaultTimeZone();
 
 		// If safe mode is turned on, this causes a NOTICE/WARNING to be issued...
-		if (!ini_get('safe_mode'))
-		{
-			set_time_limit($soap_options['time_limit']);
-		}
+		//if (!ini_get('safe_mode'))
+		//{
+		//	set_time_limit($soap_options['time_limit']);
+		//}
 
 		/*
 		if ($soap_options['error_handler'])
@@ -144,7 +160,7 @@ class QuickBooks_WebConnector_Server
 		}
 		else if ($soap_options['use_builtin_error_handler'])
 		{
-			set_error_handler( array( 'QuickBooks_ErrorHandler', 'handle' ) );
+			set_error_handler( ['ErrorHandler', 'handle'] );
 		}
 
 		if ($soap_options['log_to_syslog'])
@@ -158,33 +174,38 @@ class QuickBooks_WebConnector_Server
 		}
 		*/
 
-		// WSDL location
-		$this->_wsdl = $wsdl;
+		// Save the server version string so it's not here in the handle method and in WebConnector\Handlers.
+		$http_scheme = !empty($_SERVER['REQUEST_SCHEME']) ? "{$_SERVER['REQUEST_SCHEME']}://" : (empty($_SERVER['HTTPS']) || true !== filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN) ? 'http://' : 'https://');
+		$this->_server_version_string = 'PHP QuickBooks SOAP Server v' . PackageInfo::Package['VERSION'] . ' at ' . $http_scheme . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? '?');
+
+		$handler_options = array_merge(
+			['server_version' => $this->_server_version_string],
+			$handler_options
+		);
 
 		// Logging level
 		$this->_loglevel = $log_level;
 
-		if ($this->_loglevel >= QUICKBOOKS_LOG_DEVELOP)
+		if ($this->_loglevel >= PackageInfo::LogLevel['DEVELOP'])
 		{
-			$this->_driver = QuickBooks_Utilities::driverFactory($dsn_or_conn, $driver_options, $hooks, $log_level);
+			// Driver must be created for logging to work
+			$this->_driver = Factory::create($dsn_or_conn, $driver_options, $hooks, $log_level);
 		}
 
 		// SOAP server adapter class
-		$this->_server = $this->_adapterFactory($soap, $wsdl, $soap_options, $log_level);
+		$this->_server = $soapAdapter;
 
-		/*
-		$this->_hooks = array();
-		foreach ($hooks as $hook => $funcs)
-		{
-			if (!is_array($funcs))
-			{
-				$funcs = array( $funcs );
-			}
 
-			$hooks[$hook] = $funcs;			// Do this so that when we pass it to the handlers, the hooks are already in lists
-			$this->_hooks[$hook] = $funcs;
+		// Check the user configured callbacks, error-handlers, and hooks to make sure they're able to be called
+		$uncallable_errors = array_filter([
+			'QueueMap' => static::validateMappedFunctions($map),           // $map: An associative array containing an array [RequestFunction, ResponseFunction] mapping queued commands to function/method calls
+			'ErrorMap' => static::validateErrorHandlerFunctions($onerror), // $onerror: An associative array mapping error codes to function/method calls
+			'HookMap' => static::validateHookFunctions($hooks),            // $hooks: An associative array mapping events to hook function/method calls
+		]);
+		if (!empty($uncallable_errors)) {
+			http_response_code(503);
+			throw new \Exception('Detected uncallable callbacks: ' . print_r($uncallable_errors, true));
 		}
-		*/
 
 		// Assign hooks
 		$this->_hooks = $hooks;
@@ -192,62 +213,35 @@ class QuickBooks_WebConnector_Server
 		// Assign callback configuration info
 		$this->_callback_config = $callback_options;
 
-		// Raw input
-		$input = file_get_contents('php://input');
-
-		$this->_input = $input;
-
 		// Base handlers
-		// $dsn_or_conn, $map, $onerror, $hooks, $log_level, $input, $handler_config = array(), $driver_config = array()
-		$this->_server->setClass('QuickBooks_WebConnector_Handlers', $dsn_or_conn, $map, $onerror, $hooks, $log_level, $input, $handler_options, $driver_options, $callback_options);
+		// $dsn_or_conn, $map, $onerror, $hooks, $log_level, $this->_input, $handler_config = [], $driver_config = []
+		$this->_server->setClass(__NAMESPACE__ . "\\Handlers", $dsn_or_conn, $map, $onerror, $hooks, $log_level, 'UNUSED_$this->_input', $handler_options, $driver_options, $callback_options);
 	}
 
-	/**
-	 * Get an adapter class instance
-	 *
-	 * @param string $adapter
-	 * @param string $wsdl
-	 * @param array $soap_options
-	 * @param integer $loglevel
-	 * @return boolean
-	 */
-	protected function _adapterFactory($adapter, $wsdl, $soap_options, $loglevel)
+	public function setDefaultTimeZone(?string $tz = null): bool
 	{
-		$adapter = ucfirst(strtolower($adapter));
+		PackageInfo::$TIMEZONE_AUTOSET = false;
 
-		$file = '/QuickBooks/Adapter/Server/' . $adapter . '.php';
-		$class = 'QuickBooks_Adapter_Server_' . $adapter;
-
-		QuickBooks_Loader::load($file);
-
-		if (class_exists($class))
+		if (null === $tz)
 		{
-			return new $class($wsdl, $soap_options);
+			if (!empty(PackageInfo::$TIMEZONE) && is_string(PackageInfo::$TIMEZONE))
+			{
+				$tz = PackageInfo::$TIMEZONE;
+			}
+			else
+			{
+				PackageInfo::$TIMEZONE_AUTOSET = true;
+				$tz = @date_default_timezone_get();
+			}
 		}
 
-		return null;
-	}
+		$success = @date_default_timezone_set($tz);
+		if ($success == true)
+		{
+			PackageInfo::$TIMEZONE = $tz;
+		}
 
-	/**
-	 * Merge configurations with the defaults
-	 *
-	 * @param array $arr
-	 * @return array
-	 */
-	final protected function _defaults($arr)
-	{
-		$defaults = array(
-			'error_handler' => '',
-			'use_builtin_error_handler' => false,
-			'time_limit' => 0,
-			'log_to_file' => null,
-			'log_to_syslog' => null,
-			'masking' => true,
-			);
-
-		$arr = array_merge($defaults, $arr);
-
-		return $arr;
+		return $success;
 	}
 
 	/**
@@ -257,13 +251,8 @@ class QuickBooks_WebConnector_Server
 	 * true, then the arrays of arrays will be merged, allowing $arr2 to
 	 * override $arr1 entries. If the arrays of arrays are numerically indexed,
 	 * $arr2 entries will be appended to $arr1 entries.
-	 *
-	 * @param array $arr1
-	 * @param array $arr2
-	 * @param boolean $array_of_arrays
-	 * @return array
 	 */
-	protected function _merge($arr1, $arr2, $array_of_arrays = false)
+	protected function _merge(array $arr1, array $arr2, bool $array_of_arrays = false): array
 	{
 		if ($array_of_arrays)
 		{
@@ -271,14 +260,14 @@ class QuickBooks_WebConnector_Server
 			{
 				if (!is_array($funcs))
 				{
-					$funcs = array( $funcs );
+					$funcs = [$funcs];
 				}
 
 				if (isset($arr1[$key]))
 				{
 					if (!is_array($arr1[$key]))
 					{
-						$arr1[$key] = array( $arr1[$key] );
+						$arr1[$key] = [$arr1[$key]];
 					}
 
 					$arr1[$key] = array_merge($arr1[$key], $funcs);
@@ -288,8 +277,6 @@ class QuickBooks_WebConnector_Server
 					$arr1[$key] = $funcs;
 				}
 			}
-
-			return $arr1;
 		}
 		else
 		{
@@ -300,47 +287,30 @@ class QuickBooks_WebConnector_Server
 			{
 				$arr1[$key] = $value;
 			}
-
-			return $arr1;
 		}
+
+		return $arr1;
 	}
 
 	/**
 	 * Send the correct HTTP headers for this request
-	 *
-	 * @return boolean
 	 */
-	protected function _headers()
+	protected function _headers(): bool
 	{
-		if ($_SERVER['REQUEST_METHOD'] == 'POST')
-		{
-			header('Content-Type: text/xml');
-		}
-		else if (isset($_GET['wsdl']) or isset($_GET['WSDL']))
-		{
-			header('Content-Type: text/xml');
-		}
-		else
-		{
-			header('Content-Type: text/plain');
-		}
+		$content_type = ($_SERVER['REQUEST_METHOD'] == 'POST' ? 'text/xml' : 'text/plain');
+		@header('Content-Type: ' . $content_type . '; charset=UTF-8');
 
 		return true;
 	}
 
 	/**
 	 * Log a message to the error/debug log
-	 *
-	 * @param string $msg
-	 * @param string $ticket
-	 * @param integer $level
-	 * @return boolean
 	 */
-	protected function _log($msg, $ticket, $level = QUICKBOOKS_LOG_NORMAL)
+	protected function _log(string $msg, ?string $ticket, int $level = PackageInfo::LogLevel['NORMAL']): bool
 	{
 		$Driver = $this->_driver;
 
-		$msg = QuickBooks_Utilities::mask($msg);
+		$msg = Utilities::mask($msg);
 
 		if ($Driver)
 		{
@@ -350,44 +320,45 @@ class QuickBooks_WebConnector_Server
 		return false;
 	}
 
+
+	/**
+	 * Set the raw request input (Let's us write tests)
+	 */
+	public function setRawRequestInput(?string $input): void
+	{
+		$this->_input = $input;
+	}
+
 	/**
 	 * Handle the SOAP request
-	 *
-	 * @param boolean $return
-	 * @param boolean $debug
-	 * @return void
 	 */
-	public function handle($return = false, $debug = false)
+	public function handle(bool $return = false, bool $debug = false): ?string
 	{
-		// Get the raw input
-		$input = $this->_input;
+		if (null === $this->_input)
+		{
+			// Raw input
+			$this->setRawRequestInput(file_get_contents('php://input'));
+		}
 
-		//
+		// raw input
+		$input = &$this->_input;
+
 		if ($_SERVER['REQUEST_METHOD'] == 'POST')
 		{
+			// This is a SOAP Request
+
 			$this->_headers();
 
 			$output_buffering = false;
 
-			/*
-			if (isset($this->_hooks[QUICKBOOKS_SERVER_HOOK_PREHANDLE]))
-			{
-				foreach ($this->_hooks[QUICKBOOKS_SERVER_HOOK_PREHANDLE] as $func)
-				{
-					$func($input, $this->_callback_config);
-				}
-			}
-			*/
-
-			$hook_data = array(
+			$hook_data = [
 				'input' => $input,
-				);
+			];
 
 			$err = '';
-			$this->_callHooks(QUICKBOOKS_SERVER_HOOK_PREHANDLE, null, null, null, $err, $hook_data);
-			//QuickBooks_Callbacks::callHook($this->_driver, $this->_hooks, QUICKBOOKS_SERVER_HOOK_PREHANDLE, null, null, null, $err, $hook_data, $this->_callback_config, __FILE__, __LINE__);
+			$this->_callHooks(static::HOOK_PREHANDLE, null, null, null, $err, $hook_data);
 
-			if ($this->_loglevel >= QUICKBOOKS_LOG_DEVELOP)
+			if ($this->_loglevel >= PackageInfo::LogLevel['DEVELOP'])
 			{
 				if (function_exists('apache_request_headers'))
 				{
@@ -397,56 +368,38 @@ class QuickBooks_WebConnector_Server
 						$headers .= $header . ': ' . $value . "\n";
 					}
 
-					//$this->_driver->log('Incoming HTTP Headers: ' . $headers, null, QUICKBOOKS_LOG_DEVELOP);
-					$this->_log('Incoming HTTP Headers: ' . $headers, null, QUICKBOOKS_LOG_DEVELOP);
+					$this->_log('Incoming HTTP Headers: ' . $headers, null, PackageInfo::LogLevel['DEVELOP']);
 				}
 
-				//$this->_driver->log('Incoming SOAP Request: ' . $input, null, QUICKBOOKS_LOG_DEVELOP);
-				$this->_log('Incoming SOAP Request: ' . $input, null, QUICKBOOKS_LOG_DEVELOP);
+				$this->_log('Incoming SOAP Request: ' . $input, null, PackageInfo::LogLevel['DEVELOP']);
 			}
 
-			if ($return or isset($this->_hooks[QUICKBOOKS_SERVER_HOOK_POSTHANDLE]))
+			$output_buffering = ($return || isset($this->_hooks[static::HOOK_POSTHANDLE]) || $this->_loglevel >= PackageInfo::LogLevel['DEVELOP']);
+			if ($output_buffering)
 			{
-				$output_buffering = true;
 				ob_start();
 			}
 
+			// Handle to SOAP request
 			$this->_server->handle($input);
 
-			if ($return or
-				isset($this->_hooks[QUICKBOOKS_SERVER_HOOK_POSTHANDLE]) or
-				$this->_loglevel >= QUICKBOOKS_LOG_DEVELOP)
+			if ($output_buffering)
 			{
-				$output = '';
-				if ($output_buffering)
-				{
-					$output = ob_get_contents();
-					ob_end_flush();
-				}
+				// Get the buffered output
+				$output = ob_get_flush();
 
-				/*
-				if (isset($this->_hooks[QUICKBOOKS_SERVER_HOOK_POSTHANDLE]))
-				{
-					foreach ($this->_hooks[QUICKBOOKS_SERVER_HOOK_POSTHANDLE] as $func)
-					{
-						$func($output, $this->_callback_config);
-					}
-				}
-				*/
-
-				$hook_data = array(
+				$hook_data = [
 					'input' => $input,
 					'output' => $output,
-					);
+				];
 
 				$err = '';
-				$this->_callHooks(QUICKBOOKS_SERVER_HOOK_POSTHANDLE, null, null, null, $err, $hook_data);
+				$this->_callHooks(static::HOOK_POSTHANDLE, null, null, null, $err, $hook_data);
 				//QuickBooks_Callbacks::callHook($this->_driver, $this->_hooks, QUICKBOOKS_SERVER_HOOK_POSTHANDLE, null, null, null, $err, $hook_data, $this->_callback_config);
 
-				if ($this->_loglevel >= QUICKBOOKS_LOG_DEVELOP)
+				if ($this->_loglevel >= PackageInfo::LogLevel['DEVELOP'])
 				{
-					//$this->_driver->log('Outgoing SOAP Response: ' . $output, null, QUICKBOOKS_LOG_DEVELOP);
-					$this->_log('Outgoing SOAP Response: ' . $output, null, QUICKBOOKS_LOG_DEVELOP);
+					$this->_log("Outgoing SOAP Response: \n" . $output, null, PackageInfo::LogLevel['DEVELOP']);
 				}
 
 				if ($return)
@@ -454,62 +407,62 @@ class QuickBooks_WebConnector_Server
 					return $output;
 				}
 			}
-
-			return;
 		}
-		else if (isset($_GET['WSDL']) or isset($_GET['wsdl']))
+		else if (array_key_exists('wsdl', array_change_key_case($_GET, CASE_LOWER)))
 		{
-			if ($contents = file_get_contents($this->_wsdl))
+			// Output the WSDL file
+
+			$contents = file_get_contents($this->_server->getWsdlPath());
+			if (false !== $contents)
 			{
-				$this->_headers();
-				print($contents);
-				exit;
+				@header('Content-Type: text/xml; charset=UTF-8');
+				echo $contents;
 			}
 		}
 		else
 		{
+			// Output the QuickBooksPhpDevKit package information
 			$this->_headers();
 
-			print(QUICKBOOKS_PACKAGE_NAME . ' Server v' . QUICKBOOKS_PACKAGE_VERSION . ' at ' . $_SERVER['REQUEST_URI'] . "\n");
-			print('   (c) ' . QUICKBOOKS_PACKAGE_AUTHOR . ' ' . "\n");
-			print('   Visit us at: ' . QUICKBOOKS_PACKAGE_WEBSITE . ' ' . "\n");
+			print('*************************************************************************************************************************' . "\n");
+			print('***  Use QuickBooks Web Connector to access this SOAP server.                                                         ***' . "\n");
+			print('***  https://developer.intuit.com/app/developer/qbdesktop/docs/get-started/get-started-with-quickbooks-web-connector  ***' . "\n");
+			print('*************************************************************************************************************************' . "\n");
 			print("\n");
-			print('Use the QuickBooks Web Connector to access this SOAP server.' . "\n");
-			print("\n");
+			print($this->_server_version_string . "\n");
+			print('   (c) ' . PackageInfo::Package['AUTHOR'] . "\n");
+			print('   Visit us at: ' . PackageInfo::Package['WEBSITE'] . "\n");
+			print("\n\n");
 
 			if ($debug)
 			{
-				print(get_class($this) . str_replace(__CLASS__, '', __METHOD__) . '() parameters: ' . "\n");
+				print(__METHOD__ . '() Parameters: ' . "\n");
 				print(' - $return = ' . $return . "\n");
 				print(' - $debug  = ' . $debug . "\n");
 				print("\n");
-				print('Misc. information: ' . "\n");
+				print('Miscellaneous Information: ' . "\n");
 				print(' - Logging: ' . $this->_loglevel . "\n");
 
 				if (function_exists('date_default_timezone_get'))
 				{
 					print(' - Timezone: ' . date_default_timezone_get() . ' (Auto-set: ');
-
-					if (QUICKBOOKS_TIMEZONE_AUTOSET)
-					{
-						print('Yes');
-					}
-
-					print(')' . "\n");
+					print (PackageInfo::$TIMEZONE_AUTOSET === true ? 'Yes' : 'No') . ')' . "\n";
 				}
 				print(' - Current Date/Time: ' . date('Y-m-d H:i:s') . "\n");
 				print(' - Error Reporting: ' . error_reporting() . "\n");
 
 				print("\n");
-				print('SOAP adapter: ' . "\n");
+				print('SOAP Adapter: ' . "\n");
 				print(' - ' . get_class($this->_server) . "\n");
+
 				print("\n");
-				print('Registered handler functions: ' . "\n");
-				print_r($this->_server->getFunctions());
+				print('Registered SOAP Handler Functions: ' . "\n");
+				$handler_functions = array_filter($this->_server->getFunctions(), function($f){return $f != '__construct';});
+				print_r($handler_functions);
 
 				/*
 				print("\n");
-				print('Registered hooks: ' . "\n");
+				print('Registered Hooks: ' . "\n");
 				//print_r($this->_hooks);		// This is bad because it prints passwords
 				foreach ($this->_hooks as $hook => $arr)
 				{
@@ -518,12 +471,12 @@ class QuickBooks_WebConnector_Server
 						continue;
 					}
 
-					print(' - ' . $hook . QUICKBOOKS_CRLF);
+					print(' - ' . $hook . PackageInfo::$CRLF);
 					foreach ($arr as $x)
 					{
 						$y = current(explode("\n", print_r($x, true)));
 
-						print('    ' . $y . QUICKBOOKS_CRLF);
+						print('    ' . $y . PackageInfo::$CRLF);
 					}
 				}
 				*/
@@ -533,29 +486,23 @@ class QuickBooks_WebConnector_Server
 				print($input);
 				print("\n");
 				print("\n");
-				print('Timestamp: ' . "\n");
-				print(' - ' . date('Y-m-d H:i:s') . ' -- process ' . round(microtime(true) - QUICKBOOKS_TIMESTAMP, 5) . "\n");
+				print('Extra Bits: ' . "\n");
+				print(' - Timestamp: ' . date('Y-m-d H:i:s') . ' -- process took ' . round(microtime(true) - $this->_timestamp, 5) . " seconds\n");
+				print(' - Peak Memory Usage: ' . number_format(memory_get_peak_usage(), 0) . " bytes\n");
 			}
-
-			return;
 		}
+
+		return null;
 	}
 
 	/**
 	 *
-	 *
-	 * @param string $hook
-	 * @param string $requestID
-	 * @param string $user
-	 * @param string $ticket
-	 * @param string $err
-	 * @param array $hook_data
-	 * @return boolean
 	 */
-	protected function _callHooks($hook, $requestID, $user, $ticket, &$err, $hook_data)
+	protected function _callHooks(string $hook, ?string $requestID, ?string $user, ?string $ticket, string &$err, array $hook_data): bool
 	{
 		$err = '';
-		return QuickBooks_Callbacks::callHook(
+
+		return Callbacks::callHook(
 			$this->_driver,
 			$this->_hooks,
 			$hook,
@@ -569,11 +516,192 @@ class QuickBooks_WebConnector_Server
 
 	/**
 	 * Get debugging information from the SOAP server
-	 *
-	 * @return array
 	 */
-	public function debug()
+	public function debug(): string
 	{
-		return var_export($this, true);
+		return print_r($this, true);
+	}
+
+
+
+
+
+
+
+
+	protected static function validateCallbackFunction($callback): ?string
+	{
+		$errmsg = null;
+
+		// Find the callback type
+		$type = Utilities::callbackType($callback, $errmsg);
+
+		//$isValid = true;
+		if ($type == Callbacks::TYPE_FUNCTION && !function_exists($callback))
+		{
+			//$isValid = false;
+			$errmsg = 'Callback does not exist: [function] ' . $callback . '(...)';
+		}
+		else if ($type == Callbacks::TYPE_OBJECT_METHOD || $type == Callbacks::TYPE_HOOK_INSTANCE)			// Object instance method hook
+		{
+			if (!is_callable($callback))
+			{
+				//$isValid = false;
+				if ($type == Callbacks::TYPE_OBJECT_METHOD)
+				{
+					$errmsg = 'Object method does not exist: instance of ' . get_class($callback[0]) . '->' . $callback[1] . '(...)';
+				}
+				else
+				{
+					$errmsg = 'Hook instance uncallable: instance of ' . get_class($callback[0]) . '->' . $callback[1] . '(...)';
+				}
+			}
+		}
+		else if ($type == Callbacks::TYPE_STATIC_METHOD)
+		{
+			if (!is_callable($callback))
+			{
+				$errmsg = 'Static method does not exist: ' . $callback . '(...)';
+
+				// is_callable returns true even if the method is not static, so find out if it is a static function
+				try
+				{
+					$method = new \ReflectionMethod($callback);
+					if ($method->isPublic() === false)
+					{
+						$visibility = $method->isProtected() ? 'Protected' : 'Private';
+						$errmsg = 'Static method exists but is ' . $visibility . ' instead of Public: ' . $callback . '(...)';
+					}
+				}
+				catch (\Exception $e)
+				{
+					// Attempt to use reflection to determine if this is really a static method failed... just let it go through.
+				}
+			}
+			else
+			{
+				// is_callable returns true even if the method is not static, so find out if it is a static function
+				try
+				{
+					$method = new \ReflectionMethod($callback);
+					if ($method->isStatic() === false)
+					{
+						$errmsg = 'Method exists but is not static.  Create an instance and use [$instance, "methodName"] instead: ' . $callback . '(...)';
+					}
+					else if ($method->isPublic() === false)
+					{
+						$visibility = $method->isProtected() ? 'Protected' : 'Private';
+						$errmsg = 'Static method exists but is ' . $visibility . ' instead of Public: ' . $callback . '(...)';
+					}
+				}
+				catch (\Exception $e)
+				{
+					// Attempt to use reflection to determine if this is really a static method failed... just let it go through.
+				}
+
+			}
+		}
+
+		return $errmsg;
+	}
+
+
+
+
+	public static function validateHookFunctions(array &$map): ?array
+	{
+		$invalid = [];
+
+		foreach ($map as $hook => &$callbacks)
+		{
+			if (!is_array($callbacks))
+			{
+				$callbacks = [$callbacks];
+			}
+			else if (count($callbacks) == 2 && in_array(Utilities::callbackType($callbacks, $errmsg), [Callbacks::TYPE_OBJECT_METHOD, Callbacks::TYPE_STATIC_METHOD, Callbacks::TYPE_HOOK_INSTANCE]))
+			{
+				$callbacks = [$callbacks];
+			}
+
+			for ($i = 0; $i < count($callbacks); $i++)
+			{
+				$callback = &$callbacks[$i];
+
+				$errmsg = static::validateCallbackFunction($callback);
+				if ($errmsg !== null)
+				{
+					$invalid[$hook][$i] = $errmsg;
+				}
+			}
+		}
+
+		return count($invalid) > 0 ? $invalid : null;
+	}
+
+
+	public static function validateErrorHandlerFunctions(array &$map): ?array
+	{
+		$invalid = [];
+
+		foreach ($map as $errnum => &$callback)
+		{
+			$errmsg = static::validateCallbackFunction($callback);
+			if ($errmsg !== null)
+			{
+				$invalid[$errnum] = $errmsg;
+			}
+		}
+
+		return count($invalid) > 0 ? $invalid : null;
+	}
+
+	public static function validateMappedFunctions(array &$map): ?array
+	{
+		$invalid = [];
+
+		foreach ($map as $action => &$config)
+		{
+			$identity = $action;
+
+			if (!is_array($config))
+			{
+				$invalid[$identity] = "The Action to Request/Response mapping elements be an associatiive array containing arrays with exactly 2 callback elements (1 Request Function and 1 Response Function) but is a variable of type ". gettype($config);
+			}
+			else
+			{
+				$arraySize = count($config);
+				if ($arraySize !== 2)
+				{
+					$invalid[$identity] = "The Action to Request/Response mapping element for $action must be an array containing exactly 2 callbacks (1 Request Function and 1 Response Function) but has $arraySize elements.";
+				}
+				else if (in_array(Utilities::callbackType($config, $errmsg), [Callbacks::TYPE_OBJECT_METHOD, Callbacks::TYPE_STATIC_METHOD, Callbacks::TYPE_HOOK_INSTANCE]))
+				{
+					$errmsg = "The Action to Request/Response mapping element must contain exactly 2 callbacks but contains 1 static or instance callback [object, method].";
+				}
+				else
+				{
+					$columnToRequestResponse = [
+						0 => 'Request',
+						1 => 'Response',
+					];
+
+					foreach ($columnToRequestResponse as $column => $requestOrResponse)
+					{
+						if (!isset($config[$column]))
+						{
+							$errmsg = '';
+						}
+						$identity = "$action - $requestOrResponse";
+						$errmsg = static::validateCallbackFunction($config[$column]);
+						if ($errmsg !== null)
+						{
+							$invalid[$identity] = $errmsg;
+						}
+					}
+				}
+			}
+		}
+
+		return count($invalid) > 0 ? $invalid : null;
 	}
 }

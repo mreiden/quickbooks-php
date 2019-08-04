@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,17 +16,16 @@
  * @subpackage Client
  */
 
-/**
- * QuickBooks request base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Request.php');
+namespace QuickBooksPhpDevKit\WebConnector\Request;
+
+use QuickBooksPhpDevKit\WebConnector\Request;
 
 /**
  *
  *
  *
  */
-class QuickBooks_WebConnector_Request_ServerVersion extends QuickBooks_WebConnector_Request
+class Serverversion extends Request
 {
 	public function __construct()
 	{

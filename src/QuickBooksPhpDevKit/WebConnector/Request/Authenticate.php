@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,21 +16,20 @@
  * @subpackage Client
  */
 
-/**
- * QuickBooks request base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Request.php');
+namespace QuickBooksPhpDevKit\WebConnector\Request;
+
+use QuickBooksPhpDevKit\WebConnector\Request;
 
 /**
  *
  */
-class QuickBooks_WebConnector_Request_Authenticate extends QuickBooks_WebConnector_Request
+class Authenticate extends Request
 {
 	public $strUserName;
 
 	public $strPassword;
 
-	public function __construct($username = null, $password = null)
+	public function __construct(?string $username = null, ?string $password = null)
 	{
 		$this->strUserName = $username;
 		$this->strPassword = $password;

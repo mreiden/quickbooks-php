@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Result container object for the SOAP ->authenticate() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * QuickBooks result base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Result container object for the SOAP ->authenticate() method call
  */
-class QuickBooks_WebConnector_Result_Authenticate extends QuickBooks_WebConnector_Result
+class Authenticate extends Result
 {
 	/**
 	 * A two element array indicating the result of the call to ->authenticate()
@@ -39,9 +38,9 @@ class QuickBooks_WebConnector_Result_Authenticate extends QuickBooks_WebConnecto
 	 * @param string $ticket	The ticket of the new login session
 	 * @param string $status	The status of the new login session (blank, a company file path, or "nvu" for an invalid login)
 	 */
-	public function __construct($ticket, $status, $wait_before_next_update = null, $min_run_every_n_seconds = null)
+	public function __construct(string $ticket, string $status, $wait_before_next_update = null, $min_run_every_n_seconds = null)
 	{
-		$this->authenticateResult = array( $ticket, $status );
+		$this->authenticateResult = [ $ticket, $status ];
 
 		if ((int) $wait_before_next_update)
 		{

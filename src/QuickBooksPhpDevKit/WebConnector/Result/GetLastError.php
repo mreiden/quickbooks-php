@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Result container object for the SOAP ->getLastError() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * Result base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Result container object for the SOAP ->getLastError() method call
  */
-class QuickBooks_WebConnector_Result_GetLastError extends QuickBooks_WebConnector_Result
+class GetLastError extends Result
 {
 	/**
 	 * An error message
@@ -36,9 +35,9 @@ class QuickBooks_WebConnector_Result_GetLastError extends QuickBooks_WebConnecto
 	/**
 	 * Create a new result object
 	 *
-	 * @param string $resp 		A message describing the last error that occured
+	 * @param string $result 		A message describing the last error that occurred
 	 */
-	public function __construct($result)
+	public function __construct(string $result)
 	{
 		$this->getLastErrorResult = $result;
 	}

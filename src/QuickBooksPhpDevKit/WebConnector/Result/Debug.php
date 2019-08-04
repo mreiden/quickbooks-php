@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Result container object for the SOAP ->authenticate() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * QuickBooks result base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Result container object for the SOAP ->authenticate() method call
  */
-class QuickBooks_WebConnector_Result_Debug extends QuickBooks_WebConnector_Result
+class Debug extends Result
 {
 	/**
 	 * A two element array indicating the result of the call to ->authenticate()
@@ -35,11 +34,8 @@ class QuickBooks_WebConnector_Result_Debug extends QuickBooks_WebConnector_Resul
 
 	/**
 	 * Create a new result object
-	 *
-	 * @param string $ticket	The ticket of the new login session
-	 * @param string $status	The status of the new login session (blank, a company file path, or "nvu" for an invalid login)
 	 */
-	public function __construct($debug)
+	public function __construct(array $debug)
 	{
 		$this->debug = $debug;
 	}

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Result container object for the SOAP ->clientVersion() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * QuickBooks result base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Result container object for the SOAP ->clientVersion() method call
  */
-class QuickBooks_WebConnector_Result_ClientVersion extends QuickBooks_WebConnector_Result
+class ClientVersion extends Result
 {
 	/**
 	 * Client version response string (empty string, E:..., W:..., or O:...
@@ -36,9 +35,9 @@ class QuickBooks_WebConnector_Result_ClientVersion extends QuickBooks_WebConnect
 	/**
 	 * Create a new result object
 	 *
-	 * @param string $response 	The response string
+	 * @param string $response		The response string
 	 */
-	public function __construct($response)
+	public function __construct(string $response)
 	{
 		$this->clientVersionResult = $response;
 	}

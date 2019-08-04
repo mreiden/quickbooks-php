@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Result container object for the SOAP ->connectionError() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * Result interface
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Result class for ->closeConnection() SOAP method
  */
-class QuickBooks_WebConnector_Result_CloseConnection extends QuickBooks_WebConnector_Result
+class CloseConnection extends Result
 {
 	/**
 	 * A message indicating the connection has been closed/update was successful
@@ -36,10 +35,10 @@ class QuickBooks_WebConnector_Result_CloseConnection extends QuickBooks_WebConne
 	/**
 	 * Create a new result object
 	 *
-	 * @param string $resp		A message indicating the connection has been closed
+	 * @param string $response		A message indicating the connection has been closed
 	 */
-	public function __construct($result)
+	public function __construct(string $response)
 	{
-		$this->closeConnectionResult = $result;
+		$this->closeConnectionResult = $response;
 	}
 }

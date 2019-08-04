@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- *
+ * QuickBooks response object for responses to the ->interactiveRejected() SOAP method call
  *
  * Copyright (c) {2010-04-16} {Keith Palmer / ConsoliBYTE, LLC.
  * All rights reserved. This program and the accompanying materials
@@ -15,3 +15,30 @@
  * @package QuickBooks
  * @subpackage Server
  */
+
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
+
+/**
+ * QuickBooks response object for responses to the ->interactiveRejected() SOAP method call
+ */
+class InteractiveRejected extends Result
+{
+    /**
+     * A string indicating the interactive session was rejected
+     *
+     * @var string
+     */
+    public $interactiveRejected;
+
+    /**
+     * Create a new result object
+     *
+     * @param string $interactiveRejected
+     */
+    public function __construct(string $interactiveRejected)
+    {
+        $this->interactiveRejected = $interactiveRejected;
+    }
+}

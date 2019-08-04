@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Response result for the SOAP ->sendRequestXML() method call
@@ -16,15 +16,14 @@
  * @subpackage Server
  */
 
-/**
- * QuickBooks result base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  * Response result for the SOAP ->sendRequestXML() method call
  */
-class QuickBooks_WebConnector_Result_SendRequestXML extends QuickBooks_WebConnector_Result
+class SendRequestXML extends Result
 {
 	/**
 	 * A QBXML XML request string
@@ -38,7 +37,7 @@ class QuickBooks_WebConnector_Result_SendRequestXML extends QuickBooks_WebConnec
 	 *
 	 * @param string $xml	The XML request to send to QuickBooks
 	 */
-	public function __construct($xml)
+	public function __construct(string $xml)
 	{
 		$this->sendRequestXMLResult = $xml;
 	}

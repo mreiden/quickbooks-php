@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -16,17 +16,16 @@
  * @subpackage Client
  */
 
-/**
- * QuickBooks request base class
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Request.php');
+namespace QuickBooksPhpDevKit\WebConnector\Request;
+
+use QuickBooksPhpDevKit\WebConnector\Request;
 
 /**
  *
  *
  *
  */
-class QuickBooks_WebConnector_Request_ReceiveResponseXML extends QuickBooks_WebConnector_Request
+class Receiveresponsexml extends Request
 {
 	public $ticket;
 
@@ -36,7 +35,7 @@ class QuickBooks_WebConnector_Request_ReceiveResponseXML extends QuickBooks_WebC
 
 	public $response;
 
-	public function __construct($ticket = null, $response = null, $hresult = null, $message = null)
+	public function __construct(?string $ticket = null, ?string $response = null, $hresult = null, ?string $message = null)
 	{
 		$this->ticket = $ticket;
 		$this->response = $response;

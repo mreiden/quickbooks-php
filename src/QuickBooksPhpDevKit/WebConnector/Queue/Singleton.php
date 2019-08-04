@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * QuickBooks singleton class for the queueing class
@@ -23,21 +23,20 @@
  * @subpackage Queue
  */
 
+namespace QuickBooksPhpDevKit\WebConnector;
+
+use QuickBooksPhpDevKit\WebConnector\Queue;
+
 /**
  * QuickBooks singleton class for the QuickBooks_Queue class
  */
-class QuickBooks_WebConnector_Queue_Singleton
+class Singleton
 {
 	/**
 	 * Initialize the queueing object
-	 *
-	 * @param string $dsn
-	 * @param string $user
-	 * @param array  $config
-	 * @param bool   $return_boolean
-	 * @return QuickBooks_WebConnector_Queue
+	 * @return Queue|bool
 	 */
-	static public function initialize($dsn = null, $user = null, $config = array(), $return_boolean = true)
+	static public function initialize(?string $dsn = null, ?string $user = null, array $config = [], bool $return_boolean = true)
 	{
 		static $instance;
 		if (empty($instance))
@@ -47,23 +46,15 @@ class QuickBooks_WebConnector_Queue_Singleton
 				return false;
 			}
 
-			$instance = new QuickBooks_WebConnector_Queue($dsn, $user, $config);
+			$instance = new Queue($dsn, $user, $config);
 		}
 
-		if ($return_boolean and $instance)
+		if ($return_boolean && $instance)
 		{
 			return true;
 		}
 
 		return $instance;
-	}
-
-	/**
-	 * ???
-	 */
-	static protected function _hash($dsn, $config)
-	{
-		return md5(serialize($dsn) . serialize($config));
 	}
 
 	/**
@@ -73,6 +64,6 @@ class QuickBooks_WebConnector_Queue_Singleton
 	 */
 	static public function getInstance()
 	{
-		return QuickBooks_WebConnector_Queue_Singleton::initialize(null, null, null, false);
+		return static::initialize(null, null, null, false);
 	}
 }

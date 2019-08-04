@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * SOAP response container for ->getInteractiveURL() call
@@ -16,18 +16,17 @@
  * @subpackage Server
  */
 
-/**
- * Result interface
- */
-QuickBooks_Loader::load('/QuickBooks/WebConnector/Result.php');
+namespace QuickBooksPhpDevKit\WebConnector\Result;
+
+use QuickBooksPhpDevKit\WebConnector\Result;
 
 /**
  *
  */
-class QuickBooks_WebConnector_Result_GetInteractiveURL extends QuickBooks_WebConnector_Result
+class GetInteractiveURL extends Result
 {
 
-	public function __construct($url)
+	public function __construct(string $url)
 	{
 
 	}
