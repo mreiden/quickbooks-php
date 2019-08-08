@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  *
@@ -15,47 +15,37 @@
  * @subpackage Error
  */
 
-//
-QuickBooks_Loader::load('/QuickBooks/Driver/Factory.php');
+namespace QuickBooksPhpDevKit\Status;
 
-//
-QuickBooks_Loader::load('/QuickBooks/Utilities.php');
-
-//
-QuickBooks_Loader::load('/QuickBooks/SQL/Schema.php');
+use QuickBooksPhpDevKit\Driver\Factory;
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\SQL\Schema;
+use QuickBooksPhpDevKit\Utilities;
 
 /**
  *
  *
  *
  */
-class QuickBooks_Status_Report
+class Report
 {
-	const MODE_QUEUE_ERRORS = 'queue-errors';
+	public const MODE_QUEUE_ERRORS = 'queue-errors';
+	public const MODE_QUEUE_RECORDS = 'queue-records';
+	public const MODE_MIRROR_ERRORS = 'mirror-errors';
+	public const MODE_MIRROR_RECORDS = 'mirror-records';
 
-	const MODE_QUEUE_RECORDS = 'queue-records';
-
-	const MODE_MIRROR_ERRORS = 'mirror-errors';
-
-	const MODE_MIRROR_RECORDS = 'mirror-records';
-
-	const STATUS_OK = 'OK';
-
-	const STATUS_NOTICE = 'Notice';
-
-	const STATUS_CAUTION = 'Caution';
-
-	const STATUS_WARNING = 'Warning';
-
-	const STATUS_DANGER = 'Danger';
-
-	const STATUS_UNKNOWN = 'Unknown';
+	public const STATUS_OK = 'OK';
+	public const STATUS_NOTICE = 'Notice';
+	public const STATUS_CAUTION = 'Caution';
+	public const STATUS_WARNING = 'Warning';
+	public const STATUS_DANGER = 'Danger';
+	public const STATUS_UNKNOWN = 'Unknown';
 
 	protected $_driver;
 
-	public function __construct($dsn, $config = array())
+	public function __construct($dsn, array $config = [])
 	{
-		$this->_driver = QuickBooks_Driver_Factory::create($dsn, $config);
+		$this->_driver = Factory::create($dsn, $config);
 	}
 
 	/**
@@ -63,7 +53,7 @@ class QuickBooks_Status_Report
 	 *
 	 *
 	 */
-	public function create($mode, $user = null, $date_from = null, $date_to = null, $fetch_full_record = false, $restrict = array())
+	public function create(string $mode, ?string $user = null, ?string $date_from = null, ?string $date_to = null, bool $fetch_full_record = false, array $restrict = [])
 	{
 		$Driver = $this->_driver;
 
@@ -74,12 +64,14 @@ class QuickBooks_Status_Report
 
 		switch ($mode)
 		{
-			case QuickBooks_Status_Report::MODE_QUEUE_ERRORS:
-			case QuickBooks_Status_Report::MODE_QUEUE_RECORDS:
+			case static::MODE_QUEUE_ERRORS:
+			case static::MODE_QUEUE_RECORDS:
 				return $this->_createForQueue($mode, $user, $date_from, $date_to, $fetch_full_record, $restrict);
-			case QuickBooks_Status_Report::MODE_MIRROR_ERRORS:
-			case QuickBooks_Status_Report::MODE_MIRROR_RECORDS:
+
+			case static::MODE_MIRROR_ERRORS:
+			case static::MODE_MIRROR_RECORDS:
 				return $this->_createForMirror($mode, $user, $date_from, $date_to, $fetch_full_record, $restrict);
+
 			default:
 				return false;
 		}
@@ -91,18 +83,14 @@ class QuickBooks_Status_Report
 	 * The returned array will look something like this:
 	 * <pre>
 	 * Array (
-	 * 	[0] => danger 					// This is a constant, one of the QuickBooks_Status_Report::STATUS_* constants
+	 * 	[0] => danger 					// This is a constant, one of the static::STATUS_* constants
 	 * 	[1] => ERROR: A connection has not been made in 54 days, 1 hours and 46 minutes! Contact support to get this issue resolved!
 	 * 	[2] => 2010-03-19 12:26:41 		// This is the last time the given user logged in
 	 * 	[3] => 2010-03-19 12:26:41 		// This is the last time the given user performed any action
 	 * )
 	 * </pre>
-	 *
-	 * @param string $user
-	 * @param array $levels
-	 * @return array			An array of status information
 	 */
-	public function status($user = null, $levels = array())
+	public function status(?string $user = null, ?array $levels = []): array
 	{
 		$Driver = $this->_driver;
 
@@ -113,22 +101,22 @@ class QuickBooks_Status_Report
 
 		if (!count($levels))
 		{
-			$levels = array(
-				60 * 60 * 12 => array( QuickBooks_Status_Report::STATUS_NOTICE, 'Notice: A connection has not been made in %d days, %d hours and %d minutes.' ),
-				60 * 60 * 24 => array( QuickBooks_Status_Report::STATUS_CAUTION, 'Caution: A connection has not been made in %d days, %d hours and %d minutes.' ),
-				60 * 60 * 36 => array( QuickBooks_Status_Report::STATUS_WARNING, 'Warning! A connection has not been made in %d days, %d hours and %d minutes.' ),
-				60 * 60 * 48 => array( QuickBooks_Status_Report::STATUS_DANGER, 'DANGER! A connection has not been made in %d days, %d hours and %d minutes! Contact support to get this issue resolved!' ),
-				);
+			$levels = [
+				60 * 60 * 12 => [static::STATUS_NOTICE, 'Notice: A connection has not been made in %d days, %d hours and %d minutes.'],
+				60 * 60 * 24 => [static::STATUS_CAUTION, 'Caution: A connection has not been made in %d days, %d hours and %d minutes.'],
+				60 * 60 * 36 => [static::STATUS_WARNING, 'Warning! A connection has not been made in %d days, %d hours and %d minutes.'],
+				60 * 60 * 48 => [static::STATUS_DANGER, 'DANGER! A connection has not been made in %d days, %d hours and %d minutes! Contact support to get this issue resolved!'],
+			];
 		}
 
 		if (!isset($levels[0]))
 		{
-			$levels[0] = array( QuickBooks_Status_Report::STATUS_OK, 'Status is OK. Last connection made %d days, %d hours, and %d minutes ago.' );
+			$levels[0] = [static::STATUS_OK, 'Status is OK. Last connection made %d days, %d hours, and %d minutes ago.'];
 		}
 
 		if (!isset($levels[-1]))
 		{
-			$levels[-1] = array( QuickBooks_Status_Report::STATUS_UNKNOWN, 'Status is unknown.');
+			$levels[-1] = [static::STATUS_UNKNOWN, 'Status is unknown.'];
 		}
 
 		//print_r($levels);
@@ -176,30 +164,31 @@ class QuickBooks_Status_Report
 
 		return $levels[-1];
 	}
-
+	/*
 	public function connection($type, $user = null)
 	{
 
 	}
+	*/
 
-	protected function &_createForQueue($mode, $user, $date_from, $date_to, $fetch_full_record, $restrict)
+	protected function &_createForQueue(string $mode, ?string $user, ?string $date_from, ?string $date_to, bool $fetch_full_record, array $restrict)
 	{
 		$Driver = $this->_driver;
 
-		$report = array();
+		$report = [];
 
 		$list = $Driver->queueReport($user, $date_from, $date_to);
 
-		$statuses = array(
-			QUICKBOOKS_STATUS_QUEUED => 'Queued',
-			QUICKBOOKS_STATUS_SUCCESS => 'Successfully processed',
-			QUICKBOOKS_STATUS_ERROR => 'Error',
-			QUICKBOOKS_STATUS_PROCESSING => 'Currently being processed',
-			QUICKBOOKS_STATUS_HANDLED => 'An error occurred, but the error was handled',
-			QUICKBOOKS_STATUS_CANCELLED => 'Cancelled',
-			QUICKBOOKS_STATUS_REMOVED => 'Removed from queue',
-			QUICKBOOKS_STATUS_NOOP => 'No operation occurred',
-			);
+		$statuses = [
+			PackageInfo::Status['QUEUED'] => 'Queued',
+			PackageInfo::Status['SUCCESS'] => 'Successfully processed',
+			PackageInfo::Status['ERROR'] => 'Error',
+			PackageInfo::Status['PROCESSING'] => 'Currently being processed',
+			PackageInfo::Status['HANDLED'] => 'An error occurred, but the error was handled',
+			PackageInfo::Status['CANCELLED'] => 'Cancelled',
+			PackageInfo::Status['REMOVED'] => 'Removed from queue',
+			PackageInfo::Status['NOOP'] => 'No operation occurred',
+		];
 
 		foreach ($list as $key => $arr)
 		{
@@ -217,7 +206,7 @@ class QuickBooks_Status_Report
 				$errmsg = $arr['msg'];
 			}
 
-			$record = array(
+			$record = [
 				$arr['quickbooks_queue_id'],
 				$arr['qb_action'],
 				$arr['ident'],
@@ -225,10 +214,10 @@ class QuickBooks_Status_Report
 				$statuses[$arr['qb_status']],
 				$errnum,
 				$errmsg,
-				QuickBooks_Status_Report::describe($errnum, $errmsg),
+				static::describe($errnum, $errmsg),
 				$arr['enqueue_datetime'],
 				$arr['dequeue_datetime'],
-				);
+			];
 
 			$report[] = $record;
 		}
@@ -241,25 +230,25 @@ class QuickBooks_Status_Report
 	 *
 	 *
 	 */
-	protected function &_createForMirror($mode, $user, $date_from, $date_to, $fetch_full_record, $restrict)
+	protected function &_createForMirror(string $mode, ?string $user, ?string $date_from, ?string $date_to, bool $fetch_full_record, array $restrict)
 	{
 		$Driver = $this->_driver;
 
-		$report = array();
+		$report = [];
 
 		$do_restrict = count($restrict) > 0;
 
-		$actions = QuickBooks_Utilities::listActions('*IMPORT*');
+		$actions = Utilities::listActions('*IMPORT*');
 		//print_r($actions);
 		//print_r($restrict);
 
 		foreach ($actions as $action)
 		{
-			$object = QuickBooks_Utilities::actionToObject($action);
+			$object = Utilities::actionToObject($action);
 
 			//print('checking object [' . $object . ']' . "<br />");
 
-			if ($do_restrict and
+			if ($do_restrict &&
 				!in_array($object, $restrict))
 			{
 				continue;
@@ -268,38 +257,38 @@ class QuickBooks_Status_Report
 			//print('doing object: ' . $object . '<br />');
 
 			$pretty = $this->_prettyName($object);
-			$report[$pretty] = array();
+			$report[$pretty] = [];
 
-			QuickBooks_SQL_Schema::mapPrimaryKey($object, QUICKBOOKS_SQL_SCHEMA_MAP_TO_SQL, $table_and_field);
+			Schema::mapPrimaryKey($object, Schema::MAP_TO_SQL, $table_and_field);
 
 			//print_r($table_and_field);
 
-			if (!empty($table_and_field[0]) and
+			if (!empty($table_and_field[0]) &&
 				!empty($table_and_field[1]))
 			{
 				$sql = "
 					SELECT
 						*
 					FROM
-						" . QUICKBOOKS_DRIVER_SQL_PREFIX_SQL . $table_and_field[0] . "
+						" . Sql::$TablePrefix['BASE'] . $table_and_field[0] . "
 					WHERE ";
 
-				if ($mode == QuickBooks_Status_Report::MODE_MIRROR_ERRORS)
+				if ($mode == static::MODE_MIRROR_ERRORS)
 				{
-					$sql .= " LENGTH(" . QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER . ") > 0 ";
+					$sql .= " LENGTH(" . Sql::Field['ERROR_NUMBER'] . ") > 0 ";
 				}
 				else
 				{
 					$sql .= " 1 ";
 				}
 
-				if ($timestamp = strtotime($date_from) and
+				if ($timestamp = strtotime($date_from) &&
 					$timestamp > 0)
 				{
 					$sql .= " AND TimeCreated >= '" . date('Y-m-d H:i:s', $timestamp) . "' ";
 				}
 
-				if ($timestamp = strtotime($date_to) and
+				if ($timestamp = strtotime($date_to) &&
 					$timestamp > 0)
 				{
 					$sql .= " AND TimeCreated <= '" . date('Y-m-d H:i:s', $timestamp) . "' ";
@@ -320,31 +309,31 @@ class QuickBooks_Status_Report
 						$record = $arr;
 					}
 
-					if ($arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER])
+					if ($arr[Sql::Field['ERROR_NUMBER']])
 					{
-						$details = QuickBooks_Status_Report::describe($arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER], $arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_MESSAGE]);
+						$details = static::describe($arr[Sql::Field['ERROR_NUMBER']], $arr[Sql::Field['ERROR_MESSAGE']]);
 					}
-					else if ($arr[QUICKBOOKS_DRIVER_SQL_FIELD_RESYNC] == $arr[QUICKBOOKS_DRIVER_SQL_FIELD_MODIFY])
+					else if ($arr[Sql::Field['RESYNC']] == $arr[Sql::Field['MODIFY']])
 					{
 						$details = 'Synced successfully.';
 					}
-					else if ($arr[QUICKBOOKS_DRIVER_SQL_FIELD_MODIFY] > $arr[QUICKBOOKS_DRIVER_SQL_FIELD_RESYNC])
+					else if ($arr[Sql::Field['MODIFY']] > $arr[Sql::Field['RESYNC']])
 					{
 						$details = 'Waiting to sync.';
 					}
 
-					$report[$pretty][] = array(
-						$arr[QUICKBOOKS_DRIVER_SQL_FIELD_ID],
-						$this->_fetchSomeField($arr, array( 'ListID', 'TxnID' )),
-						$this->_fetchSomeField($arr, array( 'FullName', 'Name', 'RefNumber' )),
-						$this->_fetchSomeField($arr, array( 'TxnDate' )),
-						$this->_fetchSomeField($arr, array( 'Customer_FullName', 'Vendor_FullName' )),
-						$arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_NUMBER],
-						$arr[QUICKBOOKS_DRIVER_SQL_FIELD_ERROR_MESSAGE],
+					$report[$pretty][] = [
+						$arr[Sql::Field['ID']],
+						$this->_fetchSomeField($arr, ['ListID', 'TxnID']),
+						$this->_fetchSomeField($arr, ['FullName', 'Name', 'RefNumber']),
+						$this->_fetchSomeField($arr, ['TxnDate']),
+						$this->_fetchSomeField($arr, ['Customer_FullName', 'Vendor_FullName']),
+						$arr[Sql::Field['ERROR_NUMBER']],
+						$arr[Sql::Field['ERROR_MESSAGE']],
 						$details,
-						$arr[QUICKBOOKS_DRIVER_SQL_FIELD_DEQUEUE_TIME],
+						$arr[Sql::Field['DEQUEUE_TIME']],
 						$record,
-						);
+					];
 				}
 			}
 		}
@@ -352,7 +341,7 @@ class QuickBooks_Status_Report
 		return $report;
 	}
 
-	protected function _fetchSomeField($arr, $fields)
+	protected function _fetchSomeField(array $arr, array $fields)
 	{
 		foreach ($fields as $field)
 		{
@@ -369,7 +358,7 @@ class QuickBooks_Status_Report
 	 *
 	 * @todo This might be better suited to the Utilities class in case we want to use it somewhere else
 	 */
-	protected function _prettyName($constant)
+	protected function _prettyName(string $constant): string
 	{
 		//$constant = str_replace('Import', '', $constant);
 
@@ -386,124 +375,134 @@ class QuickBooks_Status_Report
 		return $constant;
 	}
 
-	public function HTML($mode, $user = null, $date_from = null, $date_to = null, $fetch_full_record = false, $restrict = array(), $skip_empties = true)
+	public function HTML(string $mode, ?string $user = null, ?string $date_from = null, ?string $date_to = null, bool $fetch_full_record = false, array $restrict = [], bool $skip_empties = true): string
 	{
 		$report = $this->create($mode, $user, $date_from, $date_to, $fetch_full_record, $restrict);
 
 		switch ($mode)
 		{
-			case QuickBooks_Status_Report::MODE_MIRROR_RECORDS:
-			case QuickBooks_Status_Report::MODE_MIRROR_ERRORS:
+			case static::MODE_MIRROR_RECORDS:
+			case static::MODE_MIRROR_ERRORS:
 				return $this->_htmlForMirror($report, $skip_empties);
-			case QuickBooks_Status_Report::MODE_QUEUE_RECORDS:
-			case QuickBooks_Status_Report::MODE_QUEUE_ERRORS:
+
+			case static::MODE_QUEUE_RECORDS:
+			case static::MODE_QUEUE_ERRORS:
 				return $this->_htmlForQueue($report);
+
 			default:
 				return '';
 		}
 	}
 
-	protected function _htmlForQueue($report)
+	protected function _htmlForQueue(array $report): string
 	{
-		$html = '';
+		$html = implode(PackageInfo::$CRLF, [
+			'<table>',
+			'	<thead>',
+			'		<tr>',
+			'			<td>Queue ID</td>',
+			'			<td>Action</td>',
+			'			<td>Record ID</td>',
+			'			<td>Priority</td>',
+			'			<td>Status</td>',
+			'			<td>Error Number</td>',
+			'			<td>Error Message</td>',
+			'			<td>Status Details</td>',
+			'			<td>Queued</td>',
+			'			<td>Processed</td>',
+			'		</tr>',
+			'	</thead>',
+			'	<tbody>',
+		]) . PackageInfo::$CRLF;
 
-		$html .= '<table>' . QUICKBOOKS_CRLF;
-		$html .= '	<thead>' . QUICKBOOKS_CRLF;
-		$html .= '		<tr>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Queue ID</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Action</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Record ID</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Priority</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Status</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Error Number</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Error Message</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Status Details</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Queued</td>' . QUICKBOOKS_CRLF;
-		$html .= '			<td>Processed</td>' . QUICKBOOKS_CRLF;
-		$html .= '		</tr>' . QUICKBOOKS_CRLF;
-		$html .= '	</thead>' . QUICKBOOKS_CRLF;
-		$html .= '	</tbody>' . QUICKBOOKS_CRLF;
 
 		foreach ($report as $record)
 		{
-			$html .= '		<tr>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[0] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[1] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[2] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[3] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[4] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[5] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[6] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[7] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[8] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>' . $record[9] . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '		</tr>' . QUICKBOOKS_CRLF;
+			$html .= implode(PackageInfo::$CRLF, [
+				'		<tr>',
+				'			<td>' . $record[0] . '</td>',
+				'			<td>' . $record[1] . '</td>',
+				'			<td>' . $record[2] . '</td>',
+				'			<td>' . $record[3] . '</td>',
+				'			<td>' . $record[4] . '</td>',
+				'			<td>' . $record[5] . '</td>',
+				'			<td>' . $record[6] . '</td>',
+				'			<td>' . $record[7] . '</td>',
+				'			<td>' . $record[8] . '</td>',
+				'			<td>' . $record[9] . '</td>',
+				'		</tr>',
+			]) . PackageInfo::$CRLF;
 		}
 
-		$html .= '	</tbody>' . QUICKBOOKS_CRLF;
-		$html .= '</table>' . QUICKBOOKS_CRLF;
+		$html .= '	</tbody>' . PackageInfo::$CRLF;
+		$html .= '</table>' . PackageInfo::$CRLF;
 
 		return $html;
 	}
 
-	protected function _htmlForMirror($report, $skip_empties)
+	protected function _htmlForMirror(array $report, bool $skip_empties): string
 	{
 		$html = '';
 
 		foreach ($report as $type => $records)
 		{
-			if ($skip_empties and
+			if ($skip_empties &&
 				!count($records))
 			{
 				continue;
 			}
 
-			$html .= '<table>' . QUICKBOOKS_CRLF;
-			$html .= '	<thead>' . QUICKBOOKS_CRLF;
-			$html .= '		<tr>' . QUICKBOOKS_CRLF;
-			$html .= '			<td colspan="9">' . $type . '</td>' . QUICKBOOKS_CRLF;
-			$html .= '		</tr>' . QUICKBOOKS_CRLF;
-			$html .= '		<tr>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>SQL ID</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>ListID or TxnID</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>Name or RefNumber</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>Transaction Date</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>Entity Name</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>Error Number</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>Error Message</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>Status Details</td>' . QUICKBOOKS_CRLF;
-			$html .= '			<td>Date/Time</td>' . QUICKBOOKS_CRLF;
-			$html .= '		</tr>' . QUICKBOOKS_CRLF;
-			$html .= '	</thead>' . QUICKBOOKS_CRLF;
-			$html .= '	</tbody>' . QUICKBOOKS_CRLF;
+			$html .= implode(PackageInfo::$CRLF, [
+				'<table>',
+				'	<thead>',
+				'		<tr>',
+				'			<td colspan="9">' . $type . '</td>',
+				'		</tr>',
+				'		<tr>',
+				'			<td>SQL ID</td>',
+				'			<td>ListID or TxnID</td>',
+				'			<td>Name or RefNumber</td>',
+				'			<td>Transaction Date</td>',
+				'			<td>Entity Name</td>',
+				'			<td>Error Number</td>',
+				'			<td>Error Message</td>',
+				'			<td>Status Details</td>',
+				'			<td>Date/Time</td>',
+				'		</tr>',
+				'	</thead>',
+				'	<tbody>',
+			]) . PackageInfo::$CRLF;
 
 			foreach ($records as $record)
 			{
-				$html .= '		<tr>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[0] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[1] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[2] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[3] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[4] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[5] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[6] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[7] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '			<td>' . $record[8] . '</td>' . QUICKBOOKS_CRLF;
-				$html .= '		</tr>' . QUICKBOOKS_CRLF;
+				$html .= implode(PackageInfo::$CRLF, [
+					'		<tr>',
+					'			<td>' . $record[0] . '</td>',
+					'			<td>' . $record[1] . '</td>',
+					'			<td>' . $record[2] . '</td>',
+					'			<td>' . $record[3] . '</td>',
+					'			<td>' . $record[4] . '</td>',
+					'			<td>' . $record[5] . '</td>',
+					'			<td>' . $record[6] . '</td>',
+					'			<td>' . $record[7] . '</td>',
+					'			<td>' . $record[8] . '</td>',
+					'		</tr>',
+				]) . PackageInfo::$CRLF;
 			}
 
-			$html .= '	</tbody>' . QUICKBOOKS_CRLF;
-			$html .= '</table>' . QUICKBOOKS_CRLF;
-			$html .= '<br />' . QUICKBOOKS_CRLF;
+			$html .= '	</tbody>' . PackageInfo::$CRLF;
+			$html .= '</table>' . PackageInfo::$CRLF;
+			$html .= '<br />' . PackageInfo::$CRLF;
 		}
 
 		return $html;
 	}
-
-	public function XML($mode, $date_from = null, $date_to = null, $fetch_full_record = false, $restrict = array())
+	/*
+	public function XML($mode, $date_from = null, $date_to = null, $fetch_full_record = false, $restrict = [])
 	{
 
 	}
+	*/
 
 	/**
 	 *
@@ -511,13 +510,13 @@ class QuickBooks_Status_Report
 	 * @todo Make this better for error codes that get thrown for more than one different type of error.
 	 *
 	 */
-	static public function describe($errcode, $errmsg)
+	static public function describe($errcode, $errmsg): string
 	{
-		static $errs = array(
-			3100 => array(
+		static $errs = [
+			3100 => [
 				'*' => 'QuickBooks "Name" fields must be unique across all Customers, Vendors, Employees, and Other Names. Is there another Customer, Vendor, Employee, or Other Name with the same name as this record?',
-				),
-			);
+			],
+		];
 
 		if (isset($errs[$errcode]))
 		{
