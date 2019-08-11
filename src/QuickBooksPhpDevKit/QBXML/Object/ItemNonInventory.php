@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks NonInventoryItem object container
+ * QuickBooks ItemNonInventory object container
  *
  * NOTE: By default, NonInventoryItems are created as SalesOrPurchase items, and are
  * thus *NOT* created as SalesAndPurchase items. If you want to create an item
  * that is sold *and* purchased, you'll need to set the type with the method:
- * 	-> {@link QuickBooks_Object_NonInventoryItem::isSalesAndPurchase()}
+ * 	-> {@link QBXML\Object\ItemNonInventory::isSalesAndPurchase()}
  *
  * @todo Verify the get/set methods on this one... it was copied from ServiceItem
  * @todo Add isActive(), getIsActive(), etc. methods
@@ -24,9 +24,9 @@ use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
- *
+ * QuickBooks ItemNonInventory Object
  */
-class NonInventoryItem extends AbstractQbxmlObject
+class ItemNonInventory extends AbstractQbxmlObject
 {
 	protected $_is_sales_and_purchase;
 

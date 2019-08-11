@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks ServiceItem object container
+ * QuickBooks ItemService object container
  *
  * NOTE: By default, ServiceItems are created as SalesOrPurchase items, and are
  * thus *NOT* created as SalesAndPurchase items. If you want to create an item
  * that is sold *and* purchased, you'll need to set the type with the method:
- * 	-> {@link QuickBooks_Object_ServiceItem::isSalesAndPurchase()}
+ * 	-> {@link QBXML\Object\ItemService::isSalesAndPurchase()}
  *
  * @author Keith Palmer <keith@consolibyte.com>
  * @license LICENSE.txt
@@ -21,9 +21,9 @@ use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
- * QuickBooks ServiceItem object
+ * QuickBooks ItemService Object
  */
-class ServiceItem extends AbstractQbxmlObject
+class ItemService extends AbstractQbxmlObject
 {
 	/**
 	 * Flag indicating whether or not this for sales *AND* purchase, or just sales *OR* purchase

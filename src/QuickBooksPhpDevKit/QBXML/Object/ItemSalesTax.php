@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks SalesTaxItem object container
+ * QuickBooks ItemSalesTax object container
  *
  * @author Keith Palmer <keith@consolibyte.com>
  * @license LICENSE.txt
@@ -16,9 +16,9 @@ use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
- *
+ * QuickBooks ItemSalesTax Object
  */
-class SalesTaxItem extends AbstractQbxmlObject
+class ItemSalesTax extends AbstractQbxmlObject
 {
 	public function __construct(array $arr = [])
 	{

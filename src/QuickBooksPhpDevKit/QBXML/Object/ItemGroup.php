@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks InventoryItem object container
+ * QuickBooks ItemGroup object container
  *
  * @todo Verify the get/set methods on this one... it was copied from NonInventoryItem
  * @todo Add isActive(), getIsActive(), etc. methods
@@ -21,7 +21,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 /**
  *
  */
-class GroupItem extends AbstractQbxmlObject
+class ItemGroup extends AbstractQbxmlObject
 {
 	public function __construct(array $arr = [])
 	{

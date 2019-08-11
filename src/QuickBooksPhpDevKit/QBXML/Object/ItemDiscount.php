@@ -1,12 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks ServiceItem object container
- *
- * NOTE: By default, ServiceItems are created as SalesOrPurchase items, and are
- * thus *NOT* created as SalesAndPurchase items. If you want to create an item
- * that is sold *and* purchased, you'll need to set the type with the method:
- * 	-> {@link QuickBooks_Object_ServiceItem::isSalesAndPurchase()}
+ * QuickBooks ItemDiscount object container
  *
  * @author Keith Palmer <keith@consolibyte.com>
  * @license LICENSE.txt
@@ -23,7 +18,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 /**
  *
  */
-class DiscountItem extends AbstractQbxmlObject
+class ItemDiscount extends AbstractQbxmlObject
 {
 	public function __construct(array $arr = [])
 	{
@@ -149,7 +144,7 @@ class DiscountItem extends AbstractQbxmlObject
 
 	public function setAccountApplicationID($value): bool
 	{
-		return $this->set('AccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_DiscountItem'], PackageInfo::QbId['LISTID'], $value));
+		return $this->set('AccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_DISCOUNTITEM'], PackageInfo::QbId['LISTID'], $value));
 	}
 
 	public function getAccountApplicationID()

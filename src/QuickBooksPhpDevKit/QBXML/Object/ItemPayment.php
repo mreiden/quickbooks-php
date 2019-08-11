@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks OtherChargeItem object container
+ * QuickBooks ItemPayment object container
  *
  * @todo FIX THIS FIX THIS FIX THIS!
  *
@@ -18,9 +18,9 @@ use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
- * QuickBooks PaymentItem object
+ * QuickBooks ItemPayment Object
  */
-class PaymentItem extends AbstractQbxmlObject
+class ItemPayment extends AbstractQbxmlObject
 {
 	/**
 	 * Flag indicating whether or not this for sales *AND* purchase, or just sales *OR* purchase
@@ -28,7 +28,7 @@ class PaymentItem extends AbstractQbxmlObject
 	protected $_is_sales_and_purchase;
 
 	/**
-	 * Create a new QuickBooks_Object_PaymentItem object (PaymentItem)
+	 * Create a new QBXML\Object\ItemPayment Object
 	 */
 	public function __construct(array $arr = [], bool $is_sales_and_purchase = false)
 	{

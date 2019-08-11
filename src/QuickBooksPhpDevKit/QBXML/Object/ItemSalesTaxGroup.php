@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks ServiceItem object container
+ * QuickBooks ItemSalesTaxGroup object container
  *
  * @author Keith Palmer <keith@consolibyte.com>
  * @license LICENSE.txt
@@ -14,12 +14,12 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\SalesTaxGroupItem\ItemSalesTaxRef;
+use QuickBooksPhpDevKit\QBXML\Object\ItemSalesTaxGroup\ItemSalesTaxRef;
 
 /**
- *
+ * QuickBooks ItemSalesTaxGroup Object
  */
-class SalesTaxGroupItem extends AbstractQbxmlObject
+class ItemSalesTaxGroup extends AbstractQbxmlObject
 {
 	public function __construct(array $arr = [])
 	{

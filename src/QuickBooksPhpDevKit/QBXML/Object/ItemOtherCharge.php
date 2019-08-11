@@ -16,9 +16,9 @@ use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 /**
- * QuickBooks OtherChargeItem object (This is actually ItemOtherCharge in QuickBooks)
+ * QuickBooks ItemOtherCharge Object
  */
-class OtherChargeItem extends AbstractQbxmlObject
+class ItemOtherCharge extends AbstractQbxmlObject
 {
 	/**
 	 * Flag indicating whether or not this for sales *AND* purchase, or just sales *OR* purchase

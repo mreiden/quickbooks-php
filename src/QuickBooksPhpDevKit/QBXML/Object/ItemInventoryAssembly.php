@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks InventoryItem object container
+ * QuickBooks ItemInventoryAssembly object container
  *
  * @todo Verify the get/set methods on this one... it was copied from NonInventoryItem
  * @todo Add isActive(), getIsActive(), etc. methods
@@ -21,7 +21,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 /**
  *
  */
-class InventoryAssemblyItem extends AbstractQbxmlObject
+class ItemInventoryAssembly extends AbstractQbxmlObject
 {
 	public function __construct(array $arr = [])
 	{

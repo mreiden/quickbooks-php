@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * QuickBooks FixedAssetItem object container
+ * QuickBooks ItemFixedAsset object container
  *
  * @todo Verify the get/set methods on this one... it was copied from NonInventoryItem
  * @todo Add isActive(), getIsActive(), etc. methods
@@ -17,12 +17,11 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\Estimate;
 
 /**
  *
  */
-class FixedAssetItem extends AbstractQbxmlObject
+class ItemFixedAsset extends AbstractQbxmlObject
 {
 	public function __construct(array $arr = [])
 	{
