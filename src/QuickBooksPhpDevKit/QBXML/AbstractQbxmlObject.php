@@ -798,27 +798,7 @@ abstract class AbstractQbxmlObject
 
 		$type = Utilities::actionToObject($action_or_object);
 
-		// The QBXML item classes end in "Item" while the QuickBooks action begins with "Item" (e.g. ServiceItem instead of ItemService)
-		$exceptions = [
-			PackageInfo::Actions['OBJECT_SERVICEITEM'] => 'ServiceItem',
-			PackageInfo::Actions['OBJECT_INVENTORYITEM'] => 'InventoryItem',
-			PackageInfo::Actions['OBJECT_NONINVENTORYITEM'] => 'NonInventoryItem',
-			PackageInfo::Actions['OBJECT_DISCOUNTITEM'] => 'DiscountItem',
-			PackageInfo::Actions['OBJECT_FIXEDASSETITEM'] => 'FixedAssetItem',
-			PackageInfo::Actions['OBJECT_GROUPITEM'] => 'GroupItem',
-			PackageInfo::Actions['OBJECT_OTHERCHARGEITEM'] => 'OtherChargeItem',
-			PackageInfo::Actions['OBJECT_SALESTAXITEM'] => 'SalesTaxItem',
-			PackageInfo::Actions['OBJECT_SALESTAXGROUPITEM'] => 'SalesTaxGroupItem',
-			PackageInfo::Actions['OBJECT_SUBTOTALITEM'] => 'SubtotalItem',
-			PackageInfo::Actions['OBJECT_INVENTORYASSEMBLYITEM'] => 'InventoryAssemblyItem',
-		];
-		if (isset($exceptions[$type]))
-		{
-			$type = $exceptions[$type];
-		}
-
 		//print('trying to create type: {' . $type . '}' . "\n");
-
 		$class = PackageInfo::NAMESPACE_QBXML_OBJECT . "\\" . $type;
 		$Object = static::_fromXMLHelper($class, $XML);
 
@@ -882,7 +862,7 @@ abstract class AbstractQbxmlObject
 
 			case PackageInfo::Actions['OBJECT_SALESTAXGROUPITEM']:
 				$children = [
-					'ItemSalesTaxRef' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\SalesTaxGroupItem\\ItemSalesTaxRef", 'addItemSalesTaxRef'],
+					'ItemSalesTaxRef' => [PackageInfo::NAMESPACE_QBXML_OBJECT . "\\ItemSalesTaxGroup\\ItemSalesTaxRef", 'addItemSalesTaxRef'],
 				];
 				break;
 
