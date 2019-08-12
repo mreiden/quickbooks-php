@@ -327,7 +327,7 @@ abstract class AbstractQbxmlObject
 		// Convert numbers to strings (for unix timestamps)
 		if (!is_string($date))
 		{
-			$date = (string)$date;
+			$date = (string) $date;
 		}
 
 		// Disallow empty string and '0'
@@ -342,9 +342,14 @@ abstract class AbstractQbxmlObject
 			return false;
 		}
 
-		// Convert string to a unix timestamp unless it already is a unix timestamp.
-		// We assume an 8 digit number is a date in YYYMMDD format like 20190704
-		if (!ctype_digit($date) || strlen($date) <= 8)
+		// We assume an 8 digit number is a date in YYYMMDD format like 20190704 and
+		// assume number strings longer than 8 digits are unix timestamps.
+		if (ctype_digit($date) && strlen($date) > 8)
+		{
+			// This is a unix timestamp that needs to be cast back to an int for strict typing
+			$date = (int) $date;
+		}
+		else
 		{
 			// Convert date string to a unix timestamp
 			$date = strtotime($date);
