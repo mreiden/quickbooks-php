@@ -300,7 +300,7 @@ abstract class AbstractQbxmlObject
 			return $default;
 		}
 
-		return filter_var($this->get($key), FILTER_VALIDATE_BOOLEAN);
+		return filter_var($this->get($key), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 	}
 
 	/**
