@@ -354,50 +354,6 @@ class Node
 	}
 
 	/**
-	 *
-	 */
-	protected function _pathHelper(): void
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	public function path(string $path): void
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	protected function _getChildByTagHelper(): void
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	public function getChildByTag(string $name): void
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	static protected function _fnmatch(string $pattern, string $str): bool
-	{
-		$arr = [
-			'\*' => '.*',
-			'\?' => '.'
-		];
-		return 1 === preg_match('#^' . strtr(preg_quote($pattern, '#'), $arr) . '$#i', $str);
-	}
-
-	/**
 	 * Get an array of child nodes for this XML node
 	 *
 	 * @param string $pattern
@@ -411,7 +367,7 @@ class Node
 
 			foreach ($this->_children as $Child)
 			{
-				if ($this->_fnmatch($pattern, $Child->name()))
+				if (Utilities::fnmatch($pattern, $Child->name()))
 				{
 					$list[] = $Child;
 				}
@@ -528,39 +484,9 @@ class Node
 		return false;
 	}
 
-	public function replaceChild($which, $node): void
-	{
-
-	}
-
 	public function getChild($which)
 	{
-		if (isset($this->_children[$which]))
-		{
-			return $this->_children[$which];
-		}
-
-		return null;
-	}
-
-	public function normalize(): void
-	{
-
-	}
-
-	public function equals($node, bool $recurse = true): void
-	{
-
-	}
-
-	public function getElementById(): void
-	{
-
-	}
-
-	public function getElementByTagName(): void
-	{
-
+		return $this->_children[$which] ?? null;
 	}
 
 	public function hasAttributes(): bool
@@ -591,7 +517,7 @@ class Node
 	 * @param string $indent
 	 * @return string
 	 */
-	public function _asXMLHelper(Node $node, int $tabs, int $empty, string $indent)
+	public function _asXMLHelper(Node $node, int $tabs, int $empty, string $indent): string
 	{
 		$xml = '';
 
@@ -797,26 +723,5 @@ class Node
 		}
 
 		return false !== file_put_contents($path_or_resource, $json);
-	}
-
-	/**
-	 * Get a YAML representation of this XML node
-	 */
-	/*
-	public function asYAML(): void
-	{
-	}
-	*/
-
-	/**
-	 * Save a YAML representation of this XML node structure to disk
-	 *
-	 * @param mixed $path_or_resource
-	 * @param string $mode
-	 * @return bool
-	 */
-	public function saveYAML($path_or_resource, string $mode = 'wb'): bool
-	{
-
 	}
 }
