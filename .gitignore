@@ -1,4 +1,18 @@
 #################
+## Composer
+#################
+vendor/
+
+
+###########################
+## Configuration Files
+###########################
+tests/database-configuration.ini
+docs/partner_platform/example_app_ipp_v3/config-private.php
+
+
+
+#################
 ## Eclipse
 #################
 
