@@ -283,6 +283,16 @@ class QbxmlTestdataGenerator
 		return $qbCustomer;
 	}
 
+	public static function Department(string $departmentName, string $departmentCode): \QuickBooksPhpDevKit\QBXML\Object\Department
+	{
+		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\Department();
+
+		$qbObject->setDepartmentName($departmentName);
+		$qbObject->setDepartmentCode($departmentCode);
+
+		return $qbObject;
+	}
+
 	public static function Invoice($refNumber, $invoiceDate, string $customerFullName, ?string $poNumber = null, ?string $salesRepName = null): \QuickBooksPhpDevKit\QBXML\Object\Invoice
 	{
 		$qbInvoice = new \QuickBooksPhpDevKit\QBXML\Object\Invoice();
@@ -365,6 +375,30 @@ class QbxmlTestdataGenerator
 		return $qbInvoice;
 	}
 
+	public static function ItemService(string $itemName, string $accountName): \QuickBooksPhpDevKit\QBXML\Object\ItemService
+	{
+		$qbItem = new \QuickBooksPhpDevKit\QBXML\Object\ItemService();
+
+		// ListID is Quickbooks Unique Identifier
+		$qbItem->setListId('70000010-1234567890');
+		// EditSequence is a Secondary Quickbooks Unique Identifier
+		$qbItem->setEditSequence(9876543210);
+
+		$qbItem->setIsActive(true);
+		$qbItem->setFullName($itemName);
+		$qbItem->setAccountFullName($accountName);
+
+		$qbItem->setSalesTaxCodeName('Non');
+
+		$price = 100 - ord(substr(strtoupper($itemName), -1));
+		$price += $price/100;
+		$qbItem->setPrice($price);
+
+		$qbItem->setDescription("$itemName for $price");
+
+		return $qbItem;
+	}
+
 	public static function ItemSites(): \QuickBooksPhpDevKit\QBXML\Object\ItemSites
 	{
 		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\ItemSites();
@@ -409,30 +443,6 @@ class QbxmlTestdataGenerator
 		$qbPayment->addAppliedToTxn($qbAppliedToTxn);
 
 		return $qbPayment;
-	}
-
-	public static function ServiceItem(string $itemName, string $accountName): \QuickBooksPhpDevKit\QBXML\Object\ServiceItem
-	{
-		$qbItem = new \QuickBooksPhpDevKit\QBXML\Object\ServiceItem();
-
-		// ListID is Quickbooks Unique Identifier
-		$qbItem->setListId('70000010-1234567890');
-		// EditSequence is a Secondary Quickbooks Unique Identifier
-		$qbItem->setEditSequence(9876543210);
-
-		$qbItem->setIsActive(true);
-		$qbItem->setFullName($itemName);
-		$qbItem->setAccountFullName($accountName);
-
-		$qbItem->setSalesTaxCodeName('Non');
-
-		$price = 100 - ord(substr(strtoupper($itemName), -1));
-		$price += $price/100;
-		$qbItem->setPrice($price);
-
-		$qbItem->setDescription("$itemName for $price");
-
-		return $qbItem;
 	}
 
 	public static function StandardTerms(string $name, int $daysDue, ?int $daysDiscount = null, ?float $discountPercent = null): \QuickBooksPhpDevKit\QBXML\Object\StandardTerms
