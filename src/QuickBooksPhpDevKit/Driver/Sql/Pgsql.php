@@ -197,7 +197,7 @@ class Pgsql extends Sql
 
 			$schema = array_shift($db_and_schema);
 			if (null !== $schema)
-            {
+			{
 				$this->_schema = $schema;
 			}
 		}

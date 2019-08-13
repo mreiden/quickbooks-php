@@ -359,19 +359,19 @@ abstract class Service
 		}
 		else if ($flavor == IDS::FLAVOR_ONLINE)
 		{
-		    if (!$xml)
-		    {
+			if (!$xml)
+			{
 				$defaults = [
 					'PageNum' => $page,
 					'ResultsPerPage' => $size,
 				];
 
-		    	if (!is_array($query))
-		    	{
-		    		// Assume $query is a query string and convert it to an array
-		    		$str = $query ?? '';
-		    		$query = parse_str($str, $query);
-		    	}
+				if (!is_array($query))
+				{
+					// Assume $query is a query string and convert it to an array
+					$str = $query ?? '';
+					$query = parse_str($str, $query);
+				}
 
 				if (!is_array($query))
 				{
@@ -686,20 +686,20 @@ abstract class Service
 
 		$return = $IPP->IDS($Context, $realmID, $resource, IDS::OPTYPE_SEND, null, $ID);
 
-      $this->_setLastRequestResponse($Context->lastRequest(), $Context->lastResponse());
-      $this->_setLastDebug($Context->lastDebug());
+	  $this->_setLastRequestResponse($Context->lastRequest(), $Context->lastResponse());
+	  $this->_setLastDebug($Context->lastDebug());
 
-      if ($IPP->errorCode() != IPP::ERROR_OK)
-      {
-         $this->_setError(
-            $IPP->errorCode(),
-            $IPP->errorText(),
-            $IPP->errorDetail());
+	  if ($IPP->errorCode() != IPP::ERROR_OK)
+	  {
+		 $this->_setError(
+			$IPP->errorCode(),
+			$IPP->errorText(),
+			$IPP->errorDetail());
 
-         return false;
-      }
+		 return false;
+	  }
 
-      return $return;
+	  return $return;
 	}
 
 	/**
