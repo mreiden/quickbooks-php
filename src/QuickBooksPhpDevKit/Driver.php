@@ -611,7 +611,7 @@ abstract class Driver
 	 * @param boolean $override		If set to TRUE, a correct password will not be required
 	 * @return string				The ticket for the login session
 	 */
-	final public function authLogin(string $username, string $password, &$company_file, &$wait_before_next_update, &$min_run_every_n_seconds, bool $override = false): ?string
+	final public function authLogin(string $username, string $password, ?string &$company_file, ?int &$wait_before_next_update, ?int &$min_run_every_n_seconds, bool $override = false): ?string
 	{
 		$hookdata = [
 			'username' => $username,
@@ -627,7 +627,7 @@ abstract class Driver
 	/**
 	 * @see Driver::authLogin()
 	 */
-	abstract protected function _authLogin(string $username, string $password, &$company_file, &$wait_before_next_update, &$min_run_every_n_seconds, bool $override = false): ?string;
+	abstract protected function _authLogin(string $username, string $password, ?string &$company_file, ?int &$wait_before_next_update, ?int &$min_run_every_n_seconds, bool $override = false): ?string;
 
 	/**
 	 * Return the default QuickBooks user's username
@@ -859,7 +859,7 @@ abstract class Driver
 		$data = $this->_oauthLoadV2($app_tenant);
 		if ($data)
 		{
-			if (strlen($data['oauth_access_token']) > 0)
+			if (!empty($data['oauth_access_token']))
 			{
 				$Encryption = EncryptionFactory::create('sodium');
 

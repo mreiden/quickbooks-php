@@ -32,7 +32,8 @@ class Singleton
 	public static function getInstance($dsn_or_conn = null, array $options = [], array $hooks = [], ?int $log_level = null): Driver
 	{
 		static $instance = null;
-		if (is_null($instance))
+
+		if (null === $instance)
 		{
 			$instance = Factory::create($dsn_or_conn, $options, $hooks, $log_level);
 		}
@@ -44,13 +45,8 @@ class Singleton
 	 *
 	 *
 	 */
-	public static function initialize($dsn_or_conn = null, array $options = [], array $hooks = [], ?int $log_level = null): bool
+	public static function initialize($dsn_or_conn = null, array $options = [], array $hooks = [], ?int $log_level = null): Driver
 	{
-		if ($obj = self::getInstance($dsn_or_conn, $options, $hooks, $log_level))
-		{
-			return true;
-		}
-
-		return false;
+		return self::getInstance($dsn_or_conn, $options, $hooks, $log_level);
 	}
 }
