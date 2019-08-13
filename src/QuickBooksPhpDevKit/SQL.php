@@ -79,9 +79,7 @@ class SQL
 	 */
 	protected function _startsWith(string $str, string $startswith): bool
 	{
-		$length = strlen($startswith);
-
-		return (substr($str, 0, $length)) == $startswith;
+		return (substr($str, 0, strlen($startswith)) === $startswith);
 	}
 
 	/**
@@ -95,6 +93,7 @@ class SQL
 	{
 		if ($this->_driver)
 		{
+			/*
 			if ($look)
 			{
 				$tmp = trim(strtoupper($sql));
@@ -112,56 +111,11 @@ class SQL
 
 				}
 			}
+			*/
 
 			return $this->_driver->query($sql);
 		}
 
 		return false;
-	}
-
-	/**
-	 * Fetch a record from a result resource
-	 *
-	 * @param resource $res			The result resource to fetch the next record from
-	 * @param boolean $as_object
-	 * @param integer $index
-	 * @return object
-	 */
-	public function fetch($res, bool $as_object = true, ?int $index = null)
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	public function escape(string $str): string
-	{
-
-	}
-
-	public function last()
-	{
-
-	}
-
-	public function getCustomer(string $listID)
-	{
-
-	}
-
-	public function addCustomer($customer)
-	{
-
-	}
-
-	public function modifyCustomer(string $listID, $customer)
-	{
-
-	}
-
-	public function deleteCustomer(string $listID)
-	{
-
 	}
 }

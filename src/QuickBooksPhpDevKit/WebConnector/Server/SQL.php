@@ -262,7 +262,7 @@ class SQL extends Server
 		$Driver = Singleton::getInstance($dsn_or_conn, $driver_options, $sql_hooks, $log_level);
 
 		//public function __construct($dsn_or_conn, AdapterInterface $soapAdapter, array $map, array $onerror = [], array $hooks = [], int $log_level = PackageInfo::LogLevel['NORMAL'], $handler_options = [], $driver_options = [], $callback_options = [])
-		parent::__construct($dsn_or_conn, $soapAdapter, $sql_map, $sql_onerror, $sql_hooks, $log_level, $handler_options, $driver_options, $sql_callback_options);
+		parent::__construct($Driver, $soapAdapter, $sql_map, $sql_onerror, $sql_hooks, $log_level, $handler_options, $driver_options, $sql_callback_options);
 
 		/*
 		// TESTING only

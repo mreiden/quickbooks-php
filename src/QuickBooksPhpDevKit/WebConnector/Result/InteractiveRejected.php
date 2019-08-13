@@ -25,20 +25,17 @@ use QuickBooksPhpDevKit\WebConnector\Result;
  */
 class InteractiveRejected extends Result
 {
-    /**
-     * A string indicating the interactive session was rejected
-     *
-     * @var string
-     */
-    public $interactiveRejected;
+	/**
+	 * A string indicating the interactive session was rejected
+	 * @var string
+	 */
+	public $interactiveRejected;
 
-    /**
-     * Create a new result object
-     *
-     * @param string $interactiveRejected
-     */
-    public function __construct(string $interactiveRejected)
-    {
-        $this->interactiveRejected = $interactiveRejected;
-    }
+	/**
+	 * Create a new result object
+	 */
+	public function __construct(string $interactiveRejected)
+	{
+		$this->interactiveRejected = $interactiveRejected;
+	}
 }

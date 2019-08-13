@@ -9,7 +9,7 @@
  * which accompanies this distribution, and is available at
  * http://www.opensource.org/licenses/eclipse-1.0.php
  *
- * As or release v1.5.3 all callback calling is being re-factored and
+ * As of release v1.5.3 all callback calling is being re-factored and
  * re-located to this file to ease maintainance of callbacks. Callbacks are now
  * supported as:
  * 	- functions
@@ -46,7 +46,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	static public function callAuthenticate($Driver, string $callback, string $username, string $password, &$customauth_company_file, &$customauth_wait_before_next_update, &$customauth_min_run_every_n_seconds)
+	static public function callAuthenticate($Driver, $callback, string $username, string $password, ?string &$customauth_company_file, ?int &$customauth_wait_before_next_update, ?int &$customauth_min_run_every_n_seconds)
 	{
 		$type = self::_type($callback, $Driver);
 

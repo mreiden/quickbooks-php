@@ -59,7 +59,7 @@ use QuickBooksPhpDevKit\Callbacks;
 use QuickBooksPhpDevKit\Driver\Factory;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\Utilities;
-//use QuickBooksPhpDevKit\WebConnector\Handlers;	// Base handlers for each of the methods required by the QuickBooks Web Connector
+use QuickBooksPhpDevKit\WebConnector\Handlers;	// Base handlers for each of the methods required by the QuickBooks Web Connector
 
 /**
  * QuickBooks SOAP Server
@@ -215,7 +215,7 @@ class Server
 
 		// Base handlers
 		// $dsn_or_conn, $map, $onerror, $hooks, $log_level, $this->_input, $handler_config = [], $driver_config = []
-		$this->_server->setClass(__NAMESPACE__ . "\\Handlers", $dsn_or_conn, $map, $onerror, $hooks, $log_level, 'UNUSED_$this->_input', $handler_options, $driver_options, $callback_options);
+		$this->_server->setClass(Handlers::class, $dsn_or_conn, $map, $onerror, $hooks, $log_level, 'UNUSED_$this->_input', $handler_options, $driver_options, $callback_options);
 	}
 
 	public function setDefaultTimeZone(?string $tz = null): bool

@@ -211,13 +211,19 @@ class Handlers
 
 		$this->_callback_config = $callback_config;
 
-		$this->_log('Handler is starting up NOW...: ' . print_r($this->_config, true), '', PackageInfo::LogLevel['DEBUG']);
+		$printable_config = $this->_config;
+		if (!empty($this->_config['authenticate']) && is_array($this->_config['authenticate']) && is_object($this->_config['authenticate'][0]))
+		{
+			$printable_config['authenticate'][0] = get_class($printable_config['authenticate'][0]) . ' instance';
+		}
+
+		$this->_log('Handler is starting up NOW...: ' . print_r($printable_config, true), '', PackageInfo::LogLevel['DEBUG']);
 	}
 
 	/**
 	 * Massage any optional configuration flags
 	 */
-	protected function _defaults(array $config)
+	protected function _defaults(array $config): array
 	{
 		$defaults = [
 			'qb_company_file' => null,					// To force a specific company file to be used
@@ -493,12 +499,12 @@ class Handlers
 		$wait_before_next_update = null;
 		$min_run_every_n_seconds = null;
 
-		$customauth_company_file = null;
-		$customauth_wait_before_next_update = null;
-		$customauth_min_run_every_n_seconds = null;
-
 		if (!empty($override_dsn) && (is_array($override_dsn) || is_string($override_dsn))) 	// Custom auth
 		{
+			$customauth_company_file = null;
+			$customauth_wait_before_next_update = null;
+			$customauth_min_run_every_n_seconds = null;
+
 			if (Callbacks::callAuthenticate($this->_driver, $override_dsn, $obj->strUserName, $obj->strPassword, $customauth_company_file, $customauth_wait_before_next_update, $customauth_min_run_every_n_seconds) &&
 				($ticket = $this->_driver->authLogin($obj->strUserName, $obj->strPassword, $company_file, $wait_before_next_update, $min_run_every_n_seconds, true)))
 			{
@@ -536,7 +542,7 @@ class Handlers
 				}
 				else if ((int) $min_run_every_n_seconds)
 				{
-					;
+					// Do Nothing
 				}
 				else if ((int) $this->_config['qbwc_min_run_every_n_seconds'])
 				{
