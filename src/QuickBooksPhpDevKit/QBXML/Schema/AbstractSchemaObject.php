@@ -22,24 +22,24 @@ abstract class AbstractSchemaObject
 	public const TYPE_BOOLTYPE = 'BOOLTYPE';
 	public const TYPE_AMTTYPE = 'AMTTYPE';
 
+	/**
+	 * This QuickBooks Action is found only in the QuickBooks Point of Sale (QBPOS) sdk.
+	 * @var bool
+	 */
+	protected $_isQbxmlPosOnly = false;
 
-	abstract protected function &_qbxmlWrapper(): string;
 
 	public function qbxmlWrapper(): string
 	{
-		return $this->_qbxmlWrapper();
+		return $this->_qbxmlWrapper;
 	}
-
-	abstract protected function &_dataTypePaths(): array;
 
 	/**
 	 *
 	 */
 	public function paths(?string $match = null): array
 	{
-		$paths = $this->_dataTypePaths();
-
-		return array_keys($paths);
+		return array_keys($this->_dataTypePaths);
 	}
 
 	/**
@@ -53,62 +53,46 @@ abstract class AbstractSchemaObject
 		];
 		*/
 
-		$paths = $this->_dataTypePaths();
-
-		if (isset($paths[$path]))
+		if (isset($this->_dataTypePaths[$path]))
 		{
-			return $paths[$path];
+			return $this->_dataTypePaths[$path];
 		}
 		else if ($case_doesnt_matter)
 		{
-			foreach ($paths as $dtpath => $datatype)
+			$nocase = array_change_key_case($this->_dataTypePaths, CASE_LOWER);
+			if (isset($nocase[strtolower($path)]))
 			{
-				if (strtolower($dtpath) == strtolower($path))
-				{
-					return $datatype;
-				}
+				return $nocase[strtolower($path)];
 			}
 		}
 
 		return null;
 	}
 
-	abstract protected function &_maxLengthPaths(): array;
-
 	/**
-	 *
+	 * Find the maximum length allowed for a path
 	 */
 	public function maxLength(string $path, bool $case_doesnt_matter = true, ?string $locale = null): int
 	{
-		/*
-		static $paths = [
-			'Name' => 40,
-			'FirstName' => 41,
-		];
-		*/
-
-		$paths = $this->_maxLengthPaths();
-
-		if (isset($paths[$path]))
+		if (isset($this->_maxLengthPaths[$path]))
 		{
-			return $paths[$path];
+			return $this->_maxLengthPaths[$path];
 		}
 		else if ($case_doesnt_matter)
 		{
-			foreach ($paths as $mlpath => $maxlength)
+			$nocase = array_change_key_case($this->_maxLengthPaths, CASE_LOWER);
+			if (isset($nocase[strtolower($path)]))
 			{
-				if (strtolower($mlpath) == strtolower($path))
-				{
-					return $paths[$mlpath];
-				}
+				return $nocase[strtolower($path)];
 			}
 		}
 
-		return 0;
+		return PHP_INT_MAX;
 	}
 
-	abstract protected function &_isOptionalPaths(): array;
-
+	/**
+	 * Tell whether the path is optional (may be ommitted from the QBXML request)
+	 */
 	public function isOptional(string $path): bool
 	{
 		/*
@@ -119,13 +103,12 @@ abstract class AbstractSchemaObject
 		];
 		*/
 
-		$paths = $this->_isOptionalPaths();
-
-		return $paths[$path] ?? true;
+		return $this->_isOptionalPaths[$path] ?? true;
 	}
 
-	abstract protected function &_sinceVersionPaths(): array;
-
+	/**
+	 * Find the QBXML version the path became available
+	 */
 	public function sinceVersion(string $path): float
 	{
 		/*
@@ -135,12 +118,8 @@ abstract class AbstractSchemaObject
 		];
 		*/
 
-		$paths = $this->_sinceVersionPaths();
-
-		return $paths[$path] ?? 999.99;
+		return $this->_sinceVersionPaths[$path] ?? 1;
 	}
-
-	abstract protected function &_isRepeatablePaths(): array;
 
 	/**
 	 * Tell whether or not a specific element is repeatable
@@ -154,9 +133,7 @@ abstract class AbstractSchemaObject
 		];
 		*/
 
-		$paths = $this->_isRepeatablePaths();
-
-		return $paths[$path] ?? false;
+		return $this->_isRepeatablePaths[$path] ?? false;
 	}
 
 	/**
@@ -164,21 +141,15 @@ abstract class AbstractSchemaObject
 	 */
 	public function exists(string $path, bool $case_doesnt_matter = true, bool $is_end_element = false): bool
 	{
-		$ordered_paths = $this->_reorderPathsPaths();
-
-		if (in_array($path, $ordered_paths))
+		if (in_array($path, $this->_reorderPathsPaths))
 		{
 			return true;
 		}
 		else if ($case_doesnt_matter)
 		{
-			foreach ($ordered_paths as $ordered_path)
-			{
-				if (strtolower($path) == strtolower($ordered_path))
-				{
-					return true;
-				}
-			}
+			$nocase = array_map('strtolower', $this->_reorderPathsPaths);
+
+			return in_array(strtolower($path), $nocase);
 		}
 
 		return false;
@@ -191,10 +162,9 @@ abstract class AbstractSchemaObject
 	{
 		static $paths = null;
 
-		if (is_null($paths))
+		if (null === $paths)
 		{
-			$paths = $this->_reorderPathsPaths();
-			$paths = array_change_key_case(array_combine(array_values($paths), array_values($paths)), CASE_LOWER);
+			$paths = array_change_key_case(array_combine(array_values($this->_reorderPathsPaths), array_values($this->_reorderPathsPaths)), CASE_LOWER);
 		}
 
 		//print('unfolding: {' . $path . '}' . "\n");
@@ -207,46 +177,20 @@ abstract class AbstractSchemaObject
 	 * @note WARNING! These are lists of UNSUPPORTED locales, NOT lists of supported ones!
 	 *
 	 */
-	protected function &_inLocalePaths(): array
-	{
-		$arr = [];
-
-		return $arr;
-	}
-
-	/**
-	 *
-	 * @note WARNING! These are lists of UNSUPPORTED locales, NOT lists of supported ones!
-	 *
-	 */
 	public function localePaths(): array
 	{
-		return $this->_inLocalePaths();
+		return $this->_localeExcludedPaths;
 	}
 
-	/*
-	public function inLocale($path, $locale)
+	public function inLocale(string $path, string $locale): bool
 	{
-		//static $paths = [
-		//	'FirstName' => ['QBD', 'QBCA', 'QBUK', 'QBAU'],
-		//	'LastName' => ['QBD', 'QBCA', 'QBUK', 'QBAU'],
-		//];
-
-		$paths = $this->_inLocalePaths();
-
-		if (isset($paths[$path]))
+		if (!empty($this->_localeExcludedPaths[$path]))
 		{
-			return in_array($locale, $paths[$path]);
+			return in_array($locale, $this->_localeExcludedPaths[$path]);
 		}
 
 		return false;
 	}
-	*/
-
-	/**
-	 * Return a list of paths in a specific schema order
-	 */
-	abstract protected function &_reorderPathsPaths(): array;
 
 	/**
 	 * Re-order an array to match the schema order
@@ -254,17 +198,15 @@ abstract class AbstractSchemaObject
 	public function reorderPaths(array $unordered_paths, bool $allow_application_id = true, bool $allow_application_editsequence = true): array
 	{
 		/*
-		static $ordered_paths = array(
-			0 => 'Name',
-			1 => 'FirstName',
-			2 => 'LastName',
-			);
+		static $ordered_paths = [
+			'Name',
+			'FirstName',
+			'LastName',
+		];
 		*/
 
-		$ordered_paths = $this->_reorderPathsPaths();
 		$tmp = [];
-
-		foreach ($ordered_paths as $key => $path)
+		foreach ($this->_reorderPathsPaths as $key => $path)
 		{
 			if (in_array($path, $unordered_paths))
 			{
@@ -313,6 +255,14 @@ abstract class AbstractSchemaObject
 			}*/
 		}
 
-		return array_merge($tmp);
+		return $tmp;
+	}
+
+	/**
+	 * This QuickBooks Action is found only in the QuickBooks Point of Sale (QBPOS) sdk.
+	 */
+	public function isOnlyInQBPOS(): bool
+	{
+		return $this->_isQbxmlPosOnly;
 	}
 }
