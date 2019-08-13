@@ -40,7 +40,7 @@ class Utilities
 	{
 		if (!is_array($dsn) && !is_string($dsn))
 		{
-			throw new \Exception('DSN must be an array or a dsn string.');
+			throw new \Exception('DSN must be an array or a dsn string but got (' . (is_object($dsn) ? get_class($dsn) : gettype($dsn)) . ').');
 		}
 
 		$map_url_to_param = [
@@ -695,6 +695,12 @@ class Utilities
 			$flipped_actions = array_flip(PackageInfo::Actions);
 		}
 
+		// Ret objects are objects 'Ret'urned by QuickBooks and should be mapped to the object type
+		if (substr(strtolower($action), -3) === 'ret')
+		{
+			$action = substr($action, 0, -3);
+		}
+
 		if (array_key_exists($action, $flipped_actions))
 		{
 			$object_key = preg_replace('/^[A-Z]+_/', 'OBJECT_', $flipped_actions[$action]);
@@ -1187,7 +1193,8 @@ class Utilities
 	 */
 	static public function actionToRequest(string $action): string
 	{
-		return $action . 'Rq';
+
+		return (substr(strtolower($action), -2) == 'rq') ? $action : $action . 'Rq';
 	}
 
 	/**
@@ -1195,7 +1202,7 @@ class Utilities
 	 */
 	static public function actionToResponse(string $action): string
 	{
-		return $action . 'Rs';
+		return (substr(strtolower($action), -2) == 'rs') ? $action : $action . 'Rs';
 	}
 
 	/**
@@ -1203,7 +1210,7 @@ class Utilities
 	 */
 	static public function requestToAction(string $request): string
 	{
-		return substr($request, 0, -2);
+		return (substr(strtolower($request), -2) == 'rq') ? substr($request, 0, -2) : $request;
 	}
 
 	/**

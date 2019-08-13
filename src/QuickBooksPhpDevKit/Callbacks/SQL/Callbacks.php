@@ -4496,8 +4496,7 @@ class Callbacks
 					$use_in_request = true;
 
 					// If this version doesn't support this field, skip it
-					if ($schema_object->sinceVersion($map) > $version &&
-						$schema_object->sinceVersion($map) < 100.0)			// For some reason I set the ->sinceVersion to return 999.99 if we don't know the support version...?
+					if ($schema_object->sinceVersion($map) > $version)
 					{
 						$use_in_request = false;
 					}
@@ -4589,8 +4588,7 @@ class Callbacks
 					$use_in_request = true;
 
 					// If this version doesn't support this field, skip it
-					if ($schema_object->sinceVersion($map) > $version &&
-						$schema_object->sinceVersion($map) < 100.0)			// For some reason I set the ->sinceVersion to return 999.99 if we don't know the support version...?
+					if ($schema_object->sinceVersion($map) > $version)
 					{
 						$use_in_request = false;
 					}

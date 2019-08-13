@@ -2512,6 +2512,9 @@ class Schema
 	 */
 	static public function mapFieldToSQLDefinition(string $object_type, string $field, string $qb_type): array
 	{
+		// Store the original value of $object_type
+		$object_type_provided = $object_type;
+
 		// array( type, length, default )
 
 		static $overrides = [
@@ -2698,7 +2701,7 @@ class Schema
 				//print('field: ' . $field . "\n");
 
 				$x = str_repeat('x', 10000);
-				$length = strlen(Cast::cast($object_type, $field, $x));
+				$length = strlen(Cast::cast($object_type_provided, $field, $x));
 
 				// All FullName and *_FullName fields should be VARCHAR(255) so we can add INDEXes to them
 				if ($length > 255 &&

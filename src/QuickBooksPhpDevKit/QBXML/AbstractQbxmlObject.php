@@ -24,7 +24,7 @@ use QuickBooksPhpDevKit\Utilities;
 use QuickBooksPhpDevKit\XML;
 use QuickBooksPhpDevKit\XML\Node;
 use QuickBooksPhpDevKit\QBXML\Object\Generic;
-use QuickBooksPhpDevKit\QBXML\Schema\AbstractSchemaObject as SchemaObject;
+use QuickBooksPhpDevKit\QBXML\Schema\AbstractSchemaObject;
 use QuickBooksPhpDevKit\XML\Parser;
 
 /**
@@ -158,11 +158,15 @@ abstract class AbstractQbxmlObject
 
 			if ($cast && $value != '__EMPTY__')
 			{
-				$value = Cast::cast($this->object(), $key, $value, true, false);
+				// Use the full namespaced classname.
+				// The classname excluding namespace is replaced with ->object().
+				// This is necessary for the *Item Objects (DiscountItem, etc) and the Generic Object
+				$classname = get_class($this);
+				$classname = substr($classname, 0, 1 + strrpos($classname, "\\")) . $this->object();
+				$value = Cast::cast($classname, $key, $value, true, false);
 			}
 
 			//print('	setting [' . $key . '] to value {' . $value . '}' . "\n");
-
 			$this->_object[$key] = $value;
 		}
 
@@ -513,7 +517,7 @@ abstract class AbstractQbxmlObject
 	 * @param string $request		A valid QuickBooks API request (for example: CustomerAddRq, InvoiceQueryRq, CustomerModRq, etc.)
 	 * @return QuickBooks_QBXML_Schema_Object
 	 */
-	protected function _schema(string $request)
+	protected function _schema(string $request): AbstractSchemaObject
 	{
 		if (strtolower(substr($request, -2, 2)) != 'rq')
 		{
@@ -527,7 +531,7 @@ abstract class AbstractQbxmlObject
 		}
 		catch (\Exception $e)
 		{
-			return false;
+			return null;
 		}
 	}
 
@@ -538,7 +542,7 @@ abstract class AbstractQbxmlObject
 	 * @param string $parent
 	 * @return Node
 	 */
-	public function asXML(?string $root = null, ?string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($root))
 		{
@@ -605,10 +609,10 @@ abstract class AbstractQbxmlObject
 	 * @param string $root		The node to use as the root node of the XML node structure  ***[unused in function]
 	 * @return string
 	 */
-	public function asQBXML(string $request, ?float $version = null, ?string $locale = null, ?string $root = null)
+	public function asQBXML(string $request, ?float $version = null, ?string $locale = null, ?string $root = null): string
 	{
 		$todo_for_empty_elements = XML::XML_DROP;
-		$indent = "\t";
+		$indent = '  ';
 
 		// Call any cleanup routines
 		$this->_cleanup();
@@ -621,7 +625,8 @@ abstract class AbstractQbxmlObject
 
 		$RequestNode = new Node($request);
 
-		if ($schema = $this->_schema($request))
+		$schema = $this->_schema($request);
+		if ($schema)
 		{
 			$tmp = [];
 
@@ -634,13 +639,6 @@ abstract class AbstractQbxmlObject
 			// Restrict it to a specific qbXML locale?
 			if ($locale)
 			{
-				// List of fields which are not supported for some versions of qbXML
-				if (strlen($locale) == 2)
-				{
-					// The OSR lists locales as 'QBOE', 'QBUK', 'QBCA', etc. vs. our PackageInfo::Locale constants of just 'OE', 'UK', 'CA', etc.
-					$locale = 'QB' . $locale;
-				}
-
 				$locales = $schema->localePaths();
 			}
 
@@ -684,15 +682,20 @@ abstract class AbstractQbxmlObject
 							$subpath = $arr->getParentIsNode() ? substr($fullpath, strlen($path) + 1) : $path;
 							//fwrite(STDERR, "\n\n\t\tfullpath: ". print_r($fullpath,true) . ' | subpath: '. print_r($subpath,true));
 
-							if (!$locale || !isset($locales[$fullpath]) || !in_array($locale, $locales[$fullpath]))
+							// Skip adding this path if a version of QBXML is set and it was not added until a later QBXML version
+							if (!$version || $version >= $schema->sinceVersion($fullpath))
 							{
-								$tmp2[$subpath] = $arr->get($fullpath);
-							}
+								// Skip adding this path if a locale is set and this path is in the list of disallowed locales
+								if (!$locale || !isset($locales[$fullpath]) || !in_array($locale, $locales[$fullpath]))
+								{
+									$tmp2[$subpath] = $arr->get($fullpath);
+								}
 
-							if (isset($tmp2[$subpath]) && $schema->dataType($fullpath) == SchemaObject::TYPE_AMTTYPE)
-							{
-								// This value is an amount type, so format it with 2 decimal places
-								$tmp2[$subpath] = sprintf('%01.2f', $tmp2[$subpath]);
+								if (isset($tmp2[$subpath]) && $schema->dataType($fullpath) == AbstractSchemaObject::TYPE_AMTTYPE)
+								{
+									// This value is an amount type, so format it with 2 decimal places
+									$tmp2[$subpath] = sprintf('%01.2f', $tmp2[$subpath]);
+								}
 							}
 						}
 
@@ -706,14 +709,19 @@ abstract class AbstractQbxmlObject
 					// Exclude it if it is in $locales ($locales is an exclude list of fields for the locale)
 
 					// Do some simple data type casting...
-					if ($schema->dataType($path) == SchemaObject::TYPE_AMTTYPE)
+					if ($schema->dataType($path) == AbstractSchemaObject::TYPE_AMTTYPE)
 					{
 						$this->_object[$path] = sprintf('%01.2f', $this->_object[$path]);
 					}
 
-					if (!$locale || !isset($locales[$path]) || !in_array($locale, $locales[$path]))
+					// Skip adding this path if a version of QBXML is set and it was not added until a later QBXML version
+					if (!$version || $version >= $schema->sinceVersion($path))
 					{
-						$tmp[$path] = $this->_object[$path];
+						// Skip adding this path if a locale is set and this path is in the list of disallowed locales
+						if (!$locale || !isset($locales[$path]) || !in_array($locale, $locales[$path]))
+						{
+							$tmp[$path] = $this->_object[$path];
+						}
 					}
 				}
 			}
@@ -721,7 +729,9 @@ abstract class AbstractQbxmlObject
 			// *DO NOT* change the source values of the original object!
 			//$this->_object = $tmp;
 
-			if ($wrapper = $schema->qbxmlWrapper())
+			// Create and add the wrapper node if needed
+			$wrapper = $schema->qbxmlWrapper();
+			if ($wrapper)
 			{
 				$Node = $this->asXML($wrapper, null, $tmp);
 				$RequestNode->addChild($Node);
@@ -739,15 +749,63 @@ abstract class AbstractQbxmlObject
 
 				return $Node->asXML(XML::XML_PRESERVE, $indent);
 			}
-			else
-			{
-				$Node = $this->asXML($request, null, $tmp);
 
-				return $Node->asXML($todo_for_empty_elements, $indent);
-			}
+			$Node = $this->asXML($request, null, $tmp);
+
+			return $Node->asXML($todo_for_empty_elements, $indent);
 		}
 
 		return '';
+	}
+
+	/**
+	 * Convert this object to a valid qbXML request and warp in the appropriate QBXML or QBXMLPOS wrapper
+	 */
+	public function asCompleteQBXML(string $request, ?float $version = null, ?string $locale = null, ?string $root = null, ?string $onError = null): string
+	{
+		// Create the QBXML for the request
+		$qbxml = $this->asQBXML($request, $version, $locale, $root);
+
+		// Find the schema object and find if it is only in the QB POS sdk
+		$schema = $this->_schema($request);
+		$isQBXMLPOS = ($schema instanceof AbstractSchemaObject) ? $schema->isOnlyInQBPOS() : false;
+
+		return $this->addQbXmlRequestWrapper($qbxml, $version, $onError, $isQBXMLPOS);
+	}
+
+	/**
+	 * Add the XML and QBXML version declarations and the QBXML and QBXMLMsgsRq wrapping tags
+	 */
+	public function addQbXmlRequestWrapper(string $xmlRequest, ?float $qbxmlVersion = null, ?string $onError = null, bool $isQBXMLPOS = false): string
+	{
+		$onError = $onError ?? 'continueOnError';
+
+		if ($isQBXMLPOS === true)
+		{
+			$tagName = 'QBXMLPOS';
+			$default_version = 3.0;
+		}
+		else
+		{
+			$tagName = 'QBXML';
+			$default_version = 13.0;
+		}
+
+		$qbxmlVersion = $qbxmlVersion ?? $default_version;
+		if (is_float($qbxmlVersion) || is_int($qbxmlVersion))
+		{
+			$qbxmlVersion = number_format($qbxmlVersion, 1, '.', '');
+		}
+
+		$completeQBXML  = '<?xml version="1.0" encoding="utf-8"?>' . "\n";
+		$completeQBXML .= '<?' . strtolower($tagName) .' version="' . $qbxmlVersion . '"?>' . "\n";
+		$completeQBXML .= '<' . $tagName . '>' . "\n";
+		$completeQBXML .= '  <' . $tagName . 'MsgsRq onError="' . $onError . '">' . "\n";
+		$completeQBXML .=      $xmlRequest;
+		$completeQBXML .= '  </' . $tagName . 'MsgsRq>' . "\n";
+		$completeQBXML .= '</' . $tagName . '>' . "\n";
+
+		return $completeQBXML;
 	}
 
 	/**
@@ -804,6 +862,7 @@ abstract class AbstractQbxmlObject
 		$type = Utilities::actionToObject($action_or_object);
 
 		//print('trying to create type: {' . $type . '}' . "\n");
+
 		$class = PackageInfo::NAMESPACE_QBXML_OBJECT . "\\" . $type;
 		$Object = static::_fromXMLHelper($class, $XML);
 
@@ -905,7 +964,7 @@ abstract class AbstractQbxmlObject
 	}
 
 	/**
-	 * Convert a qbXML string to a QuickBooks_Object_* object instance
+	 * Convert a qbXML string to a QBXML\Object\* object instance
 	 */
 	static public function fromQBXML(string $qbxml, ?string $action_or_object = null): ?AbstractQbxmlObject
 	{

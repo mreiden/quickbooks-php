@@ -252,10 +252,6 @@ class XML
 	 * Extract the attributes from a tag container
 	 *
 	 * @todo Holy confusing code Batman!
-	 *
-	 * @param string $tag_w_attributes
-	 * @param bool $return_tag_first
-	 * @return array
 	 */
 	static public function extractTagAttributes(string $tag_w_attrs, bool $return_tag_first = false): array
 	{
@@ -364,8 +360,6 @@ class XML
 	/**
 	 * Encode a string for use within an XML document
 	 *
-	 * @todo Investigate QuickBooks qbXML encoding and implement solution
-	 *
 	 * @param string $str				The string to encode
 	 * @param boolean $for_qbxml
 	 * @return string
@@ -376,26 +370,15 @@ class XML
 			return '';
 		}
 
-		$transform = [
-			'&' => '&amp;',
-			'<' => '&lt;',
-			'>' => '&gt;',
-			//'\'' => '&apos;',
-			'"' => '&quot;',
-		];
-
-		$str = str_replace(array_keys($transform), array_values($transform), $str);
-
-		if (!$double_encode)
+		// Encode Special Characters [&"<>]
+		if ($for_qbxml)
 		{
-			$fix = [];
-			foreach ($transform as $raw => $encoded)
-			{
-				$fix[str_replace('&', '&amp;', $encoded)] = $encoded;
-			}
-
-			$str = str_replace(array_keys($fix), array_values($fix), $str);
+			$str = htmlspecialchars($str, ENT_COMPAT | ENT_XML1, 'UTF-8', $double_encode);
 		}
+
+		// Convert non-ASCII UTF8 characters to numeric entities
+		$conversion_map = [0x0080, 0x10FFFF, 0x0, 0xFFFFFF];
+		$str = mb_encode_numericentity($str, $conversion_map, 'UTF-8');
 
 		return $str;
 	}
@@ -411,15 +394,15 @@ class XML
 	 */
 	static public function decode(string $str, bool $for_qbxml = true): string
 	{
-		$transform = [
-			'&lt;' => '<',
-			'&gt;' => '>',
-			'&apos;' => '\'',
-			'&quot;' => '"',
-			'&amp;' => '&', 		// Make sure that this is *the last* transformation to run, otherwise we end up double-un-encoding things
-		];
 
-		return str_replace(array_keys($transform), array_values($transform), $str);
+		// Decode Special Characters (&amp;, &quot;, &lt;, &gt;) to [&"<>]
+		$str = htmlspecialchars_decode($str, ENT_COMPAT | ENT_XML1);
+
+		// Convert numeric entities to non-ASCII UTF8 characters
+		$conversion_map = [0x0080, 0x10FFFF, 0x0, 0xFFFFFF];
+		$str = mb_decode_numericentity($str, $conversion_map, 'UTF-8');
+
+		return $str;
 	}
 
 	/**
@@ -430,16 +413,20 @@ class XML
 	 * @param string|null 	$encoding	Defaults to utf-8
 	 * @return string
 	 */
-	static public function cleanXML(string $xml, ?string $xmlVersion = null, ?string $encoding = null): ?string
+	static public function cleanXML(string $xml, ?string $xmlVersion = null, ?string $encoding = null): string
 	{
 		$dom = new \DomDocument();
 		$dom->preserveWhiteSpace = false;
 
+		$saved_state = libxml_use_internal_errors(true);
 		$loaded = $dom->loadXML($xml);
 		if ($loaded !== true)
 		{
-			return null;
+			$error = libxml_get_errors()[0];
+			throw new \Exception('DomDocument::loadXML(): ' . trim($error->message) . ' in Entity, line: ' . $error->line);
 		}
+		libxml_clear_errors();
+		libxml_use_internal_errors($saved_state);
 
 		$dom->formatOutput = true;
 		$dom->xmlVersion = $xmlVersion ?? '1.0';
