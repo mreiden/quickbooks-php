@@ -19,6 +19,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\CreditMemo\CreditMemoLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * QBXML\Ojbect\CreditMemo class
@@ -43,7 +44,7 @@ class CreditMemo extends AbstractQbxmlObject
 	/**
 	 * Get the transaction ID for this CreditMemo
 	 */
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -58,12 +59,12 @@ class CreditMemo extends AbstractQbxmlObject
 		return $this->set('CustomerRef FullName', $name);
 	}
 
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
 
-	public function getCustomerFullName(): string
+	public function getCustomerFullName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -89,12 +90,12 @@ class CreditMemo extends AbstractQbxmlObject
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -118,7 +119,7 @@ class CreditMemo extends AbstractQbxmlObject
 	/**
 	 * Get the reference number
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -126,7 +127,7 @@ class CreditMemo extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link QBXML\Ojbect\CreditMemo::getRefNumber()}
 	 */
-	public function getReferenceNumber(): string
+	public function getReferenceNumber(): ?string
 	{
 		return $this->getRefNumber();
 	}
@@ -135,17 +136,22 @@ class CreditMemo extends AbstractQbxmlObject
 	{
 		return $this->set('PONumber', (string) $num);
 	}
-	public function getPONumber(): string
+	public function getPONumber(): ?string
 	{
 		return $this->get('PONumber');
 	}
 
+	/**
+	 * Set Sales Rep Full Name
+	 *
+	 * NOTE: It can only be 5 characters, so it's really the "Sales Rep Initials" field in QuickBooks
+	 */
 	public function setSalesRepName(string $name): bool
 	{
 		return $this->set('SalesRepRef FullName', $name);
 	}
 
-	public function getSalesRepName(): string
+	public function getSalesRepName(): ?string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
@@ -155,7 +161,7 @@ class CreditMemo extends AbstractQbxmlObject
 		return $this->set('SalesRepRef ListID', $ListID);
 	}
 
-	public function getSalesRepListID(): string
+	public function getSalesRepListID(): ?string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
@@ -171,7 +177,7 @@ class CreditMemo extends AbstractQbxmlObject
 	/**
 	 * Get the transaction date
 	 */
-	public function getTxnDate(string $format = 'Y-m-d'): string
+	public function getTxnDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -187,7 +193,7 @@ class CreditMemo extends AbstractQbxmlObject
 	/**
 	 * Get the due date
 	 */
-	public function getDueDate(string $format = 'Y-m-d'): string
+	public function getDueDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('DueDate', $format);
 	}
@@ -198,12 +204,12 @@ class CreditMemo extends AbstractQbxmlObject
 		return $this->addListItem('CreditMemoLine', $obj);
 	}
 
-	public function getCreditMemoLine(int $i): CreditMemoLine
+	public function getCreditMemoLine(int $i): ?CreditMemoLine
 	{
 		return $this->getListItem('CreditMemoLine', $i);
 	}
 
-	public function listCreditMemoLine()
+	public function listCreditMemoLine(): array
 	{
 		return $this->getList('CreditMemoLine');
 	}
@@ -219,12 +225,12 @@ class CreditMemo extends AbstractQbxmlObject
 		return $this->set('ShipMethodRef ListID', $ListID);
 	}
 
-	public function getShipMethodName(): string
+	public function getShipMethodName(): ?string
 	{
 		return $this->get('ShipMethodRef FullName');
 	}
 
-	public function getShipMethodListID(): string
+	public function getShipMethodListID(): ?string
 	{
 		return $this->get('ShipMethodRef ListID');
 	}
@@ -234,7 +240,7 @@ class CreditMemo extends AbstractQbxmlObject
 		return $this->set('ItemSalesTaxRef FullName', $name);
 	}
 
-	public function getSalesTaxItemName(): string
+	public function getSalesTaxItemName(): ?string
 	{
 		return $this->get('ItemSalesTaxRef FullName');
 	}
@@ -249,7 +255,7 @@ class CreditMemo extends AbstractQbxmlObject
 	/**
 	 * Get the tax code ListID for the customer
 	 */
-	public function getCustomerSalesTaxCodeListID(): string
+	public function getCustomerSalesTaxCodeListID(): ?string
 	{
 		return $this->get('CustomerSalesTaxCodeRef ListID');
 	}
@@ -264,7 +270,7 @@ class CreditMemo extends AbstractQbxmlObject
 	/**
 	 * Get the tax code FullName for the customer
 	 */
-	public function getCustomerSalesTaxCodeFullName(): string
+	public function getCustomerSalesTaxCodeFullName(): ?string
 	{
 		return $this->get('CustomerSalesTaxCodeRef FullName');
 	}
@@ -273,7 +279,7 @@ class CreditMemo extends AbstractQbxmlObject
 	{
 		return $this->setBooleanType('IsToBePrinted', $printed);
 	}
-	public function getIsToBePrinted(): bool
+	public function getIsToBePrinted(): ?bool
 	{
 		return $this->getBooleanType('IsToBePrinted');
 	}
@@ -282,7 +288,7 @@ class CreditMemo extends AbstractQbxmlObject
 	{
 		return $this->setBooleanType('IsToBeEmailed', $emailed);
 	}
-	public function getIsToBeEmailed(): bool
+	public function getIsToBeEmailed(): ?bool
 	{
 		return $this->getBooleanType('IsToBeEmailed');
 	}
@@ -295,7 +301,7 @@ class CreditMemo extends AbstractQbxmlObject
 		return $this->setBooleanType('IsPending', $pending);
 	}
 
-	public function getIsPending(): bool
+	public function getIsPending(): ?bool
 	{
 		return $this->getBooleanType('IsPending');
 	}
@@ -307,7 +313,7 @@ class CreditMemo extends AbstractQbxmlObject
 	 * @param array $defaults		Default values if a value isn't filled in
 	 * @return array				The address
 	 */
-	public function getShipAddress(?string $part = null, array $defaults = []): array
+	public function getShipAddress(?string $part = null, array $defaults = [])
 	{
 		if (!is_null($part))
 		{
@@ -356,7 +362,7 @@ class CreditMemo extends AbstractQbxmlObject
 	 * @param array $defaults		Default values if a value isn't filled in
 	 * @return array				The address
 	 */
-	public function getBillAddress(?string $part = null, array $defaults = []): array
+	public function getBillAddress(?string $part = null, array $defaults = [])
 	{
 		if (!is_null($part))
 		{
@@ -398,7 +404,7 @@ class CreditMemo extends AbstractQbxmlObject
 		$this->set('BillAddress Note', $note);
 	}
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -419,7 +425,7 @@ class CreditMemo extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(?string $root = null, ?string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

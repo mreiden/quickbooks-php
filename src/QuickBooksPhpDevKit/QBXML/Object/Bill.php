@@ -16,6 +16,7 @@ use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\Bill\ItemLine;
 use QuickBooksPhpDevKit\QBXML\Object\Bill\ExpenseLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -40,7 +41,7 @@ class Bill extends AbstractQbxmlObject
 	/**
 	 * Get the transaction ID for this Bill
 	 */
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -73,7 +74,7 @@ class Bill extends AbstractQbxmlObject
 	/**
 	 * Get the vendor ListID
 	 */
-	public function getVendorListID(): string
+	public function getVendorListID(): ?string
 	{
 		return $this->get('VendorRef ListID');
 	}
@@ -101,7 +102,7 @@ class Bill extends AbstractQbxmlObject
 	/**
 	 * Get the TxnDate for the Bill
 	 */
-	public function getTxnDate(string $format = null): string
+	public function getTxnDate(string $format = null): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -117,7 +118,7 @@ class Bill extends AbstractQbxmlObject
 	/**
 	 * @see Bill::getTxnDate()
 	 */
-	public function getTransactionDate(string $format = null): string
+	public function getTransactionDate(string $format = null): ?string
 	{
 		$this->getTxnDate($format);
 	}
@@ -128,7 +129,7 @@ class Bill extends AbstractQbxmlObject
 		return $this->setDateType('DueDate', $date);
 	}
 
-	public function getDueDate(string $format = 'Y-m-d'): string
+	public function getDueDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('DueDate', $format);
 	}
@@ -144,7 +145,7 @@ class Bill extends AbstractQbxmlObject
 	/**
 	 * Get the RefNumber for the Bill
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -162,7 +163,7 @@ class Bill extends AbstractQbxmlObject
 	/**
 	 * Get the Memo for the Bill
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -178,7 +179,7 @@ class Bill extends AbstractQbxmlObject
 	}
 
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -210,7 +211,7 @@ class Bill extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

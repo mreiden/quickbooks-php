@@ -40,7 +40,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the TxnLineID for the JournalDebitLine
 	 */
-	public function getTxnLineID(): string
+	public function getTxnLineID(): ?string
 	{
 		return $this->get('TxnLineID');
 	}
@@ -58,7 +58,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef ListID for the JournalDebitLine
 	 */
-	public function getAccountListID(): string
+	public function getAccountListID(): ?string
 	{
 		return $this->get('AccountRef ListID');
 	}
@@ -86,7 +86,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef FullName for the JournalDebitLine
 	 */
-	public function getAccountName(): string
+	public function getAccountName(): ?string
 	{
 		return $this->get('AccountRef FullName');
 	}
@@ -126,7 +126,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the Memo for the JournalDebitLine
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -144,7 +144,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the EntityRef ListID for the JournalDebitLine
 	 */
-	public function getEntityListID(): string
+	public function getEntityListID(): ?string
 	{
 		return $this->get('EntityRef ListID');
 	}
@@ -172,7 +172,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the EntityRef FullName for the JournalDebitLine
 	 */
-	public function getEntityName(): string
+	public function getEntityName(): ?string
 	{
 		return $this->get('EntityRef FullName');
 	}
@@ -190,7 +190,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef ListID for the JournalDebitLine
 	 */
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -219,7 +219,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef FullName for the JournalDebitLine
 	 */
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -237,7 +237,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the ItemSalesTaxRef ListID for the JournalDebitLine
 	 */
-	public function getItemSalesTaxListID(): string
+	public function getItemSalesTaxListID(): ?string
 	{
 		return $this->get('ItemSalesTaxRef ListID');
 	}
@@ -266,7 +266,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the ItemSalesTaxRef FullName for the JournalDebitLine
 	 */
-	public function getItemSalesTaxName(): string
+	public function getItemSalesTaxName(): ?string
 	{
 		return $this->get('ItemSalesTaxRef FullName');
 	}
@@ -284,7 +284,7 @@ class JournalDebitLine extends AbstractQbxmlObject
 	/**
 	 * Get the BillableStatus for the JournalDebitLine
 	 */
-	public function getBillableStatus(): string
+	public function getBillableStatus(): ?string
 	{
 		return $this->get('BillableStatus');
 	}

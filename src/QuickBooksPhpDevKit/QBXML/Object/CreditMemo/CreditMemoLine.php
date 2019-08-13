@@ -19,6 +19,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\CreditMemo;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\CreditMemo;
+use QuickBooksPhpDevKit\XML\Node;
 
 class CreditMemoLine extends AbstractQbxmlObject
 {
@@ -47,12 +48,12 @@ class CreditMemoLine extends AbstractQbxmlObject
 	/**
 	 * Get the name of the item for this invoice line item
 	 */
-	public function getItemName(): string
+	public function getItemName(): ?string
 	{
 		return $this->getItemFullName();
 	}
 
-	public function getItemFullName(): string
+	public function getItemFullName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -62,7 +63,7 @@ class CreditMemoLine extends AbstractQbxmlObject
 		return $this->setDesc($descrip);
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->getDesc();
 	}
@@ -71,17 +72,17 @@ class CreditMemoLine extends AbstractQbxmlObject
 	{
 		return $this->set('Desc', $value);
 	}
-	public function getDesc(): string
+	public function getDesc(): ?string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setQuantity($quantity): bool
+	public function setQuantity(float $quantity): bool
 	{
-		return $this->set('Quantity', (float) $quantity);
+		return $this->set('Quantity', $quantity);
 	}
 
-	public function getQuantity(): float
+	public function getQuantity(): ?float
 	{
 		return $this->get('Quantity');
 	}
@@ -91,7 +92,7 @@ class CreditMemoLine extends AbstractQbxmlObject
 		return $this->set('Rate', (float) $value);
 	}
 
-	public function getRate(): float
+	public function getRate(): ?float
 	{
 		return $this->get('Rate');
 	}
@@ -124,12 +125,12 @@ class CreditMemoLine extends AbstractQbxmlObject
 	{
 		return $this->set('TxnLineID', $TxnLineID);
 	}
-	public function getTxnLineID(): int
+	public function getTxnLineID(): ?int
 	{
 		return $this->get('TxnLineID');
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		$this->_cleanup();
 

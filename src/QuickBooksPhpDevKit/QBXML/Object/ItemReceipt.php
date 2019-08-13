@@ -21,6 +21,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ExpenseLine;
 use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ItemGroupLine;
 use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ItemLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * Quickbooks ItemReceipt definition
@@ -38,7 +39,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	/**
 	 * Gets the Vendor ListID
 	 */
-	public function getVendorListID(): string
+	public function getVendorListID(): ?string
 	{
 		return $this->get('VendorRef ListID');
 	}
@@ -54,7 +55,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	/**
 	 * Gets the Vendor Name
 	 */
-	public function getVendorName(): string
+	public function getVendorName(): ?string
 	{
 		return $this->get('VendorRef FullName');
 	}
@@ -70,7 +71,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	/**
 	 * Gets the Accounts Payable Account ListID
 	 */
-	public function getAPAccountListID(): string
+	public function getAPAccountListID(): ?string
 	{
 		return $this->get('APAccountRef ListID');
 	}
@@ -86,7 +87,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	/**
 	 * Gets the Accounts Payable Account Name
 	 */
-	public function getAPAccountName(): string
+	public function getAPAccountName(): ?string
 	{
 		return $this->get('APAccountRef FullName');
 	}
@@ -102,7 +103,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	/**
 	 * Gets the transaction date
 	 */
-	public function getTxnDate(?string $format='Y-m-d'): string
+	public function getTxnDate(?string $format='Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate');
 	}
@@ -118,7 +119,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	/**
 	 * Gets the RefNumber
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -134,7 +135,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	/**
 	 * Gets the Memo
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -147,28 +148,21 @@ class ItemReceipt extends AbstractQbxmlObject
 		return $this->set('Memo', $value);
 	}
 
-	// In the 8.0 SDK...
 	/**
 	 * Gets the Exchange Rate
 	 */
-	/*
-	public function getExchangeRate()
+	public function getExchangeRate(): ?float
 	{
 		return $this->get('ExchangeRate');
 	}
-	*/
+
 	/**
 	 * Set the Exchange Rate
-	 *
-	 * @param float $rate
-	 * @return boolean
 	 */
-	/*
-	public function setExchangeRate($rate)
+	public function setExchangeRate(float $rate): bool
 	{
 		return $this->set('ExchangeRate', $rate);
 	}
-	*/
 
 	/**
 	 * Gets the LinkToTxnID
@@ -206,7 +200,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	 *
 	 * @param $i a number between 0 and added Lines-1
 	 */
-	public function getExpenseLine(int $i): ExpenseLine
+	public function getExpenseLine(int $i): ?ExpenseLine
 	{
 		return $this->getListItem('ExpenseLine', $i);
 	}
@@ -224,7 +218,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	 *
 	 * @param $i a number between 0 and added Lines-1
 	 */
-	public function getItemLine(int $i): ItemLine
+	public function getItemLine(int $i): ?ItemLine
 	{
 		return $this->getListItem('ItemLine', $i);
 	}
@@ -242,7 +236,7 @@ class ItemReceipt extends AbstractQbxmlObject
 	 *
 	 * @param $i a number between 0 and added Lines-1
 	 */
-	public function getItemGroupLine(int $i): ItemGroupLine
+	public function getItemGroupLine(int $i): ?ItemGroupLine
 	{
 		return $this->getListItem('ItemGroupLine', $i);
 	}
@@ -255,7 +249,7 @@ class ItemReceipt extends AbstractQbxmlObject
 		return $this->getList('ItemGroupLine');
 	}
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -308,7 +302,7 @@ class ItemReceipt extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

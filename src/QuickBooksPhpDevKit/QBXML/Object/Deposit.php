@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\Deposit\DepositLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -37,7 +38,7 @@ class Deposit extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef ListID for the Deposit
 	 */
-	public function getDepositToAccountListID(): string
+	public function getDepositToAccountListID(): ?string
 	{
 		return $this->get('DepositToAccountRef ListID');
 	}
@@ -52,7 +53,7 @@ class Deposit extends AbstractQbxmlObject
 		return $this->set('DepositToAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getDepositToAccountApplicationID(): string
+	public function getDepositToAccountApplicationID(): ?string
 	{
 		return $this->get('DepositToAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
@@ -70,7 +71,7 @@ class Deposit extends AbstractQbxmlObject
 	/**
 	 * Get the DepositToAccountRef FullName for the Deposit
 	 */
-	public function getDepositToAccountFullName(): string
+	public function getDepositToAccountFullName(): ?string
 	{
 		return $this->get('DepositToAccountRef FullName');
 	}
@@ -91,7 +92,7 @@ class Deposit extends AbstractQbxmlObject
 	/**
 	 * Get the TxnDate for the Deposit
 	 */
-	public function getTxnDate(?string $format = null): string
+	public function getTxnDate(?string $format = null): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -107,7 +108,7 @@ class Deposit extends AbstractQbxmlObject
 	/**
 	 * @see QBXML\Object\Deposit::getTxnDate()
 	 */
-	public function getTransactionDate(?string $format = null): string
+	public function getTransactionDate(?string $format = null): ?string
 	{
 		return $this->getTxnDate($format = null);
 	}
@@ -124,12 +125,12 @@ class Deposit extends AbstractQbxmlObject
 	/**
 	 * Get the Memo for the Deposit
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
 
-	public function setAmount($amount)
+	public function setAmount($amount): bool
 	{
 		return $this->setAmountType('Amount', $amount);
 	}
@@ -144,7 +145,7 @@ class Deposit extends AbstractQbxmlObject
 		return $this->addListItem('DepositLine', $obj);
 	}
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -162,7 +163,7 @@ class Deposit extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

@@ -14,6 +14,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\Deposit;
 
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -30,7 +31,7 @@ class DepositLine extends AbstractQbxmlObject
 		return $this->set('PaymentTxnID', $TxnID);
 	}
 
-	public function getPaymentTxnID(): string
+	public function getPaymentTxnID(): ?string
 	{
 		return $this->get('PaymentTxnID');
 	}
@@ -40,7 +41,7 @@ class DepositLine extends AbstractQbxmlObject
 		return $this->set('PaymentTxnLineID', $TxnLineID);
 	}
 
-	public function getPaymentTxnLineID(): string
+	public function getPaymentTxnLineID(): ?string
 	{
 		return $this->get('PaymentTxnLineID');
 	}
@@ -53,7 +54,7 @@ class DepositLine extends AbstractQbxmlObject
 	/**
 	 * Get the Override Memo for the DepositLine
 	 */
-	public function getOverrideMemo(): string
+	public function getOverrideMemo(): ?string
 	{
 		return $this->get('OverrideMemo');
 	}
@@ -66,7 +67,7 @@ class DepositLine extends AbstractQbxmlObject
 	/**
 	 * Get the Override Check Number for the DepositLine
 	 */
-	public function getOverrideCheckNumber(): string
+	public function getOverrideCheckNumber(): ?string
 	{
 		return $this->get('OverrideCheckNumber');
 	}
@@ -74,23 +75,18 @@ class DepositLine extends AbstractQbxmlObject
 
 	/**
 	 * Set the Amount for the DepositLine
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
 	public function setAmount($value): bool
 	{
-		return $this->set('Amount', $value);
+		return $this->setAmountType('Amount', $value);
 	}
 
 	/**
 	 * Get the Amount for the DepositLine
-	 *
-	 * @return string
 	 */
 	public function getAmount()
 	{
-		return $this->get('Amount');
+		return $this->getAmountType('Amount');
 	}
 
 	public function setMemo(string $value): bool
@@ -101,7 +97,7 @@ class DepositLine extends AbstractQbxmlObject
 	/**
 	 * Get the Memo for the DepositLine
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -120,7 +116,7 @@ class DepositLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef ListID for the DepositLine
 	 */
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -148,12 +144,12 @@ class DepositLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef FullName for the DepositLine
 	 */
-	public function getClassFullName(): string
+	public function getClassFullName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{
@@ -166,6 +162,7 @@ class DepositLine extends AbstractQbxmlObject
 				$root = 'DepositLineAdd';
 				$parent = null;
 				break;
+
 			case PackageInfo::Actions['MOD_DEPOSIT']:
 				$root = 'DepositLineMod';
 				$parent = null;

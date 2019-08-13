@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\Check;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Check;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -42,7 +43,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef ListID for the Check
 	 */
-	public function getAccountListID(): string
+	public function getAccountListID(): ?string
 	{
 		return $this->get('AccountRef ListID');
 	}
@@ -68,7 +69,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef FullName for the Check
 	 */
-	public function getAccountName(): string
+	public function getAccountName(): ?string
 	{
 		return $this->get('AccountRef FullName');
 	}
@@ -86,7 +87,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the Amount for the Check
 	 */
-	public function getAmount(): string
+	public function getAmount(): ?string
 	{
 		return $this->getAmountType('Amount');
 	}
@@ -104,7 +105,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the TaxAmount for the Check
 	 */
-	public function getTaxAmount(): string
+	public function getTaxAmount(): ?string
 	{
 		return $this->getAmountType('TaxAmount');
 	}
@@ -122,7 +123,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the Memo for the Check
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -140,7 +141,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the CustomerRef ListID for the Check
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -169,7 +170,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the CustomerRef FullName for the Check
 	 */
-	public function getCustomerFullName(): string
+	public function getCustomerFullName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -178,11 +179,8 @@ class ExpenseLine extends AbstractQbxmlObject
 
 	/**
 	 * Set the ClassRef ListID for the Check
-	 *
-	 * @param string $ListID		The ListID of the record to reference
-	 * @return boolean
 	 */
-	public function setClassListID($ListID)
+	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
@@ -192,7 +190,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	 *
 	 * @return string
 	 */
-	public function getClassListID()
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -203,7 +201,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	 * @param mixed $value			The primary key within your own application
 	 * @return string
 	 */
-	public function setClassApplicationID($value)
+	public function setClassApplicationID($value): bool
 	{
 		return $this->set('ClassRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_CLASS'], PackageInfo::QbId['LISTID'], $value));
 	}

@@ -39,7 +39,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the ListID of this customer record
 	 */
-	public function getListID(): string
+	public function getListID(): ?string
 	{
 		return $this->get('ListID');
 	}
@@ -77,7 +77,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the ListID of the parent client (if exists)
 	 */
-	public function getParentListID(): string
+	public function getParentListID(): ?string
 	{
 		return $this->get('ParentRef ListID');
 	}
@@ -85,11 +85,11 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the FullName of the parent client (if exists)
 	 */
-	public function getParentFullName(): string
+	public function getParentFullName(): ?string
 	{
 		return $this->get('ParentRef FullName');
 	}
-	public function getParentName(): string
+	public function getParentName(): ?string
 	{
 		return $this->getParentFullName();
 	}
@@ -97,7 +97,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the application id of the parent client
 	 */
-	public function getParentApplicationID(): string
+	public function getParentApplicationID(): ?string
 	{
 		return $this->get('ParentRef ' . PackageInfo::$API_APPLICATIONID);
 	}
@@ -165,19 +165,19 @@ class Customer extends AbstractQbxmlObject
 		return $this->get('TermsRef ' . PackageInfo::$API_APPLICATIONID);
 	}*/
 
-	public function getTermsFullName(): string
+	public function getTermsFullName(): ?string
 	{
 		return $this->get('TermsRef FullName');
 	}
 	/**
 	 * @deprecated
 	 */
-	public function getTermsName(): string
+	public function getTermsName(): ?string
 	{
 		return $this->getTermsFullName();
 	}
 
-	public function getTermsListID(): string
+	public function getTermsListID(): ?string
 	{
 		return $this->get('TermsRef ListID');
 	}
@@ -211,19 +211,19 @@ class Customer extends AbstractQbxmlObject
 		return $this->get('SalesRepRef ' . PackageInfo::$API_APPLICATIONID);
 	}*/
 
-	public function getSalesRepFullName(): string
+	public function getSalesRepFullName(): ?string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
 	/**
 	 * @deprecated
 	 */
-	public function getSalesRepName(): string
+	public function getSalesRepName(): ?string
 	{
 		return $this->getSalesRepFullName();
 	}
 
-	public function getSalesRepListID(): string
+	public function getSalesRepListID(): ?string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
@@ -250,7 +250,7 @@ class Customer extends AbstractQbxmlObject
 	 *
 	 * @see QUICKBOOKS_CUSTOMER_DELIVERYMETHOD_PRINT, QUICKBOOKS_CUSTOMER_DELIVERYMETHOD_EMAIL, QUICKBOOKS_CUSTOMER_DELIVERYMETHOD_FAX
 	 */
-	public function getDeliveryMethod(): string
+	public function getDeliveryMethod(): ?string
 	{
 		return $this->get('DeliveryMethod');
 	}
@@ -271,7 +271,7 @@ class Customer extends AbstractQbxmlObject
 	 *
 	 * @TODO What should the behavior of this be if "Name" is not set...?
 	 */
-	public function getName(): string
+	public function getName(): ?string
 	{
 		return $this->get('Name');
 	}
@@ -290,7 +290,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the name of this customer (full name)
 	 */
-	public function getFullName(): string
+	public function getFullName(): ?string
 	{
 		return $this->getFullNameType('FullName', 'Name', 'ParentRef FullName');
 	}
@@ -306,7 +306,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the company name of this customer
 	 */
-	public function getCompanyName(): string
+	public function getCompanyName(): ?string
 	{
 		return $this->get('CompanyName');
 	}
@@ -321,7 +321,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the first name of this customer
 	 */
-	public function getFirstName(): string
+	public function getFirstName(): ?string
 	{
 		return $this->get('FirstName');
 	}
@@ -336,7 +336,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the last name of this customer
 	 */
-	public function getLastName(): string
+	public function getLastName(): ?string
 	{
 		return $this->get('LastName');
 	}
@@ -351,7 +351,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the middle name of this customer
 	 */
-	public function getMiddleName(): string
+	public function getMiddleName(): ?string
 	{
 		return $this->get('MiddleName');
 	}
@@ -432,7 +432,7 @@ class Customer extends AbstractQbxmlObject
 	{
 		return $this->set('Phone', $phone);
 	}
-	public function getPhone(): string
+	public function getPhone(): ?string
 	{
 		return $this->get('Phone');
 	}
@@ -444,7 +444,7 @@ class Customer extends AbstractQbxmlObject
 	{
 		return $this->set('AltPhone', $phone);
 	}
-	public function getAltPhone(): string
+	public function getAltPhone(): ?string
 	{
 		return $this->get('AltPhone');
 	}
@@ -456,7 +456,7 @@ class Customer extends AbstractQbxmlObject
 	{
 		return $this->set('Fax', $fax);
 	}
-	public function getFax(): string
+	public function getFax(): ?string
 	{
 		return $this->get('Fax');
 	}
@@ -468,7 +468,7 @@ class Customer extends AbstractQbxmlObject
 	{
 		return $this->set('Email', $email);
 	}
-	public function getEmail(): string
+	public function getEmail(): ?string
 	{
 		return $this->get('Email');
 	}
@@ -494,7 +494,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the name of the contact at this company/customer
 	 */
-	public function getContact(): string
+	public function getContact(): ?string
 	{
 		return $this->get('Contact');
 	}
@@ -510,7 +510,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the name of the alternate contact for this customer/company
 	 */
-	public function getAltContact(): string
+	public function getAltContact(): ?string
 	{
 		return $this->get('AltContact');
 	}
@@ -526,7 +526,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 *
 	 */
-	public function getSalutation(): string
+	public function getSalutation(): ?string
 	{
 		return $this->get('Salutation');
 	}
@@ -536,12 +536,12 @@ class Customer extends AbstractQbxmlObject
 		return $this->get('CustomerTypeRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getCustomerTypeListID(): string
+	public function getCustomerTypeListID(): ?string
 	{
 		return $this->get('CustomerTypeRef ListID');
 	}
 
-	public function getCustomerTypeName(): string
+	public function getCustomerTypeName(): ?string
 	{
 		return $this->get('CustomerTypeRef FullName');
 	}
@@ -556,12 +556,12 @@ class Customer extends AbstractQbxmlObject
 		return $this->getAmountType('OpenBalance');
 	}
 
-	public function setOpenBalanceDate(string $date): bool
+	public function setOpenBalanceDate($date): bool
 	{
 		return $this->setDateType('OpenBalanceDate', $date);
 	}
 
-	public function getOpenBalanceDate(string $format = 'Y-m-d'): string
+	public function getOpenBalanceDate(?string $format = null): ?string
 	{
 		return $this->getDateType('OpenBalanceDate', $format);
 	}
@@ -616,12 +616,12 @@ class Customer extends AbstractQbxmlObject
 		return $this->get('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getSalesTaxCodeName(): string
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID(): string
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
@@ -673,7 +673,7 @@ class Customer extends AbstractQbxmlObject
 		return $this->set('Notes', $notes);
 	}
 
-	public function getNotes(): string
+	public function getNotes(): ?string
 	{
 		return $this->get('Notes');
 	}
@@ -698,7 +698,7 @@ class Customer extends AbstractQbxmlObject
 		return $this->get('PriceLevelRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getPriceLevelName(): string
+	public function getPriceLevelName(): ?string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
@@ -708,7 +708,7 @@ class Customer extends AbstractQbxmlObject
 		return $this->set('PreferredDeliveryMethod', $value);
 	}
 
-	public function getPreferredDeliveryMethod(): string
+	public function getPreferredDeliveryMethod(): ?string
 	{
 		return $this->get('PreferredDeliveryMethod');
 	}
@@ -716,7 +716,7 @@ class Customer extends AbstractQbxmlObject
 	/**
 	 * Get the price level list id.
 	 */
-	public function getPriceLevelListID(): string
+	public function getPriceLevelListID(): ?string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
@@ -730,23 +730,34 @@ class Customer extends AbstractQbxmlObject
 	{
 		return $this->set('ClassRef FullName', $name);
 	}
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
 	/**
-	 * Set the Class ListID for this customer.
+	 * Set the Class ListID for this customer. (In QBXML 12.0+)
 	 */
 	public function setClassListID(string $ListID): bool
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
-	public function getClassListID()
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
+	/**
+	 * Set whether this is an active customer (Not In QBOE)
+	 */
+	public function setIsActive(bool $isActive): bool
+	{
+		return $this->setBooleanType('IsActive', $isActive);
+	}
+	public function getIsActive(): ?bool
+	{
+		return $this->getBooleanType('IsActive');
+	}
 
 	/**
 	 * Tell what type of object this is

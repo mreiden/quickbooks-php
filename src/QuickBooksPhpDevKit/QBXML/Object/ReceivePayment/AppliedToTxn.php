@@ -14,6 +14,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\ReceivePayment;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\ReceivePayment;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -42,7 +43,7 @@ class AppliedToTxn extends AbstractQbxmlObject
 		return $this->setTxnID($TxnID);
 	}
 
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -50,7 +51,7 @@ class AppliedToTxn extends AbstractQbxmlObject
 	/**
 	 * @see QBXML\Object\ReceivePayment\AppliedToTxn::getTxnID
 	 */
-	public function getTransactionID(): string
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
@@ -60,11 +61,12 @@ class AppliedToTxn extends AbstractQbxmlObject
 		return $this->set(PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_INVOICE'], PackageInfo::QbId['TXNID'], $value));
 		//return $this->set('NullRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_INVOICE, PackageInfo::QbId['TXNID'], $value));
 	}
-
+	/*
 	public function getTxnApplicationID(): void
 	{
 
 	}
+	*/
 
 	public function getPaymentAmount($amount)
 	{
@@ -86,7 +88,7 @@ class AppliedToTxn extends AbstractQbxmlObject
 		return $this->getDiscountAmount('DiscountAmount');
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		$this->_cleanup();
 

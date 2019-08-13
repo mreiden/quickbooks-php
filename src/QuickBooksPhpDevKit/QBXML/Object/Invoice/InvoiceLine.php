@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\Invoice;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\Invoice;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * QuickBooks InvoiceLine class for Invoices
@@ -63,7 +64,7 @@ class InvoiceLine extends AbstractQbxmlObject
 	/**
 	 * Get the ListID for this item
 	 */
-	public function getItemListID(): string
+	public function getItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
@@ -83,12 +84,12 @@ class InvoiceLine extends AbstractQbxmlObject
 	/**
 	 * Get the name of the item for this invoice line item
 	 */
-	public function getItemName(): string
+	public function getItemName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
 
-	public function getItemFullName(): string
+	public function getItemFullName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -98,7 +99,7 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->set('Desc', $descrip);
 	}
 
-	public function getDesc(): string
+	public function getDesc(): ?string
 	{
 		return $this->get('Desc');
 	}
@@ -108,7 +109,7 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->setDesc($descrip);
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->getDesc();
 	}
@@ -128,7 +129,7 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->set('UnitOfMeasure', $unit);
 	}
 
-	public function getUnitOfMeasure(): string
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
@@ -163,10 +164,12 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->get('RatePercent');
 	}
 
-	public function setPriceLevelApplicationID($value)
+	/*
+	public function setPriceLevelApplicationID($value): void
 	{
 
 	}
+	*/
 
 	public function setPriceLevelName(string $name): bool
 	{
@@ -178,12 +181,12 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->set('PriceLevelRef ListID', $ListID);
 	}
 
-	public function getPriceLevelName(): string
+	public function getPriceLevelName(): ?string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
 
-	public function getPriceLevelListID(): string
+	public function getPriceLevelListID(): ?string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
@@ -195,11 +198,12 @@ class InvoiceLine extends AbstractQbxmlObject
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
-
+	/*
 	public function setClassApplicationID($value): void
 	{
 
 	}
+	*/
 
 	/**
 	 * Set the class name for this invoice line item
@@ -209,12 +213,12 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -229,7 +233,7 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->setDateType('ServiceDate', $date);
 	}
 
-	public function getServiceDate(string $format = 'Y-m-d'): string
+	public function getServiceDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('ServiceDate', $format);
 	}
@@ -244,12 +248,12 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName(): string
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID(): string
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
@@ -290,12 +294,12 @@ class InvoiceLine extends AbstractQbxmlObject
 
 	}
 
-	public function getOverrideItemAccountListID(): string
+	public function getOverrideItemAccountListID(): ?string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
 
-	public function getOverrideItemAccountName(): string
+	public function getOverrideItemAccountName(): ?string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
@@ -307,7 +311,7 @@ class InvoiceLine extends AbstractQbxmlObject
 	{
 		return $this->set('TxnLineID', $TxnLineID);
 	}
-	public function getTxnLineID(): int
+	public function getTxnLineID(): ?int
 	{
 		return $this->get('TxnLineID');
 	}
@@ -318,7 +322,7 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->set('Other1', $value);
 	}
 
-	public function getOther1(): string
+	public function getOther1(): ?string
 	{
 		return $this->get('Other1');
 	}
@@ -328,7 +332,7 @@ class InvoiceLine extends AbstractQbxmlObject
 		return $this->set('Other2', $value);
 	}
 
-	public function getOther2(): string
+	public function getOther2(): ?string
 	{
 		return $this->get('Other2');
 	}
@@ -348,7 +352,7 @@ class InvoiceLine extends AbstractQbxmlObject
 		return true;
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		$this->_cleanup();
 
@@ -358,6 +362,7 @@ class InvoiceLine extends AbstractQbxmlObject
 				$root = 'InvoiceLineAdd';
 				$parent = null;
 				break;
+
 			case PackageInfo::Actions['MOD_INVOICE']:
 				$root = 'InvoiceLineMod';
 				$parent = null;

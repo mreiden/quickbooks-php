@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\SalesOrder\SalesOrderLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -38,7 +39,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->setTxnID($TxnID);
 	}
 
-	public function getTransactionID(): string
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
@@ -51,7 +52,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('TxnID', $TxnID);
 	}
 
-	public function getTxnId(): string
+	public function getTxnId(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -88,7 +89,7 @@ class SalesOrder extends AbstractQbxmlObject
 	/**
 	 * Get the customer ListID
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -96,7 +97,7 @@ class SalesOrder extends AbstractQbxmlObject
 	/**
 	 * Get the customer name
 	 */
-	public function getCustomerName(): string
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -121,12 +122,12 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -151,12 +152,12 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('ARAccountRef FullName', $name);
 	}
 
-	public function getARAccountListID(): string
+	public function getARAccountListID(): ?string
 	{
 		return $this->get('ARAccountRef ListID');
 	}
 
-	public function getARAccountName(): string
+	public function getARAccountName(): ?string
 	{
 		return $this->get('ARAccountRef FullName');
 	}
@@ -181,12 +182,12 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('TemplateRef ListID', $ListID);
 	}
 
-	public function getTemplateName(): string
+	public function getTemplateName(): ?string
 	{
 		return $this->get('TemplateRef FullName');
 	}
 
-	public function getTemplateListID(): string
+	public function getTemplateListID(): ?string
 	{
 		return $this->get('TemplateRef ListID');
 	}
@@ -210,7 +211,7 @@ class SalesOrder extends AbstractQbxmlObject
 	/**
 	 * Get the transaction date
 	 */
-	public function getTxnDate(string $format = 'Y-m-d'): string
+	public function getTxnDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -218,7 +219,7 @@ class SalesOrder extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link QuickBooks_Object_Invoice::getTxnDate()}
 	 */
-	public function getTransactionDate(): string
+	public function getTransactionDate(): ?string
 	{
 		return $this->getTxnDate();
 	}
@@ -234,7 +235,7 @@ class SalesOrder extends AbstractQbxmlObject
 	/**
 	 * Get the reference number
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -244,7 +245,7 @@ class SalesOrder extends AbstractQbxmlObject
 	 *
 	 * @param string $part
 	 * @param array $defaults
-	 * @return array
+	 * @return array|string|null
 	 */
 	public function getShipAddress(string $part = null, array $defaults = [])
 	{
@@ -347,7 +348,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('PONumber', $num);
 	}
 
-	public function getPONumber(): string
+	public function getPONumber(): ?string
 	{
 		return $this->get('PONumber');
 	}
@@ -372,12 +373,12 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('TermsRef FullName', $name);
 	}
 
-	public function getTermsName(): string
+	public function getTermsName(): ?string
 	{
 		return $this->get('TermsRef FullName');
 	}
 
-	public function getTermsListID(): string
+	public function getTermsListID(): ?string
 	{
 		return $this->get('TermsRef ListID');
 	}
@@ -387,7 +388,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->setDateType('DueDate', $date);
 	}
 
-	public function getDueDate(string $format = 'Y-m-d'): string
+	public function getDueDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('DueDate', $format);
 	}
@@ -422,7 +423,7 @@ class SalesOrder extends AbstractQbxmlObject
 
 	}
 */
-	public function getFOB(): string
+	public function getFOB(): ?string
 	{
 		return $this->get('FOB');
 	}
@@ -437,7 +438,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->setDateType('ShipDate', $date);
 	}
 
-	public function getShipDate(string $format = 'Y-m-d'): string
+	public function getShipDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('ShipDate', $format);
 	}
@@ -507,7 +508,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('Memo', $memo);
 	}
 
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -557,7 +558,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('LinkToTxnID', $TxnID);
 	}
 
-	public function getLinkToTxnID(): string
+	public function getLinkToTxnID(): ?string
 	{
 		return $this->get('LinkToTxnID');
 	}
@@ -594,12 +595,12 @@ class SalesOrder extends AbstractQbxmlObject
 		return $this->set('Other', $other);
 	}
 
-	public function getOther(): string
+	public function getOther(): ?string
 	{
 		return $this->get('Other');
 	}
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -608,7 +609,6 @@ class SalesOrder extends AbstractQbxmlObject
 				{
 					$this->_object['SalesOrderLineAdd'] = $this->_object['SalesOrderLine'];
 				}
-
 				break;
 
 			case 'SalesOrderModRq':
@@ -622,7 +622,7 @@ class SalesOrder extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

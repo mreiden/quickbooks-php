@@ -16,6 +16,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
 * QuickBooks object class
@@ -36,7 +37,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('CustomerRef ListID', $ListID);
 	}
 
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -46,7 +47,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('CustomerRef FullName', $name);
 	}
 
-	public function getCustomerFullName(): string
+	public function getCustomerFullName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -56,7 +57,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('RefundFromAccountRef FullName', $account);
 	}
 
-	public function getAccountRefFullName(): string
+	public function getAccountRefFullName(): ?string
 	{
 		return $this->get('RefundFromAccountRef FullName');
 	}
@@ -71,12 +72,12 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('ARAccountRef FullName', $name);
 	}
 
-	public function getARAccountListID(): string
+	public function getARAccountListID(): ?string
 	{
 		return $this->get('ARAccountRef ListID');
 	}
 
-	public function getARAccountName(): string
+	public function getARAccountName(): ?string
 	{
 		return $this->get('ARAccountRef FullName');
 	}
@@ -86,7 +87,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('PaymentMethodRef FullName', $name);
 	}
 
-	public function getPaymentMethodName(): string
+	public function getPaymentMethodName(): ?string
 	{
 		return $this->get('PaymentMethodRef FullName');
 	}
@@ -96,7 +97,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('PaymentMethodRef ListID', $ListID);
 	}
 
-	public function getPaymentMethodListID(): string
+	public function getPaymentMethodListID(): ?string
 	{
 		return $this->get('PaymentMethodRef ListID');
 	}
@@ -106,7 +107,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('ExchangeRate', floatval($rate));
 	}
 
-	public function getExchangeRate(): float
+	public function getExchangeRate(): ?float
 	{
 		return $this->get('ExchangeRate');
 	}
@@ -116,7 +117,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('ExternalGUID', $guid);
 	}
 
-	public function getExternalGUID(): string
+	public function getExternalGUID(): ?string
 	{
 		return $this->get('ExternalGUID');
 	}
@@ -126,7 +127,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('Memo', $memo);
 	}
 
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -136,7 +137,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('RefundAppliedToTxnAdd TxnID', $ID);
 	}
 
-	public function getRefundAppliedToTxnID(): string
+	public function getRefundAppliedToTxnID(): ?string
 	{
 		return $this->get('RefundAppliedToTxnAdd TxnID');
 	}
@@ -156,7 +157,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('TxnID', $TxnID);
 	}
 
-	public function getTransactionID(): string
+	public function getTransactionID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -169,7 +170,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->setDateType('ModifiedDateRangeFilter FromModifiedDate', $date);
 	}
 
-	public function getFromModifiedDate(): string
+	public function getFromModifiedDate(): ?string
 	{
 		return $this->getDateType('ModifiedDateRangeFilter FromModifiedDate');
 	}
@@ -179,7 +180,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->setDateType('ModifiedDateRangeFilter ToModifiedDate', $date);
 	}
 
-	public function getToModifiedDate(): string
+	public function getToModifiedDate(): ?string
 	{
 		return $this->getDateType('ModifiedDateRangeFilter ToModifiedDate');
 	}
@@ -189,7 +190,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->setDateType('TxnDateRangeFilter FromTxnDate', $date);
 	}
 
-	public function getFromTxnDate(): string
+	public function getFromTxnDate(): ?string
 	{
 		return $this->getDateType('TxnDateRangeFilter FromTxnDate');
 	}
@@ -199,7 +200,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->setDateType('TxnDateRangeFilter ToTxnDate', $date);
 	}
 
-	public function getToTxnDate(): string
+	public function getToTxnDate(): ?string
 	{
 		return $this->getDateType('TxnDateRangeFilter ToTxnDate');
 	}
@@ -209,7 +210,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('TxnDateRangeFilter DateMacro', $date);
 	}
 
-	public function getDateMacro(): string
+	public function getDateMacro(): ?string
 	{
 		return $this->get('TxnDateRangeFilter DateMacro');
 	}
@@ -219,7 +220,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('EntityFilter ListID', $ID);
 	}
 
-	public function getEntityFilterListID(): string
+	public function getEntityFilterListID(): ?string
 	{
 		return $this->set('EntityFilter ListID');
 	}
@@ -229,7 +230,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('AccountFilter ListID', $ID);
 	}
 
-	public function getAccountFilterListID(): string
+	public function getAccountFilterListID(): ?string
 	{
 		return $this->get('AccountFilter ListID');
 	}
@@ -239,7 +240,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		return $this->set('AccountFilter FullName', $fullname);
 	}
 
-	public function getAccountFilterFullName(): string
+	public function getAccountFilterFullName(): ?string
 	{
 		return $this->get('AccountFilter FullName');
 	}
@@ -258,7 +259,6 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 	public function setCreditCardInfo(string $cardno, int $expmonth, int $expyear, string $name, string $address, string $postalcode): bool
 	{
 		// should probably do better checking here for failed sets.
-		$b = false;
 		$b = $this->set('CreditCardInfo CreditCardNumber', $cardno);
 		$b = $this->set('CreditCardInfo ExpirationMonth', $expmonth);
 		$b = $this->set('CreditCardInfo ExpirationYear', $expyear);
@@ -315,6 +315,8 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 		$this->set('Address PostalCode', $postalcode);
 		$this->set('Address Country', $country);
 		$this->set('Address Note', $note);
+
+		return true;
 	}
 
 	/**
@@ -348,7 +350,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 	/**
 	 * Get the transaction date
 	 */
-	public function getTxnDate(string $format = 'Y-m-d'): string
+	public function getTxnDate(string $format = 'Y-m-d'): ?string
 	{
 		//return date($format, strtotime($this->get('TxnDate')));
 		return $this->getDateType('TxnDate', $format);

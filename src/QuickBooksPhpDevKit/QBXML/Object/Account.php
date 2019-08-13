@@ -40,7 +40,7 @@ class Account extends AbstractQbxmlObject
 	/**
 	 * Get the ListID of the Class
 	 */
-	public function getListID(): string
+	public function getListID(): ?string
 	{
 		return $this->get('ListID');
 	}
@@ -169,7 +169,7 @@ class Account extends AbstractQbxmlObject
 		return $this->set('AccountType', $valid[$type]);
 	}
 
-	public function getAccountType(): string
+	public function getAccountType(): ?string
 	{
 		return $this->get('AccountType');
 	}
@@ -185,7 +185,7 @@ class Account extends AbstractQbxmlObject
 	/**
 	 * Get the QuickBooks Account Number (Not a bank account number)
 	 */
-	public function getAccountNumber(): string
+	public function getAccountNumber(): ?string
 	{
 		return $this->get('AccountNumber');
 	}
@@ -195,7 +195,7 @@ class Account extends AbstractQbxmlObject
 		return $this->set('BankNumber', $number);
 	}
 
-	public function getBankNumber(): string
+	public function getBankNumber(): ?string
 	{
 		return $this->get('BankNumber');
 	}
@@ -205,14 +205,14 @@ class Account extends AbstractQbxmlObject
 		return $this->set('Desc', $descrip);
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setOpenBalance($balance): bool
+	public function setOpenBalance(float $balance): bool
 	{
-		return $this->setAmountType('OpenBalance', (float) $balance);
+		return $this->setAmountType('OpenBalance', $balance);
 	}
 
 	public function getOpenBalance()
@@ -225,7 +225,7 @@ class Account extends AbstractQbxmlObject
 		return $this->setDateType('OpenBalanceDate', $date);
 	}
 
-	public function getOpenBalanceDate(): string
+	public function getOpenBalanceDate(): ?string
 	{
 		return $this->getDateType('OpenBalanceDate');
 	}
@@ -235,7 +235,7 @@ class Account extends AbstractQbxmlObject
 		return $this->set('TxLineID', $value);
 	}
 
-	public function getTaxLineID(): string
+	public function getTaxLineID(): ?string
 	{
 		return $this->get('TxLineID');
 	}

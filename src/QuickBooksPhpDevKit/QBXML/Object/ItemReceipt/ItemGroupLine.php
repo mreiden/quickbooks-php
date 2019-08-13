@@ -72,7 +72,7 @@ class ItemGroupLine extends AbstractQbxmlObject
 		return $this->set('UnitOfMeasure', $UnitOfMeasure);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null): Node
+	public function asXML(string $root = null, string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

@@ -18,6 +18,7 @@ use QuickBooksPhpDevKit\QBXML\Object\Invoice\DiscountLine;
 use QuickBooksPhpDevKit\QBXML\Object\Invoice\InvoiceLine;
 use QuickBooksPhpDevKit\QBXML\Object\Invoice\ShippingLine;
 use QuickBooksPhpDevKit\QBXML\Object\Invoice\SalesTaxLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * QBXML\Object\Invoice class definition
@@ -51,7 +52,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link Invoice::getTxnID()}
 	 */
-	public function getTransactionID(): string
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
@@ -59,7 +60,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the transaction ID for this invoice
 	 */
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -102,7 +103,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the customer ListID
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -120,7 +121,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the customer name
 	 */
-	public function getCustomerFullName(): string
+	public function getCustomerFullName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -128,7 +129,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * @deprecated
 	 */
-	public function getCustomerName(): string
+	public function getCustomerName(): ?string
 	{
 		return $this->getCustomerFullName();
 	}
@@ -149,7 +150,7 @@ class Invoice extends AbstractQbxmlObject
 	{
 		return $this->set('ClassRef FullName', $name);
 	}
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -161,7 +162,7 @@ class Invoice extends AbstractQbxmlObject
 	{
 		return $this->set('ClassRef ListID', $ListID);
 	}
-	public function getClassListID()
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -187,12 +188,12 @@ class Invoice extends AbstractQbxmlObject
 		return $this->set('ARAccountRef FullName', $name);
 	}
 
-	public function getARAccountListID(): string
+	public function getARAccountListID(): ?string
 	{
 		return $this->get('ARAccountRef ListID');
 	}
 
-	public function getARAccountName(): string
+	public function getARAccountName(): ?string
 	{
 		return $this->get('ARAccountRef FullName');
 	}
@@ -222,12 +223,12 @@ class Invoice extends AbstractQbxmlObject
 		return $this->set('TemplateRef ListID', $ListID);
 	}
 
-	public function getTemplateName(): string
+	public function getTemplateName(): ?string
 	{
 		return $this->get('TemplateRef FullName');
 	}
 
-	public function getTemplateListID(): string
+	public function getTemplateListID(): ?string
 	{
 		return $this->get('TemplateRef ListID');
 	}
@@ -261,16 +262,15 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the transaction date
 	 */
-	public function getTxnDate(string $format = 'Y-m-d'): string
+	public function getTxnDate(string $format = 'Y-m-d'): ?string
 	{
-		//return date($format, strtotime($this->get('TxnDate')));
 		return $this->getDateType('TxnDate', $format);
 	}
 
 	/**
 	 * Alias of {@link Invoice::getTxnDate()}
 	 */
-	public function getTransactionDate(): string
+	public function getTransactionDate(): ?string
 	{
 		return $this->getTxnDate($format);
 	}
@@ -294,7 +294,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the reference number
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -302,7 +302,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link Invoice::getRefNumber()}
 	 */
-	public function getReferenceNumber(): string
+	public function getReferenceNumber(): ?string
 	{
 		return $this->getRefNumber();
 	}
@@ -314,7 +314,7 @@ class Invoice extends AbstractQbxmlObject
 	 * @param array $defaults		Default values if a value isn't filled in
 	 * @return array				The address
 	 */
-	public function getShipAddress(?string $part = null, array $defaults = []): array
+	public function getShipAddress(?string $part = null, array $defaults = [])
 	{
 		if (!is_null($part))
 		{
@@ -340,7 +340,7 @@ class Invoice extends AbstractQbxmlObject
 	 * @param string $note			Notes
 	 * @return void
 	 */
-	public function setShipAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): void
+	public function setShipAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): bool
 	{
 		$this->set('ShipAddress Addr1', $addr1);
 		$this->set('ShipAddress Addr2', $addr2);
@@ -354,6 +354,8 @@ class Invoice extends AbstractQbxmlObject
 		$this->set('ShipAddress PostalCode', $postalcode);
 		$this->set('ShipAddress Country', $country);
 		$this->set('ShipAddress Note', $note);
+
+		return true;
 	}
 
 	/**
@@ -363,7 +365,7 @@ class Invoice extends AbstractQbxmlObject
 	 * @param array $defaults		Default values if a value isn't filled in
 	 * @return array				The address
 	 */
-	public function getBillAddress(?string $part = null, array $defaults = []): array
+	public function getBillAddress(?string $part = null, array $defaults = [])
 	{
 		if (!is_null($part))
 		{
@@ -389,7 +391,7 @@ class Invoice extends AbstractQbxmlObject
 	 * @param string $note			Notes
 	 * @return void
 	 */
-	public function setBillAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): void
+	public function setBillAddress(string $addr1, string $addr2 = '', string $addr3 = '', string $addr4 = '', string $addr5 = '', string $city = '', string $state = '', string $province = '', string $postalcode = '', string $country = '', string $note = ''): bool
 	{
 		$this->set('BillAddress Addr1', $addr1);
 		$this->set('BillAddress Addr2', $addr2);
@@ -403,6 +405,8 @@ class Invoice extends AbstractQbxmlObject
 		$this->set('BillAddress PostalCode', $postalcode);
 		$this->set('BillAddress Country', $country);
 		$this->set('BillAddress Note', $note);
+
+		return true;
 	}
 
 	/**
@@ -423,7 +427,7 @@ class Invoice extends AbstractQbxmlObject
 		return $this->set('PONumber', (string) $num);
 	}
 
-	public function getPONumber(): string
+	public function getPONumber(): ?string
 	{
 		return $this->get('PONumber');
 	}
@@ -450,20 +454,20 @@ class Invoice extends AbstractQbxmlObject
 		return $this->setTermsFullName($name);
 	}
 
-	public function getTermsFullName(): string
+	public function getTermsFullName(): ?string
 	{
 		return $this->get('TermsRef FullName');
 	}
 	/**
 	 * @deprecated
 	 */
-	public function getTermsName(): string
+	public function getTermsName(): ?string
 	{
 		return $this->getTermsFullName();
 	}
 
 
-	public function getTermsListID(): string
+	public function getTermsListID(): ?string
 	{
 		return $this->get('TermsRef ListID');
 	}
@@ -489,11 +493,16 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the due date for the invoice
 	 */
-	public function getDueDate(string $format = 'Y-m-d'): string
+	public function getDueDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('DueDate', $format);
 	}
 
+	/**
+	 * Set Sales Rep Full Name
+	 *
+	 * NOTE: It can only be 5 characters, so it's really the "Sales Rep Initials" field in QuickBooks
+	 */
 	public function setSalesRepName(string $name): bool
 	{
 		return $this->set('SalesRepRef FullName', $name);
@@ -509,12 +518,12 @@ class Invoice extends AbstractQbxmlObject
 		return $this->set('SalesRepRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_EMPLOYEE'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getSalesRepName(): string
+	public function getSalesRepName(): ?string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
 
-	public function getSalesRepListID(): string
+	public function getSalesRepListID(): ?string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
@@ -524,7 +533,7 @@ class Invoice extends AbstractQbxmlObject
 		return $this->extractApplicationID($this->get('SalesRepRef ' . PackageInfo::$API_APPLICATIONID));
 	}
 
-	public function getFOB(): string
+	public function getFOB(): ?string
 	{
 		return $this->get('FOB');
 	}
@@ -539,7 +548,7 @@ class Invoice extends AbstractQbxmlObject
 		return $this->setDateType('ShipDate', $date);
 	}
 
-	public function getShipDate(string $format = 'Y-m-d'): string
+	public function getShipDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('ShipDate', $format);
 	}
@@ -564,12 +573,12 @@ class Invoice extends AbstractQbxmlObject
 		return $this->set('ShipMethodRef ListID', $ListID);
 	}
 
-	public function getShipMethodName(): string
+	public function getShipMethodName(): ?string
 	{
 		return $this->get('ShipMethodRef FullName');
 	}
 
-	public function getShipMethodListID(): string
+	public function getShipMethodListID(): ?string
 	{
 		return $this->get('ShipMethodRef ListID');
 	}
@@ -604,12 +613,12 @@ class Invoice extends AbstractQbxmlObject
 		return $this->set('PaymentMethodRef ListID', $ListID);
 	}
 
-	public function getPaymentMethodName(): string
+	public function getPaymentMethodName(): ?string
 	{
 		return $this->get('PaymentMethodRef FullName');
 	}
 
-	public function getPaymentMethodListID(): string
+	public function getPaymentMethodListID(): ?string
 	{
 		return $this->get('PaymentMethodRef ListID');
 	}
@@ -651,19 +660,19 @@ class Invoice extends AbstractQbxmlObject
 		return $this->setSalesTaxItemFullName($name);
 	}
 
-	public function getSalesTaxItemFullName(): string
+	public function getSalesTaxItemFullName(): ?string
 	{
 		return $this->get('ItemSalesTaxRef FullName');
 	}
 	/**
 	 * @deprecated
 	 */
-	public function getSalesTaxItemName(): string
+	public function getSalesTaxItemName(): ?string
 	{
 		return $this->getSalesTaxItemFullName();
 	}
 
-	public function getSalesTaxItemListID(): string
+	public function getSalesTaxItemListID(): ?string
 	{
 		return $this->get('ItemSalesTaxRef ListID');
 	}
@@ -672,7 +681,7 @@ class Invoice extends AbstractQbxmlObject
 	{
 		return $this->set('Memo', $memo);
 	}
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -681,7 +690,7 @@ class Invoice extends AbstractQbxmlObject
 	{
 		return $this->setBooleanType('IsToBePrinted', $printed);
 	}
-	public function getIsToBePrinted(): bool
+	public function getIsToBePrinted(): ?bool
 	{
 		return $this->getBooleanType('IsToBePrinted');
 	}
@@ -690,7 +699,7 @@ class Invoice extends AbstractQbxmlObject
 	{
 		return $this->setBooleanType('IsToBeEmailed', $emailed);
 	}
-	public function getIsToBeEmailed(): bool
+	public function getIsToBeEmailed(): ?bool
 	{
 		return $this->getBooleanType('IsToBeEmailed');
 	}
@@ -705,7 +714,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the tax code ListID for the customer
 	 */
-	public function getCustomerSalesTaxCodeListID(): string
+	public function getCustomerSalesTaxCodeListID(): ?string
 	{
 		return $this->get('CustomerSalesTaxCodeRef ListID');
 	}
@@ -720,7 +729,7 @@ class Invoice extends AbstractQbxmlObject
 	/**
 	 * Get the tax code FullName for the customer
 	 */
-	public function getCustomerSalesTaxCodeFullName(): string
+	public function getCustomerSalesTaxCodeFullName(): ?string
 	{
 		return $this->get('CustomerSalesTaxCodeRef FullName');
 	}
@@ -730,7 +739,7 @@ class Invoice extends AbstractQbxmlObject
 	{
 		return $this->set('LinkToTxnID', $TxnID);
 	}
-	public function getLinkToTxnID(): string
+	public function getLinkToTxnID(): ?string
 	{
 		return $this->get('LinkToTxnID');
 	}
@@ -739,7 +748,7 @@ class Invoice extends AbstractQbxmlObject
 	{
 		return $this->setBooleanType('IncludeLinkedTxns', $includeLinkedTxns);
 	}
-	public function getIncludeLinkedTxns(): bool
+	public function getIncludeLinkedTxns(): ?bool
 	{
 		return $this->getBooleanType('IncludeLinkedTxns');
 	}
@@ -768,15 +777,6 @@ class Invoice extends AbstractQbxmlObject
 	public function addInvoiceLine(InvoiceLine $obj): bool
 	{
 		return $this->addListItem('InvoiceLine', $obj);
-
-		/*
-		$lines = $this->get('InvoiceLine');
-
-		//
-		$lines[] = $obj;
-
-		return $this->set('InvoiceLine', $lines);
-		*/
 	}
 
 	/*
@@ -834,22 +834,22 @@ class Invoice extends AbstractQbxmlObject
 		return $this->set('Other', $other);
 	}
 
-	public function getOther(): string
+	public function getOther(): ?string
 	{
 		return $this->get('Other');
 	}
 
-	public function getBalanceRemaining(): string
+	public function getBalanceRemaining(): ?string
 	{
 		return $this->getAmountType('BalanceRemaining');
 	}
 
 	public function setBalanceRemaining(float $amount): bool
 	{
-		return $this->setAmountType('BalanceRemaining', floatval($amount));
+		return $this->setAmountType('BalanceRemaining', $amount);
 	}
 
-	public function getAppliedAmount(): string
+	public function getAppliedAmount(): ?string
 	{
 		return $this->getAmountType('AppliedAmount');
 	}
@@ -891,7 +891,7 @@ class Invoice extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		//print('INVOICE got called asXML: ' . $root . ', ' . $parent . "\n");
 		//exit;

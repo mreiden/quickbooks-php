@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\ReceivePayment\AppliedToTxn;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * QuickBooks ReceivePayment object
@@ -48,7 +49,7 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * Get the ListID of the ReceivePayment
 	 */
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -56,7 +57,7 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link QBXML\Object\ReceivePayment::getTxnID()}
 	 */
-	public function getTransactionID(): string
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
@@ -102,7 +103,7 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * Get the customer ListID
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -110,12 +111,12 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * @deprecated
 	 */
-	public function getCustomerName(): string
+	public function getCustomerName(): ?string
 	{
 		return $this->getCustomerFullName();
 	}
 
-	public function getCustomerFullName(): string
+	public function getCustomerFullName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -139,7 +140,7 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * Get the transaction date
 	 */
-	public function getTxnDate(string $format = 'Y-m-d'): string
+	public function getTxnDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate');
 	}
@@ -192,12 +193,12 @@ class ReceivePayment extends AbstractQbxmlObject
 		return $this->addListItem('AppliedToTxn', $obj);
 	}
 
-	public function getAppliedToTxn(int $i): AppliedToTxn
+	public function getAppliedToTxn(int $i): ?AppliedToTxn
 	{
 		return $this->getListItem('AppliedToTxn', $i);
 	}
 
-	public function listAppliedToTxns()
+	public function listAppliedToTxns(): array
 	{
 		return $this->getList('AppliedToTxn');
 	}
@@ -205,7 +206,7 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link QBXML\Object\ReceivePayment::getTxnDate()}
 	 */
-	public function getTransactionDate(string $format = 'Y-m-d'): string
+	public function getTransactionDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -254,7 +255,7 @@ class ReceivePayment extends AbstractQbxmlObject
 		return $this->get('ARAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getARAccountListID(): string
+	public function getARAccountListID(): ?string
 	{
 		return $this->get('ARAccountRef ListID');
 	}
@@ -262,17 +263,17 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * @deprecated
 	 */
-	public function getARAccountName(): string
+	public function getARAccountName(): ?string
 	{
 		return $this->getARAccountFullName();
 	}
 
-	public function getARAccountFullName(): string
+	public function getARAccountFullName(): ?string
 	{
 		return $this->get('ARAccountRef FullName');
 	}
 
-	public function setPaymentMethodListID(string $ListID): string
+	public function setPaymentMethodListID(string $ListID): bool
 	{
 		return $this->set('PaymentMethodRef ListID', $ListID);
 	}
@@ -300,7 +301,7 @@ class ReceivePayment extends AbstractQbxmlObject
 		return $this->get('PaymentMethodRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getPaymentMethodListID(): string
+	public function getPaymentMethodListID(): ?string
 	{
 		return $this->get('PaymentMethodRef ListID');
 	}
@@ -308,12 +309,12 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * @deprecated
 	 */
-	public function getPaymentMethodName(): string
+	public function getPaymentMethodName(): ?string
 	{
 		return $this->getPaymentMethodFullName();
 	}
 
-	public function getPaymentMethodFullName(): string
+	public function getPaymentMethodFullName(): ?string
 	{
 		return $this->get('PaymentMethodRef FullName');
 	}
@@ -346,7 +347,7 @@ class ReceivePayment extends AbstractQbxmlObject
 		return $this->get('DepositToAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getDepositToAccountListID(): string
+	public function getDepositToAccountListID(): ?string
 	{
 		return $this->get('DepositToAccountRef ListID');
 	}
@@ -354,12 +355,12 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * @deprecated
 	 */
-	public function getDepositToAccountName(): string
+	public function getDepositToAccountName(): ?string
 	{
 		return $this->getDepositToAccountFullName();
 	}
 
-	public function getDepositToAccountFullName(): string
+	public function getDepositToAccountFullName(): ?string
 	{
 		return $this->get('DepositToAccountRef FullName');
 	}
@@ -369,7 +370,7 @@ class ReceivePayment extends AbstractQbxmlObject
 		return $this->set('Memo', $memo);
 	}
 
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -385,12 +386,12 @@ class ReceivePayment extends AbstractQbxmlObject
 	/**
 	 * Get whether or not this transaction is an auto-apply transaction
 	 */
-	public function getIsAutoApply(): bool
+	public function getIsAutoApply(): ?bool
 	{
 		return $this->getBooleanType('IsAutoApply');
 	}
 
-	public function asList(string$request)
+	public function asList(string $request)
 	{
 		switch ($request)
 		{
@@ -412,7 +413,7 @@ class ReceivePayment extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

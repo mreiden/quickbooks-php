@@ -18,6 +18,7 @@ use QuickBooksPhpDevKit\QBXML\Check\ExpenseLine;
 use QuickBooksPhpDevKit\QBXML\Check\ItemLine;
 use QuickBooksPhpDevKit\QBXML\Check\ItemGroupLine;
 use QuickBooksPhpDevKit\QBXML\Check\ApplyCheckToTxn;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -45,7 +46,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef ListID for the Check
 	 */
-	public function getAccountListID(): string
+	public function getAccountListID(): ?string
 	{
 		return $this->get('AccountRef ListID');
 	}
@@ -61,7 +62,7 @@ class Check extends AbstractQbxmlObject
 		return $this->set('AccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getAccountApplicationID(): string
+	public function getAccountApplicationID(): ?string
 	{
 		return $this->get('AccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
@@ -79,7 +80,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef FullName for the Check
 	 */
-	public function getAccountName(): string
+	public function getAccountName(): ?string
 	{
 		return $this->get('AccountRef FullName');
 	}
@@ -97,7 +98,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the PayeeEntityRef ListID for the Check
 	 */
-	public function getPayeeEntityListID(): string
+	public function getPayeeEntityListID(): ?string
 	{
 		return $this->get('PayeeEntityRef ListID');
 	}
@@ -112,7 +113,7 @@ class Check extends AbstractQbxmlObject
 		return $this->set('PayeeEntityRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_PAYEEENTITY'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getPayeeEntityApplicationID(): string
+	public function getPayeeEntityApplicationID(): ?string
 	{
 		return $this->get('PayeeEntityRef ' . PackageInfo::$API_APPLICATIONID);
 	}
@@ -130,7 +131,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the PayeeEntityRef FullName for the Check
 	 */
-	public function getPayeeEntityFullName(): string
+	public function getPayeeEntityFullName(): ?string
 	{
 		return $this->get('PayeeEntityRef FullName');
 	}
@@ -148,7 +149,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the RefNumber for the Check
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -166,7 +167,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the TxnDate for the Check
 	 */
-	public function getTxnDate(?string $format = null): string
+	public function getTxnDate(?string $format = null): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -182,7 +183,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * @see QBXML\Object\Check::getTxnDate()
 	 */
-	public function getTransactionDate(?string $format = null): string
+	public function getTransactionDate(?string $format = null): ?string
 	{
 		return $this->getTxnDate($format);
 	}
@@ -199,7 +200,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the Memo for the Check
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -217,7 +218,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the IsToBePrinted for the Check
 	 */
-	public function getIsToBePrinted(): bool
+	public function getIsToBePrinted(): ?bool
 	{
 		return $this->getBooleanType('IsToBePrinted');
 	}
@@ -235,7 +236,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the IsTaxIncluded for the Check
 	 */
-	public function getIsTaxIncluded(): bool
+	public function getIsTaxIncluded(): ?bool
 	{
 		return $this->getBooleanType('IsTaxIncluded');
 	}
@@ -253,7 +254,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the SalesTaxCodeRef ListID for the Check
 	 */
-	public function getSalesTaxCodeListID(): string
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
@@ -269,7 +270,7 @@ class Check extends AbstractQbxmlObject
 		return $this->set('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_SALESTAXCODE, PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getSalesTaxCodeApplicationID(): string
+	public function getSalesTaxCodeApplicationID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ' . PackageInfo::$API_APPLICATIONID);
 	}
@@ -287,7 +288,7 @@ class Check extends AbstractQbxmlObject
 	/**
 	 * Get the SalesTaxCodeRef FullName for the Check
 	 */
-	public function getSalesTaxCodeName(): string
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
@@ -332,7 +333,7 @@ class Check extends AbstractQbxmlObject
 
 		return true;
 	}
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -365,7 +366,7 @@ class Check extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

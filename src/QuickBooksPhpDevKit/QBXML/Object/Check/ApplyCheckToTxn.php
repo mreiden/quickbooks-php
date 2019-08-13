@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\Check;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Check;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -42,7 +43,7 @@ class ApplyCheckToTxn extends AbstractQbxmlObject
 	/**
 	 * Get the TxnID for the Check
 	 */
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}

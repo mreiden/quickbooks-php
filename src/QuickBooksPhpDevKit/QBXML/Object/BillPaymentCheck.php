@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\BillPaymentCheck\AppliedToTxn;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * QuickBooks ReceivePayment object
@@ -23,8 +24,6 @@ class BillPaymentCheck extends AbstractQbxmlObject
 {
 	/**
 	 * Create a new BillPaymentCheck object
-	 *
-	 * @param array $arr
 	 */
 	public function __construct(array $arr = [])
 	{
@@ -50,7 +49,7 @@ class BillPaymentCheck extends AbstractQbxmlObject
 	/**
 	 * Get the ListID of the BillPaymentCheck
 	 */
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -58,7 +57,7 @@ class BillPaymentCheck extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link BillPaymentCheck::getTxnID()}
 	 */
-	public function getTransactionID(): string
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
@@ -83,7 +82,7 @@ class BillPaymentCheck extends AbstractQbxmlObject
 	}
 
 
-	public function getPayeeEntityApplicationID(): string
+	public function getPayeeEntityApplicationID(): ?string
 	{
 		return $this->get('PayeeEntityRef ' . PackageInfo::$API_APPLICATIONID);
 	}
@@ -99,7 +98,7 @@ class BillPaymentCheck extends AbstractQbxmlObject
 	/**
 	 * Get the PayeeEntity ListID
 	 */
-	public function getPayeeEntityListID(): string
+	public function getPayeeEntityListID(): ?string
 	{
 		return $this->get('PayeeEntityRef ListID');
 	}
@@ -107,16 +106,13 @@ class BillPaymentCheck extends AbstractQbxmlObject
 	/**
 	 * Get the PayeeEntity name
 	 */
-	public function getPayeeEntityFullName(): string
+	public function getPayeeEntityFullName(): ?string
 	{
 		return $this->get('PayeeEntityRef FullName');
 	}
 
 	/**
 	 * Set the transaction date
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
 	public function setTxnDate($date): bool
 	{
@@ -133,10 +129,8 @@ class BillPaymentCheck extends AbstractQbxmlObject
 
 	/**
 	 * Get the transaction date
-	 *
-	 * @return string
 	 */
-	public function getTxnDate(string $format = 'Y-m-d'): string
+	public function getTxnDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate');
 	}
@@ -146,7 +140,7 @@ class BillPaymentCheck extends AbstractQbxmlObject
 		return $this->setBooleanType('IsToBePrinted', $bool);
 	}
 
-	public function getIsToBePrinted(): bool
+	public function getIsToBePrinted(): ?bool
 	{
 		return $this->getBooleanType('IsToBePrinted');
 	}
@@ -162,9 +156,17 @@ class BillPaymentCheck extends AbstractQbxmlObject
 	/**
 	 * Get the reference number
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
+	}
+
+	/**
+	 * Add a transcation this payment is applied to
+	 */
+	public function addAppliedToTxn(AppliedToTxn $obj): bool
+	{
+		return $this->addListItem('AppliedToTxn', $obj);
 	}
 
 	/**
@@ -176,31 +178,9 @@ class BillPaymentCheck extends AbstractQbxmlObject
 	}
 
 	/**
-	 *
-	 *
-	 */
-	public function addAppliedToTxn(AppliedToTxn $obj): bool
-	{
-		/*
-		$lines = $this->get('AppliedToTxn');
-
-		if (!is_array($lines))
-		{
-			$lines = [];
-		}
-
-		//
-		$lines[] = $obj;
-
-		return $this->set('AppliedToTxn', $lines);*/
-
-		return $this->addListItem('AppliedToTxn', $obj);
-	}
-
-	/**
 	 * Alias of {@link BillPaymentCheck::getTxnDate()}
 	 */
-	public function getTransactionDate(string $format = 'Y-m-d'): string
+	public function getTransactionDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -238,17 +218,17 @@ class BillPaymentCheck extends AbstractQbxmlObject
 		return $this->set('APAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_ACCOUNT'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getAPAccountApplicationID(): string
+	public function getAPAccountApplicationID(): ?string
 	{
 		return $this->get('APAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getAPAccountListID(): string
+	public function getAPAccountListID(): ?string
 	{
 		return $this->get('APAccountRef ListID');
 	}
 
-	public function getAPAccountFullName(): string
+	public function getAPAccountFullName(): ?string
 	{
 		return $this->get('APAccountRef FullName');
 	}
@@ -268,17 +248,17 @@ class BillPaymentCheck extends AbstractQbxmlObject
 		return $this->set('BankAccountRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(QUICKBOOKS_OBJECT_ACCOUNT, PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getBankAccountApplicationID(): string
+	public function getBankAccountApplicationID(): ?string
 	{
 		return $this->get('BankAccountRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getBankAccountListID(): string
+	public function getBankAccountListID(): ?string
 	{
 		return $this->get('BankAccountRef ListID');
 	}
 
-	public function getBankAccountFullName(): string
+	public function getBankAccountFullName(): ?string
 	{
 		return $this->get('BankAccountRef FullName');
 	}
@@ -288,12 +268,12 @@ class BillPaymentCheck extends AbstractQbxmlObject
 		return $this->set('Memo', $memo);
 	}
 
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -316,7 +296,7 @@ class BillPaymentCheck extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

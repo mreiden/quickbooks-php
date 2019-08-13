@@ -10,7 +10,9 @@
 namespace QuickBooksPhpDevKit\QBXML\Object\SalesReceipt;
 
 use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\SalesReceipt;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -64,7 +66,7 @@ class SalesReceiptLine extends AbstractQbxmlObject
 	/**
 	 * Get the ListID for this item
 	 */
-	public function getItemListID(): string
+	public function getItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
@@ -85,12 +87,12 @@ class SalesReceiptLine extends AbstractQbxmlObject
 	 * Get the name of the item for this SalesReceiptLine item
 	 * @deprecated
 	 */
-	public function getItemName(): string
+	public function getItemName(): ?string
 	{
 		return $this->getItemFullName();
 	}
 
-	public function getItemFullName(): string
+	public function getItemFullName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -105,14 +107,14 @@ class SalesReceiptLine extends AbstractQbxmlObject
 		return $this->setDesc($descrip);
 	}
 
-	public function setQuantity($quantity): bool
+	public function setQuantity(float $quantity): bool
 	{
-		return $this->set('Quantity', (float) $quantity);
+		return $this->set('Quantity', $quantity);
 	}
 
-	public function setRate($rate): bool
+	public function setRate(float $rate): bool
 	{
-		return $this->set('Rate', sprintf('%01.2f', (float) $rate));
+		return $this->setAmountType('Rate', $rate);
 	}
 
 	public function setAmount($amount): bool
@@ -125,7 +127,7 @@ class SalesReceiptLine extends AbstractQbxmlObject
 		return $this->set('UnitOfMeasureSet', $uom);
 	}
 
-	public function getUnitOfMeasureSet(): string
+	public function getUnitOfMeasureSet(): ?string
 	{
 		return $this->get('UnitOfMeasureSet');
 	}
@@ -155,17 +157,17 @@ class SalesReceiptLine extends AbstractQbxmlObject
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName(): string
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID(): string
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
 
-	public function asXML(?string $root = null, ?string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		switch ($parent)
 		{

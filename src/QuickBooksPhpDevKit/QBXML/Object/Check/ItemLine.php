@@ -403,7 +403,7 @@ class ItemLine extends AbstractQbxmlObject
 		return $this->get('OverrideItemAccountRef FullName');
 	}
 
-	public function asXML(?string $root = null, ?string $parent = null, $object = null): Node
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

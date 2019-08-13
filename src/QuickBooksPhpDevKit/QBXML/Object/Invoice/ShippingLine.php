@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\Invoice;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\Invoice;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -45,7 +46,7 @@ class ShippingLine extends AbstractQbxmlObject
 		return $this->set('AccountRef FullName', $name);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		switch ($parent)
 		{

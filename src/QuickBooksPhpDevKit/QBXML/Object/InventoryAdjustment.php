@@ -17,6 +17,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\InventoryAdjustment\InventoryAdjustmentLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * Quickbooks InventoryAdjustment definition
@@ -34,7 +35,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the Account ListID
 	 */
-	public function getAccountListID(): string
+	public function getAccountListID(): ?string
 	{
 		return $this->get('AccountRef ListID');
 	}
@@ -50,7 +51,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the Account Name
 	 */
-	public function getAccountName(): string
+	public function getAccountName(): ?string
 	{
 		return $this->get('AccountRef FullName');
 	}
@@ -66,7 +67,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the transaction date
 	 */
-	public function getTxnDate(?string $format = 'Y-m-d'): string
+	public function getTxnDate(?string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate');
 	}
@@ -82,7 +83,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the RefNumber
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -98,7 +99,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the Memo
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -114,7 +115,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the Customer ListID
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -130,7 +131,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the Customer Name
 	 */
-	public function getCustomerName(): string
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -146,7 +147,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the Class ListID
 	 */
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -162,7 +163,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	/**
 	 * Gets the Class Name
 	 */
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -473,7 +474,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 	}
 */
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -489,7 +490,7 @@ class InventoryAdjustment extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

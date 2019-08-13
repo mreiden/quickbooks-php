@@ -48,66 +48,93 @@ class Department extends AbstractQbxmlObject
 	/**
 	 * Set the parent ListID
 	 */
+	/*
 	public function setParentListID(string $ListID): bool
 	{
 		return $this->set('ParentRef ListID', $ListID);
 	}
+	*/
 
 	/**
 	 *
-     */
+	*/
+	/*
 	public function getParentListID(): ?string
 	{
 		return $this->get('ParentRef ListID');
 	}
+	*/
 
 	/**
 	 * Set the name of the department
 	 */
-	public function setName(string $name): bool
+	public function setDepartmentName(string $name): bool
 	{
-		return $this->set('Name', $name);
+		return $this->set('DepartmentName', $name);
 	}
 
 	/**
 	 * Get the name of the department
 	 */
-	public function getName(): ?string
+	public function getDepartmentName(): ?string
 	{
-		return $this->get('Name');
+		return $this->get('DepartmentName');
+	}
+
+	/**
+	 * Set the code for the department
+	 */
+	public function setDepartmentCode(string $name): bool
+	{
+		return $this->set('DepartmentCode', $name);
+	}
+
+	/**
+	 * Get the code of the department
+	 */
+	public function getDepartmentCode(): ?string
+	{
+		return $this->get('DepartmentCode');
 	}
 
 	/**
 	 * Get the full name of the department
 	 */
+	/*
 	public function getFullName(): ?string
 	{
 		return $this->get('FullName');
 	}
+	*/
 
 	/**
 	 * Set the full name of the department
 	 */
+	/*
 	public function setFullName(string $name): bool
 	{
 		return $this->set('FullName', $name);
 	}
-
+	*/
 	/**
 	 * Set this department active or not
 	 */
+	/*
 	public function setIsActive(bool $value): bool
 	{
 		return $this->setBooleanType('IsActive', $value);
 	}
+	*/
 
 	/**
 	 * Tell whether or not this department object is active
 	 */
+	/*
 	public function getIsActive(): ?bool
 	{
 		return $this->get('IsActive');
 	}
+	*/
 
 	/**
 	 * Tell what type of object this is

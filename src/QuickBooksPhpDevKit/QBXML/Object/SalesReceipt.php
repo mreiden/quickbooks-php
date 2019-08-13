@@ -18,6 +18,7 @@ use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\DiscountLine;			// Sales Recei
 use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\SalesReceiptLine;	// Sales Receipt line item
 use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\ShippingLine;			// Sales Receipt shipping line item
 use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\SalesTaxLine;			// Sales Receipt sales tax line item
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * QuickBooks Sales Receipts
@@ -45,7 +46,7 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->setTxnID($TxnID);
 	}
 
-	public function getTransactionID(): string
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
@@ -58,7 +59,7 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('TxnID', $TxnID);
 	}
 
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -95,7 +96,7 @@ class SalesReceipt extends AbstractQbxmlObject
 	/**
 	 * Get the customer ListID
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -103,7 +104,7 @@ class SalesReceipt extends AbstractQbxmlObject
 	/**
 	 * Get the customer name
 	 */
-	public function getCustomerName(): string
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -165,7 +166,7 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -203,12 +204,12 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('ShipMethodRef ListID', $ListID);
 	}
 
-	public function getShipMethodName(): string
+	public function getShipMethodName(): ?string
 	{
 		return $this->get('ShipMethodRef FullName');
 	}
 
-	public function getShipMethodListID(): string
+	public function getShipMethodListID(): ?string
 	{
 		return $this->get('ShipMethodRef ListID');
 	}
@@ -231,7 +232,7 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('CheckNumber', $check);
 	}
 
-	public function getCheckNumber(): string
+	public function getCheckNumber(): ?string
 	{
 		return $this->get('CheckNumber');
 	}
@@ -256,12 +257,12 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('PaymentMethodRef FullName', $name);
 	}
 
-	public function getPaymentMethodListID(): string
+	public function getPaymentMethodListID(): ?string
 	{
 		return $this->get('PaymentMethodRef ListID');
 	}
 
-	public function getPaymentMethodName(): string
+	public function getPaymentMethodName(): ?string
 	{
 		return $this->get('PaymentMethodRef FullName');
 	}
@@ -271,7 +272,7 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->setDateType('DueDate', $date);
 	}
 
-	public function getDueDate(string $format = null): string
+	public function getDueDate(string $format = null): ?string
 	{
 		return $this->getDateType('DueDate', $format);
 	}
@@ -296,12 +297,12 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('SalesRepRef FullName', $name);
 	}
 
-	public function getSalesRepListID(): string
+	public function getSalesRepListID(): ?string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
 
-	public function getSalesRepName(): string
+	public function getSalesRepName(): ?string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
@@ -353,12 +354,12 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('DepositToAccountRef FullName', $name);
 	}
 
-	public function getDepositToAccountListID(): string
+	public function getDepositToAccountListID(): ?string
 	{
 		return $this->get('DepositToAccountRef ListID');
 	}
 
-	public function getDepositToAccountName(): string
+	public function getDepositToAccountName(): ?string
 	{
 		return $this->get('DepositToAccountRef FullName');
 	}
@@ -375,9 +376,6 @@ class SalesReceipt extends AbstractQbxmlObject
 
 	/**
 	 * Set the transaction date
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
 	public function setTxnDate($date): bool
 	{
@@ -392,21 +390,18 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->setTxnDate($date);
 	}
 
-	public function getTxnDate(string $format = null): string
+	public function getTxnDate(?string $format = null): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
 
-	public function getTransactionDate(string $format = null): string
+	public function getTransactionDate(?string $format = null): ?string
 	{
 		return $this->getTxnDate($format);
 	}
 
 	/**
 	 * Set the shipping date
-	 *
-	 * @param string $date
-	 * @return boolean
 	 */
 	public function setShipDate($date): bool
 	{
@@ -415,11 +410,8 @@ class SalesReceipt extends AbstractQbxmlObject
 
 	/**
 	 * Get the shipping date
-	 *
-	 * @param string $format	The format you want the date in (as for {@link http://www.php.net/date})
-	 * @return string
 	 */
-	public function getShipDate(string $format = null): string
+	public function getShipDate(?string $format = null): ?string
 	{
 		return $this->getDateType('ShipDate', $format);
 	}
@@ -435,7 +427,7 @@ class SalesReceipt extends AbstractQbxmlObject
 	/**
 	 * Get the reference number
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -445,12 +437,12 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('Memo', $memo);
 	}
 
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
 
-	public function getFOB(): string
+	public function getFOB(): ?string
 	{
 		return $this->get('FOB');
 	}
@@ -465,7 +457,7 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('LinkToTxnID', $TxnID);
 	}
 
-	public function getLinkToTxnID(): string
+	public function getLinkToTxnID(): ?string
 	{
 		return $this->get('LinkToTxnID');
 	}
@@ -492,7 +484,7 @@ class SalesReceipt extends AbstractQbxmlObject
 	/**
 	 *
 	 */
-	public function getSalesReceiptLine(int $i): SalesReceiptLine
+	public function getSalesReceiptLine(int $i): ?SalesReceiptLine
 	{
 		return $this->getListItem('SalesReceiptLine', $i);
 	}
@@ -629,12 +621,12 @@ class SalesReceipt extends AbstractQbxmlObject
 		return $this->set('Other', $other);
 	}
 
-	public function getOther(): string
+	public function getOther(): ?string
 	{
 		return $this->get('Other');
 	}
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -671,7 +663,7 @@ class SalesReceipt extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		//print('SalesReceipt got called asXML: ' . $root . ', ' . $parent . "\n");
 		//print('sales receipt got called as: {' . $root . '}, {' . PackageInfo::Actions['ADD_SALESRECEIPT'] . "}\n");

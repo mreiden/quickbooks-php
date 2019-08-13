@@ -6,7 +6,7 @@
  * @subpackage Object
  */
 
-namespace QuickBooksPhpDevKit\QBXML\Object\SalesTaxGroupItem;
+namespace QuickBooksPhpDevKit\QBXML\Object\ItemSalesTaxGroup;
 
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;

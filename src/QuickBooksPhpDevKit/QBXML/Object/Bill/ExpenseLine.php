@@ -42,7 +42,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef ListID for the ExpenseLine
 	 */
-	public function getAccountListID(): string
+	public function getAccountListID(): ?string
 	{
 		return $this->get('AccountRef ListID');
 	}
@@ -72,7 +72,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the AccountRef FullName for the ExpenseLine
 	 */
-	public function getAccountFullName(): string
+	public function getAccountFullName(): ?string
 	{
 		return $this->get('AccountRef FullName');
 	}
@@ -92,7 +92,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the Amount for the ExpenseLine
 	 */
-	public function getAmount(): string
+	public function getAmount(): ?string
 	{
 		return $this->getAmountType('Amount');
 	}
@@ -110,7 +110,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the Memo for the ExpenseLine
 	 */
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -128,7 +128,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the CustomerRef ListID for the ExpenseLine
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -156,7 +156,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the CustomerRef FullName for the ExpenseLine
 	 */
-	public function getCustomerFullName(): string
+	public function getCustomerFullName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -174,7 +174,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef ListID for the ExpenseLine
 	 */
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -202,7 +202,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef FullName for the ExpenseLine
 	 */
-	public function getClassName(): bool
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -235,7 +235,7 @@ class ExpenseLine extends AbstractQbxmlObject
 	/**
 	 * Get the BillableStatus for the ExpenseLine
 	 */
-	public function getBillableStatus(): string
+	public function getBillableStatus(): ?string
 	{
 		return $this->get('BillableStatus');
 	}
@@ -247,13 +247,13 @@ class ExpenseLine extends AbstractQbxmlObject
 	{
 		return $this->set('TxnLineID', $TxnLineID);
 	}
-	public function getTxnLineID(): int
+	public function getTxnLineID(): ?int
 	{
 		return $this->get('TxnLineID');
 	}
 
 
-	public function asXML(string $root = null, string $parent = null, $object = null): Node
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

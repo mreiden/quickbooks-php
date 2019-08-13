@@ -42,7 +42,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the ItemRef ListID for the ItemLine
 	 */
-	public function getItemListID(): string
+	public function getItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
@@ -70,7 +70,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the ItemRef FullName for the ItemLine
 	 */
-	public function getItemFullName(): string
+	public function getItemFullName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -87,10 +87,8 @@ class ItemLine extends AbstractQbxmlObject
 
 	/**
 	 * Get the Desc for the ItemLine
-	 *
-	 * @return string
 	 */
-	public function getDesc(): string
+	public function getDesc(): ?string
 	{
 		return $this->get('Desc');
 	}
@@ -106,7 +104,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * @see QBXML\Object\Bill\ItemLine::getDesc()
 	 */
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->getDesc();
 	}
@@ -114,13 +112,10 @@ class ItemLine extends AbstractQbxmlObject
 
 	/**
 	 * Set the Quantity for the ItemLine
-	 *
-	 * @param string $value
-	 * @return boolean
 	 */
-	public function setQuantity($value)
+	public function setQuantity(float $value): bool
 	{
-		return $this->set('Quantity', (float) $value);
+		return $this->set('Quantity', $value);
 	}
 
 	/**
@@ -146,7 +141,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the UnitOfMeasure for the ItemLine
 	 */
-	public function getUnitOfMeasure(): string
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
@@ -155,20 +150,18 @@ class ItemLine extends AbstractQbxmlObject
 
 	/**
 	 * Set the Cost for the ItemLine
-	 *
-	 * @param string $value
 	 */
 	public function setCost($value): bool
 	{
-		return $this->set('Cost', $value);
+		return $this->setAmountType('Cost', $value);
 	}
 
 	/**
 	 * Get the Cost for the ItemLine
 	 */
-	public function getCost(): string
+	public function getCost(): ?string
 	{
-		return $this->get('Cost');
+		return $this->getAmountType('Cost');
 	}
 
 	// Path: Amount, datatype:
@@ -184,9 +177,9 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the Amount for the ItemLine
 	 */
-	public function getAmount(): string
+	public function getAmount(): ?string
 	{
-		return $this->setAmountType('Amount');
+		return $this->getAmountType('Amount');
 	}
 
 	// Path: CustomerRef ListID, datatype:
@@ -202,7 +195,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the CustomerRef ListID for the ItemLine
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -231,7 +224,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the CustomerRef FullName for the ItemLine
 	 */
-	public function getCustomerName(): string
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -249,7 +242,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef ListID for the ItemLine
 	 */
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -277,7 +270,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the ClassRef FullName for the ItemLine
 	 */
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -295,7 +288,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the BillableStatus for the ItemLine
 	 */
-	public function getBillableStatus(): string
+	public function getBillableStatus(): ?string
 	{
 		return $this->get('BillableStatus');
 	}
@@ -313,7 +306,7 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the OverrideItemAccountRef ListID for the ItemLine
 	 */
-	public function getOverrideItemAccountListID(): string
+	public function getOverrideItemAccountListID(): ?string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
@@ -341,12 +334,12 @@ class ItemLine extends AbstractQbxmlObject
 	/**
 	 * Get the OverrideItemAccountRef FullName for the ItemLine
 	 */
-	public function getOverrideItemAccountName(): string
+	public function getOverrideItemAccountName(): ?string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null): Node
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

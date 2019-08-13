@@ -15,6 +15,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\Estimate\EstimateLine;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -49,7 +50,7 @@ class Estimate extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link QBXML\Object\Estimate::getTxnID()}
 	 */
-	public function getTransactionID()
+	public function getTransactionID(): ?string
 	{
 		return $this->getTxnID();
 	}
@@ -57,7 +58,7 @@ class Estimate extends AbstractQbxmlObject
 	/**
 	 * Get the transaction ID for this invoice
 	 */
-	public function getTxnID(): string
+	public function getTxnID(): ?string
 	{
 		return $this->get('TxnID');
 	}
@@ -92,7 +93,7 @@ class Estimate extends AbstractQbxmlObject
 	/**
 	 * Get the customer ListID
 	 */
-	public function getCustomerListID(): string
+	public function getCustomerListID(): ?string
 	{
 		return $this->get('CustomerRef ListID');
 	}
@@ -108,7 +109,7 @@ class Estimate extends AbstractQbxmlObject
 	/**
 	 * Get the customer name
 	 */
-	public function getCustomerName(): string
+	public function getCustomerName(): ?string
 	{
 		return $this->get('CustomerRef FullName');
 	}
@@ -133,12 +134,12 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('ClassRef FullName', $name);
 	}
 
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
 
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
@@ -163,12 +164,12 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('TemplateRef ListID', $ListID);
 	}
 
-	public function getTemplateName(): string
+	public function getTemplateName(): ?string
 	{
 		return $this->get('TemplateRef FullName');
 	}
 
-	public function getTemplateListID(): string
+	public function getTemplateListID(): ?string
 	{
 		return $this->get('TemplateRef ListID');
 	}
@@ -192,7 +193,7 @@ class Estimate extends AbstractQbxmlObject
 	/**
 	 * Get the transaction date
 	 */
-	public function getTxnDate(?string $format = 'Y-m-d'): string
+	public function getTxnDate(?string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('TxnDate', $format);
 	}
@@ -200,7 +201,7 @@ class Estimate extends AbstractQbxmlObject
 	/**
 	 * Alias of {@link QBXML\Object\Estimate::getTxnDate()}
 	 */
-	public function getTransactionDate(?string $format = 'Y-m-d'): string
+	public function getTransactionDate(?string $format = 'Y-m-d'): ?string
 	{
 		return $this->getTxnDate();
 	}
@@ -216,7 +217,7 @@ class Estimate extends AbstractQbxmlObject
 	/**
 	 * Get the reference number
 	 */
-	public function getRefNumber(): string
+	public function getRefNumber(): ?string
 	{
 		return $this->get('RefNumber');
 	}
@@ -310,7 +311,7 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('PONumber', $num);
 	}
 
-	public function getPONumber(): string
+	public function getPONumber(): ?string
 	{
 		return $this->get('PONumber');
 	}
@@ -325,7 +326,7 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('TermsRef ' . PackageInfo::$API_APPLICATIONID, $this->encodeApplicationID(PackageInfo::Actions['OBJECT_TERMS'], PackageInfo::QbId['LISTID'], $value));
 	}
 
-	public function getTermsApplicationID(): string
+	public function getTermsApplicationID(): ?string
 	{
 		return $this->get('TermsRef ' . PackageInfo::$API_APPLICATIONID);
 	}
@@ -335,12 +336,12 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('TermsRef FullName', $name);
 	}
 
-	public function getTermsName(): string
+	public function getTermsName(): ?string
 	{
 		return $this->get('TermsRef FullName');
 	}
 
-	public function getTermsListID(): string
+	public function getTermsListID(): ?string
 	{
 		return $this->get('TermsRef ListID');
 	}
@@ -350,7 +351,7 @@ class Estimate extends AbstractQbxmlObject
 		return $this->setDateType('DueDate', $date);
 	}
 
-	public function getDueDate(?string $format = 'Y-m-d'): string
+	public function getDueDate(?string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('DueDate', $format);
 	}
@@ -375,17 +376,17 @@ class Estimate extends AbstractQbxmlObject
 		return $this->get('SalesRepRef ' . PackageInfo::$API_APPLICATIONID);
 	}
 
-	public function getSalesRepName(): string
+	public function getSalesRepName(): ?string
 	{
 		return $this->get('SalesRepRef FullName');
 	}
 
-	public function getSalesRepListID(): string
+	public function getSalesRepListID(): ?string
 	{
 		return $this->get('SalesRepRef ListID');
 	}
 
-	public function getFOB(): string
+	public function getFOB(): ?string
 	{
 		return $this->get('FOB');
 	}
@@ -415,12 +416,12 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('ItemSalesTaxRef FullName', $name);
 	}
 
-	public function getSalesTaxItemName(): string
+	public function getSalesTaxItemName(): ?string
 	{
 		return $this->get('ItemSalesTaxRef FullName');
 	}
 
-	public function getSalesTaxItemListID(): string
+	public function getSalesTaxItemListID(): ?string
 	{
 		return $this->get('ItemSalesTaxRef ListID');
 	}
@@ -430,7 +431,7 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('Memo', $memo);
 	}
 
-	public function getMemo(): string
+	public function getMemo(): ?string
 	{
 		return $this->get('Memo');
 	}
@@ -440,7 +441,7 @@ class Estimate extends AbstractQbxmlObject
 		return $this->setBooleanType('IsToBeEmailed', $emailed);
 	}
 
-	public function getIsToBeEmailed(): bool
+	public function getIsToBeEmailed(): ?bool
 	{
 		return $this->getBooleanType('IsToBeEmailed');
 	}
@@ -455,12 +456,12 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('CustomerSalesTaxCodeRef FullName', $name);
 	}
 
-	public function getCustomerSalesTaxCodeListID(): string
+	public function getCustomerSalesTaxCodeListID(): ?string
 	{
 		return $this->get('CustomerSalesTaxCodeRef ListID');
 	}
 
-	public function getCustomerSalesTaxCodeName(): string
+	public function getCustomerSalesTaxCodeName(): ?string
 	{
 		return $this->get('CustomerSalesTaxCodeRef FullName');
 	}
@@ -472,7 +473,7 @@ class Estimate extends AbstractQbxmlObject
 	{
 		return $this->addListItem('EstimateLine', $obj);
 	}
-
+	/*
 	public function setEstimateLine(int $i, EstimateLine $obj): void
 	{
 
@@ -488,13 +489,14 @@ class Estimate extends AbstractQbxmlObject
 
 		return $this->set('EstimateLine', $lines);
 	}
+	*/
 
 	public function getEstimateLineData()
 	{
 		return $this->get('EstimateLine');
 	}
 
-	public function getEstimateLine($i): EstimateLine
+	public function getEstimateLine($i): ?EstimateLine
 	{
 		return $this->getListItem('EstimateLine', $i);
 	}
@@ -504,7 +506,7 @@ class Estimate extends AbstractQbxmlObject
 		return $this->listEstimateLines();
 	}
 
-	public function listEstimateLines()
+	public function listEstimateLines(): array
 	{
 		return $this->getList('EstimateLine');
 	}
@@ -514,12 +516,12 @@ class Estimate extends AbstractQbxmlObject
 		return $this->set('Other', $other);
 	}
 
-	public function getOther(): string
+	public function getOther(): ?string
 	{
 		return $this->get('Other');
 	}
 
-	public function asList(string $request)
+	public function asList(string $request): array
 	{
 		switch ($request)
 		{
@@ -541,7 +543,7 @@ class Estimate extends AbstractQbxmlObject
 		return parent::asList($request);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

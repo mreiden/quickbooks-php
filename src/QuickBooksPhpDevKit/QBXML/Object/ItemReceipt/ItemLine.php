@@ -169,7 +169,7 @@ class ItemLine extends AbstractQbxmlObject
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function setSalesTaxCodeName(stromg $Name): bool
+	public function setSalesTaxCodeName(string $Name): bool
 	{
 		return $this->set('SalesTaxCodeRef FullName', $Name);
 	}
@@ -224,7 +224,7 @@ class ItemLine extends AbstractQbxmlObject
 		return $this->set('LinkToTxn TxnLineID', $TxnLineID);
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null): Node
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		if (is_null($object))
 		{

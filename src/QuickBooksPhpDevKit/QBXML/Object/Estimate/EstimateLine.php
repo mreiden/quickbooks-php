@@ -14,6 +14,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\Estimate;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\Estimate;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -44,12 +45,12 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('ItemRef FullName', $name);
 	}
 
-	public function getItemListID(): string
+	public function getItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
 
-	public function getItemName(): string
+	public function getItemName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -70,17 +71,17 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('Desc', $descrip);
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setQuantity($quantity): bool
+	public function setQuantity(float $quantity): bool
 	{
-		return $this->set('Quantity', floatval($quantity));
+		return $this->set('Quantity', $quantity);
 	}
 
-	public function getQuantity(): float
+	public function getQuantity(): ?float
 	{
 		return $this->get('Quantity');
 	}
@@ -90,7 +91,7 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('UnitOfMeasure', $unit);
 	}
 
-	public function getUnitOfMeasure(): string
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
@@ -100,7 +101,7 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('Rate', floatval($rate));
 	}
 
-	public function getRate(): float
+	public function getRate(): ?float
 	{
 		return $this->get('Rate');
 	}
@@ -110,7 +111,7 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('RatePercent', floatval($percent));
 	}
 
-	public function getRatePercent(): float
+	public function getRatePercent(): ?float
 	{
 		return $this->get('RatePercent');
 	}
@@ -120,22 +121,24 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('ClassRef ListID', $ListID);
 	}
 
+	/*
 	public function setClassApplicationID($value): void
 	{
 
 	}
+	*/
 
 	public function setClassName(string $name): bool
 	{
 		return $this->set('ClassRef Name', $name);
 	}
 
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -145,7 +148,7 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->setAmountType('Amount', $amount);
 	}
 
-	public function getAmount(): string
+	public function getAmount(): ?string
 	{
 		return $this->getAmountType('Amount');
 	}
@@ -160,12 +163,12 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName(): string
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID(): string
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
@@ -195,9 +198,9 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('MarkupRate', floatval($rate));
 	}
 
-	public function setMarkupRatePercent($percent): bool
+	public function setMarkupRatePercent(float $percent): bool
 	{
-		return $this->set('MarkupRatePercent', floatval($percent));
+		return $this->set('MarkupRatePercent', $percent);
 	}
 
 	public function getMarkupRatePercent(): ?float
@@ -215,17 +218,19 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('PriceLevelRef FullName', $name);
 	}
 
+	/*
 	public function setPriceLevelApplicationID(): void
 	{
 
 	}
+	*/
 
-	public function getPriceLevelName(): string
+	public function getPriceLevelName(): ?string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
 
-	public function getPriceLevelListID(): string
+	public function getPriceLevelListID(): ?string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
@@ -240,17 +245,19 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('OverrideItemAccountRef ListID', $ListID);
 	}
 
+	/*
 	public function setOverrideItemAccountApplicationID($value): void
 	{
 
 	}
+	*/
 
-	public function getOverrideItemAccountListID(): string
+	public function getOverrideItemAccountListID(): ?string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
 
-	public function getOverrideItemAccountName(): string
+	public function getOverrideItemAccountName(): ?string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
@@ -260,7 +267,7 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('Other1', $value);
 	}
 
-	public function getOther1(): string
+	public function getOther1(): ?string
 	{
 		return $this->get('Other1');
 	}
@@ -270,7 +277,7 @@ class EstimateLine extends AbstractQbxmlObject
 		return $this->set('Other2', $value);
 	}
 
-	public function getOther2(): string
+	public function getOther2(): ?string
 	{
 		return $this->get('Other2');
 	}
@@ -288,7 +295,7 @@ class EstimateLine extends AbstractQbxmlObject
 		return true;
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		$this->_cleanup();
 

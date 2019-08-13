@@ -14,6 +14,7 @@ namespace QuickBooksPhpDevKit\QBXML\Object\SalesOrder;
 use QuickBooksPhpDevKit\PackageInfo;
 use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 use QuickBooksPhpDevKit\QBXML\Object\SalesOrder;
+use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *
@@ -44,12 +45,12 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('ItemRef FullName', $name);
 	}
 
-	public function getItemListID(): string
+	public function getItemListID(): ?string
 	{
 		return $this->get('ItemRef ListID');
 	}
 
-	public function getItemName(): string
+	public function getItemName(): ?string
 	{
 		return $this->get('ItemRef FullName');
 	}
@@ -59,17 +60,17 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('Desc', $descrip);
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->get('Desc');
 	}
 
-	public function setQuantity($quantity): bool
+	public function setQuantity(float $quantity): bool
 	{
-		return $this->set('Quantity', (float) $quantity);
+		return $this->set('Quantity', $quantity);
 	}
 
-	public function getQuantity()
+	public function getQuantity(): ?float
 	{
 		return $this->get('Quantity');
 	}
@@ -79,27 +80,27 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('UnitOfMeasure', $unit);
 	}
 
-	public function getUnitOfMeasure(): string
+	public function getUnitOfMeasure(): ?string
 	{
 		return $this->get('UnitOfMeasure');
 	}
 
-	public function setRate($rate): bool
+	public function setRate(float $rate): bool
 	{
-		return $this->set('Rate', (float) $rate);
+		return $this->set('Rate', $rate);
 	}
 
-	public function getRate()
+	public function getRate(): ?float
 	{
 		return $this->get('Rate');
 	}
 
-	public function setRatePercent($percent): bool
+	public function setRatePercent(float $percent): bool
 	{
 		return $this->set('RatePercent', (float) $percent);
 	}
 
-	public function getRatePercent()
+	public function getRatePercent(): ?float
 	{
 		return $this->get('RatePercent');
 	}
@@ -120,12 +121,12 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('PriceLevelRef ListID', $ListID);
 	}
 
-	public function getPriceLevelName(): string
+	public function getPriceLevelName(): ?string
 	{
 		return $this->get('PriceLevelRef FullName');
 	}
 
-	public function getPriceLevelListID(): string
+	public function getPriceLevelListID(): ?string
 	{
 		return $this->get('PriceLevelRef ListID');
 	}
@@ -147,12 +148,12 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('ClassRef Name', $name);
 	}
 
-	public function getClassListID(): string
+	public function getClassListID(): ?string
 	{
 		return $this->get('ClassRef ListID');
 	}
 
-	public function getClassName(): string
+	public function getClassName(): ?string
 	{
 		return $this->get('ClassRef FullName');
 	}
@@ -167,7 +168,7 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->setDateType('ServiceDate', $date);
 	}
 
-	public function getServiceDate(string $format = 'Y-m-d'): string
+	public function getServiceDate(string $format = 'Y-m-d'): ?string
 	{
 		return $this->getDateType('ServiceDate', $format);
 	}
@@ -182,12 +183,12 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('SalesTaxCodeRef ListID', $ListID);
 	}
 
-	public function getSalesTaxCodeName(): string
+	public function getSalesTaxCodeName(): ?string
 	{
 		return $this->get('SalesTaxCodeRef FullName');
 	}
 
-	public function getSalesTaxCodeListID(): string
+	public function getSalesTaxCodeListID(): ?string
 	{
 		return $this->get('SalesTaxCodeRef ListID');
 	}
@@ -222,12 +223,12 @@ class SalesOrderLine extends AbstractQbxmlObject
 
 	}
 */
-	public function getOverrideItemAccountListID(): string
+	public function getOverrideItemAccountListID(): ?string
 	{
 		return $this->get('OverrideItemAccountRef ListID');
 	}
 
-	public function getOverrideItemAccountName(): string
+	public function getOverrideItemAccountName(): ?string
 	{
 		return $this->get('OverrideItemAccountRef FullName');
 	}
@@ -237,7 +238,7 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('Other1', $value);
 	}
 
-	public function getOther1(): string
+	public function getOther1(): ?string
 	{
 		return $this->get('Other1');
 	}
@@ -247,7 +248,7 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return $this->set('Other2', $value);
 	}
 
-	public function getOther2(): string
+	public function getOther2(): ?string
 	{
 		return $this->get('Other2');
 	}
@@ -265,7 +266,7 @@ class SalesOrderLine extends AbstractQbxmlObject
 		return true;
 	}
 
-	public function asXML(string $root = null, string $parent = null, $object = null)
+	public function asXML(?string $root = null, ?string $parent = null, ?array $object = null): Node
 	{
 		$this->_cleanup();
 
