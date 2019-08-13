@@ -11,6 +11,10 @@ class PackageInfo {
 		'WEBSITE' => 'https://github.com/consolibyte/quickbooks-php',
 	];
 
+	// Controls whether old passwords with a static hash are allowed to log in.
+	// Disabled as a default, but this needs to be set to true to allow legacy web connect users to log in.
+	public static $PASSWORD_ALLOW_LEGACY = false;
+
 	// Controls whether old passwords with a static hash are upgraded upon successful login.
 	// Disabled as a default since it could be destructive if the password is used elsewhere (users table on their website).
 	// All the examples recommend setting this to true.

@@ -531,12 +531,10 @@ abstract class Sql extends Driver
 	/**
 	 * Log a user in
 	 *
-	 * @param string $username
-	 * @param string $password
 	 * @param boolean $override		If this is set to TRUE, a correct password *is not* required
 	 * @return string				A session ticket, or null if the login failed
 	 */
-	protected function _authLogin(string $username, string $password, &$company_file, &$wait_before_next_update, &$min_run_every_n_seconds, bool $override = false): ?string
+	protected function _authLogin(string $username, string $password, ?string &$company_file, ?int &$wait_before_next_update, ?int &$min_run_every_n_seconds, bool $override = false): ?string
 	{
 		$errnum = 0;
 		$errmsg = '';
@@ -551,7 +549,7 @@ abstract class Sql extends Driver
 		{
 			// General checks unless override is set
 
-			if (strlen($password) == 0)
+			if (empty($password))
 			{
 				// Blank passwords *always fail*
 				return null;
@@ -600,7 +598,7 @@ abstract class Sql extends Driver
 					$rehash_password = password_needs_rehash($correct_password, PASSWORD_DEFAULT);
 				}
 			}
-			else
+			else if (PackageInfo::$PASSWORD_ALLOW_LEGACY === true)
 			{
 				// This is not a password hash, so do the old password checking and upgrade the password if possible
 
