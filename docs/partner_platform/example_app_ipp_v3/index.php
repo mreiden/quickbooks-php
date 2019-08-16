@@ -141,7 +141,7 @@ foreach ($files as $file)
 						<a href="reconnect<?= $site_php_extension ?>">Reconnect / refresh connection</a>
 					</td>
 					<td>
-						(QuickBooks connections expire after 6 months, so you have to this roughly every 5 and 1/2 months)
+						(QuickBooks refresh tokens expire after 100 days, after which the user will have to reauthorize the app)
 					</td>
 				</tr>
 				<tr>

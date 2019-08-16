@@ -3,7 +3,7 @@
 use QuickBooksPhpDevKit\IPP\Object\Bill as ObjBill;
 use QuickBooksPhpDevKit\IPP\Service\Bill;
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_oauthv2.php';
 
 require_once __DIR__ . '/views/header.tpl.php';
 
@@ -21,7 +21,8 @@ $Bill->setDocNumber('abc123');
 $Bill->setTxnDate('2014-07-12');
 $Bill->setVendorRef('{-9}');
 
-if ($id = $BillService->add($Context, $realm, $Bill))
+$id = $BillService->add($Context, $realm, $Bill);
+if ($id)
 {
 	print('This will never happen... (this script is DESIGNED TO TRIGGER ERRORS to teach you how to troubleshoot!');
 }
