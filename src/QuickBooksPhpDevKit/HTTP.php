@@ -77,8 +77,6 @@ class HTTP
 
 	protected $_debug;
 
-	protected $_test;
-
 	protected $_return_headers;
 
 	/**
@@ -104,7 +102,6 @@ class HTTP
 		$this->_log = '';
 
 		$this->_debug = false;
-		$this->_test = false;
 
 		$this->_sync = true;
 
@@ -126,8 +123,6 @@ class HTTP
 
 	/**
 	 * Get the URL
-	 *
-	 * @return string
 	 */
 	public function getURL(): ?string
 	{
@@ -220,10 +215,8 @@ class HTTP
 
 	/**
 	 *
-	 *
-	 * @return string
 	 */
-	public function getRawBody()
+	public function getRawBody(): string
 	{
 		if ($this->_body)
 		{
@@ -276,22 +269,6 @@ class HTTP
 	public function useMasking(bool $yes_or_no): void
 	{
 		$this->_masking = $yes_or_no;
-	}
-
-	public function useTestEnvironment(bool $yes_or_no): bool
-	{
-		$prev = $this->_test;
-		$this->_test = $yes_or_no;
-
-		return $prev;
-	}
-
-	public function useLiveEnvironment(bool $yes_or_no): bool
-	{
-		$prev = $this->_test;
-		$this->_test = !$yes_or_no;
-
-		return $prev;
 	}
 
 	/**
@@ -449,8 +426,8 @@ class HTTP
 			$query = '?' . http_build_query($this->_get);
 		}
 
-		if ($qs = parse_url($url, PHP_URL_QUERY) and
-			false !== strpos($qs, ' '))
+		$qs = parse_url($url, PHP_URL_QUERY);
+		if (is_string($qs) && false !== strpos($qs, ' '))
 		{
 			$url = str_replace($qs, str_replace(' ', '+', $qs), $url);
 		}
