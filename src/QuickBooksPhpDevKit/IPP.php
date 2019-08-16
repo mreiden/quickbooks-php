@@ -99,31 +99,6 @@ class IPP
 	public const REQUEST_IDS = 'ids';
 
 	/**
-	 * An IDS request to add an object
-	 * @deprecated
-	 */
-	//public const IDS_ADD = 'ids-add';
-
-	/**
-	 * An IDS request to modify an object
-	 * @deprecated
-	 */
-	//public const IDS_MOD = 'ids-mod';
-
-	/**
-	 * An IDS request to search/query for an object
-	 * @deprecated
-	 */
-	//public const IDS_QUERY = 'ids-query';
-
-	/**
-	 * An IDS request to get a report
-	 * @deprecated
-	 * @var unknown_type
-	 */
-	//public const IDS_REPORT = 'ids-report';
-
-	/**
 	 * No error occurred
 	 * @var integer
 	 */
@@ -170,8 +145,6 @@ class IPP
 	 *
 	 */
 	public const ERROR_HTTP = -1096;
-
-	protected $_test;
 
 	protected $_key;
 
@@ -239,9 +212,6 @@ class IPP
 	{
 		// Are we in sandbox mode?
 		$this->_sandbox = false;
-
-		// Use a test gateway?
-		$this->_test = false;
 
 		// Use debug mode?
 		$this->_debug = false;
