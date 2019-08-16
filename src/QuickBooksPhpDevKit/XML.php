@@ -410,7 +410,7 @@ class XML
 	 *
 	 * @param string 		$xml		The XML
 	 * @param string|null 	$xmlVersion	Defaults to 1.0
-	 * @param string|null 	$encoding	Defaults to utf-8
+	 * @param string|null 	$encoding	Defaults to UTF-8
 	 * @return string
 	 */
 	static public function cleanXML(string $xml, ?string $xmlVersion = null, ?string $encoding = null): string
@@ -430,7 +430,7 @@ class XML
 
 		$dom->formatOutput = true;
 		$dom->xmlVersion = $xmlVersion ?? '1.0';
-		$dom->encoding = $encoding ?? 'utf-8';
+		$dom->encoding = $encoding ?? 'UTF-8';
 
 		return $dom->saveXML();
 	}
