@@ -214,18 +214,13 @@ class QWC
 
 	public function http($filename = 'quickbooks.qwc')
 	{
-		header('Content-Type: text/xml; charset=UTF-8');
+		header('Content-Type: text/xml; charset=utf-8');
 		header('Content-Disposition: attachment; filename="' . $filename . '"');
 		print($this->generate());
 
 		return true;
 	}
-/*
-	public function save($where): void
-	{
 
-	}
-*/
 	/**
 	 *
 	 */

@@ -298,7 +298,7 @@ class Server
 	protected function _headers(): bool
 	{
 		$content_type = ($_SERVER['REQUEST_METHOD'] == 'POST' ? 'text/xml' : 'text/plain');
-		@header('Content-Type: ' . $content_type . '; charset=UTF-8');
+		@header('Content-Type: ' . $content_type . '; charset=utf-8');
 
 		return true;
 	}
@@ -415,7 +415,7 @@ class Server
 			$contents = file_get_contents($this->_server->getWsdlPath());
 			if (false !== $contents)
 			{
-				@header('Content-Type: text/xml; charset=UTF-8');
+				@header('Content-Type: text/xml; charset=utf-8');
 				echo $contents;
 			}
 		}
