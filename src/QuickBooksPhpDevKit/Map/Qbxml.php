@@ -202,7 +202,7 @@ class Qbxml extends Map
 			if (!empty($table_and_field[0]) && !empty($table_and_field[1]))
 			{
 				// For ADDs
-				// 	- Do not sync if to_skip = 1
+				//	- Do not sync if to_skip = 1
 				//	- Do not sync if to_delete = 1
 				//	- Do not sync if last_errnum is not empty		@TODO Implement this
 
@@ -310,7 +310,7 @@ class Qbxml extends Map
 		return [];
 	}
 
-	public function queries(array$queries = []): array
+	public function queries(array $queries = []): array
 	{
 		return [];
 	}
