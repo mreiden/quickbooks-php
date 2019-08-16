@@ -18,26 +18,13 @@
 
 namespace QuickBooksPhpDevKit\Adapter\SOAP\Server;
 
-use \SoapServer as Server;
 use QuickBooksPhpDevKit\Adapter\SOAP\Server\AbstractAdapter;
 use QuickBooksPhpDevKit\Adapter\SOAP\Server\AdapterInterface;
-use QuickBooksPhpDevKit\PackageInfo;
 
 /**
- *
+ * Adapter for the \SoapServer class provided by PHP's SOAP extension.
  */
 class PhpExtensionAdapter extends AbstractAdapter implements AdapterInterface
 {
-	protected $SoapServerClass = Server::class;
-
-	/**
-	 * Create a new adapter for PHP's SOAP Extension SoapServer
-	 *
-	 * @param string $wsdl				The path to the WSDL file
-	 * @param array $soap_options		An array of SOAP server options
-	 */
-	public function __construct(?string $wsdl = null, array $soap_options = [])
-	{
-		$this->configure($wsdl, $soap_options);
-	}
+	protected $SoapServerClass = \SoapServer::class;
 }
