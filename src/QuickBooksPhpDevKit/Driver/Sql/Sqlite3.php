@@ -196,37 +196,26 @@ class Sqlite3 extends Sql
 			}
 		}
 
-		try
+		$res = $this->_conn->query($sql);
+		if (false === $res)
 		{
-			$res = $this->_conn->query($sql);
+			$errnum = -99;
+			$errmsg = 'SQLLite Query Error';
 
-			if (!$res)
-			{
-				$errnum = -99;
-				$errmsg = 'SQLLite Query Error';
-
-				trigger_error('Error Num.: ' . $errnum . "\n" . 'Error Msg.:' . $errmsg . "\n" . 'SQL: ' . $sql, E_USER_ERROR);
-
-				return null;
-			}
-
-			if ($isSelectQuery)
-			{
-				// Really bad hack (fetch all rows and reset to the first) since SQLite3 lacks a num_rows function
-				// Only for SELECT queries since it seems to cause an INSERT/UPDATE query to be run a second time.
-				$numRows = 0;
-				while ($row = $res->fetchArray(SQLITE3_NUM))
-				{
-					$numRows++;
-				}
-				$res->quickbooksRowCount = $numRows;
-				$res->reset();
-			}
-
+			throw new \Exception('Error Num.: ' . $errnum . "\n" . 'Error Msg.:' . $errmsg . "\n" . 'SQL: ' . $sql);
 		}
-		catch(\Exception $e)
+
+		if ($isSelectQuery)
 		{
-			trigger_error($e->getMessage());
+			// Really bad hack (fetch all rows and reset to the first) since SQLite3 lacks a num_rows function
+			// Only for SELECT queries since it seems to cause an INSERT/UPDATE query to be run a second time.
+			$numRows = 0;
+			while ($row = $res->fetchArray(SQLITE3_NUM))
+			{
+				$numRows++;
+			}
+			$res->quickbooksRowCount = $numRows;
+			$res->reset();
 		}
 
 		return $res;
@@ -256,19 +245,6 @@ class Sqlite3 extends Sql
 
 		return $list;
 	}
-
-	/**
-	 * Issue a query to the SQL server
-	 *
-	 * @param string $sql
-	 * @param integer $errnum
-	 * @param string $errmsg
-	 * @return resource
-	 */
-	/*public function query($sql, &$errnum, &$errmsg, $offset = 0, $limit = null)
-	{
-		return $this->_query($sql, $errnum, $errmsg, $offset, $limit);
-	}*/
 
 	/**
 	 * Tell the number of rows the last run query affected

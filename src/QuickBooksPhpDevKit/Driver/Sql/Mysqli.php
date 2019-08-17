@@ -227,10 +227,9 @@ class Mysqli extends Sql
 			// @todo Should this be implemented...?
 		}
 
-		$res = $this->_conn->query($sql);
-
 		$this->_last_error = '';
-		if (!$res)
+		$res = $this->_conn->query($sql);
+		if (false === $res)
 		{
 			$errnum = $this->_conn->errno;
 			$errmsg = $this->_conn->error;
@@ -239,24 +238,10 @@ class Mysqli extends Sql
 			//print($sql);
 
 			throw new \Exception('Error Num.: ' . $errnum . "\n" . 'Error Msg.:' . $errmsg . "\n" . 'SQL: ' . $sql . "\n" . 'Database: ' . $this->_dbname);
-			return false;
 		}
 
 		return $res;
 	}
-
-	/**
-	 * Issue a query to the SQL server
-	 *
-	 * @param string $sql
-	 * @param integer $errnum
-	 * @param string $errmsg
-	 * @return resource
-	 */
-	/*public function query($sql, &$errnum, &$errmsg, $offset = 0, $limit = null)
-	{
-		return $this->_query($sql, $errnum, $errmsg, $offset, $limit);
-	}*/
 
 	/**
 	 * Tell the number of rows the last run query affected

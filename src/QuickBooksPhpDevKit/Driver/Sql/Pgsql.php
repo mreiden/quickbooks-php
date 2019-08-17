@@ -353,30 +353,15 @@ class Pgsql extends Sql
 
 		$this->_last_result = $res;
 
-		if (!$res)
+		if (false === $res)
 		{
 			$errnum = -1;
 			$errmsg = pg_last_error($this->_conn);
-			trigger_error('PostgreSQL Error: ' . $errmsg . ', SQL: ' . $sql, E_USER_ERROR);
-
-			return false;
+			throw new \Exception('PostgreSQL Error: ' . $errmsg . ', SQL: ' . $sql);
 		}
 
 		return $res;
 	}
-
-	/**
-	 * Issue a query to the SQL server
-	 *
-	 * @param string $sql
-	 * @param integer $errnum
-	 * @param string $errmsg
-	 * @return resource
-	 */
-	/*public function query($sql, &$errnum, &$errmsg, $offset = 0, $limit = null)
-	{
-		return $this->_query($sql, $errnum, $errmsg, $offset, $limit);
-	}*/
 
 	/**
 	 * Tell the number of rows the last run query affected
