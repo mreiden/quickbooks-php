@@ -75,7 +75,7 @@ class Generator
 
 		// QuickBooks XML file
 		if (is_null($qbxml)) {
-			$qbxml = dirname(__DIR__, 4) . '/data/qbxmlops130.xml';
+			$qbxml = dirname(__FILE__, 5) . '/data/qbxmlops130.xml';
 		}
 		$this->_xmlqb_file = realpath($qbxml);
 		if (false === $this->_xmlqb_file)
@@ -94,7 +94,7 @@ class Generator
 
 		// QuickBooks POS XML file
 		if (is_null($qbxmlpos)) {
-			$qbxmlpos = dirname(__DIR__, 4) . '/data/qbposxmlops30.xml';
+			$qbxmlpos = dirname(__FILE__, 5) . '/data/qbposxmlops30.xml';
 		}
 		$this->_xmlpos_file = realpath($qbxmlpos);
 		if (false === $this->_xmlpos_file)
@@ -147,7 +147,7 @@ class Generator
 
 		// Object output directory
 		if (is_null($dir_data_schema_query_rq_rs)) {
-			$dir_data_schema_query_rq_rs = dirname(__DIR__, 4) . '/data/schema';
+			$dir_data_schema_query_rq_rs = dirname(__FILE__, 5) . '/data/schema';
 		}
 		$dir_queries = $dir_data_schema_query_rq_rs;
 		$dir_data_schema_query_rq_rs = realpath($dir_data_schema_query_rq_rs);
@@ -178,7 +178,7 @@ class Generator
 			'qbpos' => &$this->_xmlpos,
 		];
 
-		$package_root = realpath(dirname(__DIR__, 4));
+		$package_root = realpath(dirname(__FILE__, 5));
 
 		$arr_actions_adds = Utilities::listActions('*Add', false);
 		$arr_actions_mods = Utilities::listActions('*Mod', false);
