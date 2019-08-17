@@ -1,7 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * Example of building qbXML requests using the QuickBooks_QBXML_Object_* classes
+ * Example of building qbXML requests using the QuickBooksPhpDevKit\QBXML\Object\* classes
  *
  *
  *
@@ -11,19 +11,27 @@
  * @subpackage Documentation
  */
 
+// Composer Autoloader
+require(dirname(__FILE__, 3) . '/vendor/autoload.php');
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice;
+use QuickBooksPhpDevKit\QBXML\Object\Invoice\InvoiceLine;
+use QuickBooksPhpDevKit\QBXML\Object\ReceivePayment;
+use QuickBooksPhpDevKit\QBXML\Object\ReceivePayment\AppliedToTxn;
+
+
 //
-header('Content-Type: text/plain');
+header('Content-Type: text/plain; charset=utf-8');
 
 // error reporting
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 error_reporting(E_ALL | E_STRICT);
 
-// QuickBooks framework classes
-require_once '../QuickBooks.php';
 
 
 // Create the new invoice object
-$Invoice = new QuickBooks_QBXML_Object_Invoice();
+$Invoice = new Invoice();
 
 // We need to assign this invoice to a customer. There are a few ways you can
 // refer to this customer in your qbXML requests. You can refer to them by
@@ -59,13 +67,13 @@ $Invoice->setMemo('This invoice was created using the QuickBooks PHP API!');
 //	must already be present in QuickBooks for this invoice to be added.
 
 // 3 items of type "Item Type 1" at $10.00 per item
-$InvoiceLine1 = new QuickBooks_QBXML_Object_Invoice_InvoiceLine();
+$InvoiceLine1 = new InvoiceLine();
 $InvoiceLine1->setItemName('Item Type 1');
 $InvoiceLine1->setRate(10.00);
 $InvoiceLine1->setQuantity(3);
 
 // 5 items of type "Item Type 2", for a total amount of $225.00 ($45.00 each)
-$InvoiceLine2 = new QuickBooks_QBXML_Object_Invoice_InvoiceLine();
+$InvoiceLine2 = new InvoiceLine();
 $InvoiceLine2->setItemName('Item Type 2');
 $InvoiceLine2->setAmount(225.00);
 $InvoiceLine2->setQuantity(5);
@@ -98,14 +106,14 @@ $Invoice->addInvoiceLine($InvoiceLine2);
 // $value = 'Keith Palmer';
 // $xpath = 'Name';
 // // Makes sure the $value will fit in a QuickBooks Customer Name field
-// $Name = QuickBooks_Cast::cast(QUICKBOOKS_OBJECT_CUSTOMER, $xpath, $value);
+// $Name = QuickBooks_Cast::cast(PackageInfo::Actions['OBJECT_CUSTOMER'], $xpath, $value);
 //
 // $value = '56 Cowles Road';
 // $xpath = 'ShipAddress/Addr1';
 // Makes sure the $value will fit in a QuickBooks Customer ShipAddress/Addr1 field
-// $ShipAddress_Addr1 = QuickBooks_Cast::cast(QUICKBOOKS_OBJECT_CUSTOMER, $xpath, $value);
+// $ShipAddress_Addr1 = QuickBooks_Cast::cast(PackageInfo::Actions['OBJECT_CUSTOMER'], $xpath, $value);
 
-$qbxml = $Invoice->asQBXML(QUICKBOOKS_ADD_INVOICE);
+$qbxml = $Invoice->asQBXML(PackageInfo::Actions['ADD_INVOICE']);
 print($qbxml);
 
 // Prints the following XML:
@@ -113,7 +121,7 @@ print($qbxml);
 <InvoiceAddRq>
 	<InvoiceAdd>
 		<CustomerRef>
-			<FullName>The Company Name Here</FullName>
+			<FullName>The Company &amp; Name Derpé</FullName>
 		</CustomerRef>
 		<RefNumber>A-123</RefNumber>
 		<Memo>This invoice was created using the QuickBooks PHP API!</Memo>
@@ -121,14 +129,14 @@ print($qbxml);
 			<ItemRef>
 				<FullName>Item Type 1</FullName>
 			</ItemRef>
-			<Quantity>3</Quantity>
-			<Rate>10</Rate>
+			<Quantity>3.00</Quantity>
+			<Rate>10.00</Rate>
 		</InvoiceLineAdd>
 		<InvoiceLineAdd>
 			<ItemRef>
 				<FullName>Item Type 2</FullName>
 			</ItemRef>
-			<Quantity>5</Quantity>
+			<Quantity>5.00</Quantity>
 			<Amount>225.00</Amount>
 		</InvoiceLineAdd>
 	</InvoiceAdd>
@@ -136,21 +144,51 @@ print($qbxml);
 */
 
 //
-//print_r($Invoice->asList(QUICKBOOKS_ADD_CUSTOMER));
+//print_r($Invoice->asList(PackageInfo::Actions['ADD_CUSTOMER']));
 
-$ReceivePayment = new QuickBooks_QBXML_Object_ReceivePayment();
-$ReceivePayment->setCustomerListID(123);
+$ReceivePayment = new ReceivePayment();
+// ListID is a QuickBooks ID string assigned to this customer
+$ReceivePayment->setCustomerListID('70000007-1234567890');
 $ReceivePayment->setTotalAmount(25.0);
 $ReceivePayment->setMemo('Memo goes here');
 $ReceivePayment->setTxnDate(strtotime('now'));
-$ReceivePayment->setPaymentMethodListID(10);
-$ReceivePayment->setDepositToAccountListID(54);
+// ListID is a QuickBooks ID string assigned to this payment method
+$ReceivePayment->setPaymentMethodListID('55443322-1234567890');
+// ListID is a QuickBooks ID string assigned to this account
+$ReceivePayment->setDepositToAccountListID('66655544-1234567890');
+// Check #, credit card authorization code, etc
 $ReceivePayment->setRefNumber('1061');
 
-$AppliedToTxn = new QuickBooks_QBXML_Object_ReceivePayment_AppliedToTxn();
-$AppliedToTxn->setTransactionID('82');
+$AppliedToTxn = new AppliedToTxn();
+// TxnID is a QuickBooks ID string assigned to an invoice
+$AppliedToTxn->setTxnID('70000007-1234567890');
 $AppliedToTxn->setPaymentAmount(25.0);
-
+// Add the applied to transaction to the payment
 $ReceivePayment->addAppliedToTxn($AppliedToTxn);
 
-print($ReceivePayment->asQBXML(QUICKBOOKS_ADD_RECEIVEPAYMENT));
+print($ReceivePayment->asQBXML(PackageInfo::Actions['ADD_RECEIVEPAYMENT']));
+
+// Prints the following XML:
+/*
+<ReceivePaymentAddRq>
+	<ReceivePaymentAdd>
+		<CustomerRef>
+			<ListID>70000007-1234567890</ListID>
+		</CustomerRef>
+		<TxnDate>2019-08-04</TxnDate>
+		<RefNumber>1061</RefNumber>
+		<TotalAmount>25.00</TotalAmount>
+		<PaymentMethodRef>
+			<ListID>55443322-1234567890</ListID>
+		</PaymentMethodRef>
+		<Memo>Memo goes here</Memo>
+		<DepositToAccountRef>
+			<ListID>66655544-1234567890</ListID>
+		</DepositToAccountRef>
+		<AppliedToTxnAdd>
+			<TxnID>70000007-1234567890</TxnID>
+			<PaymentAmount>25.00</PaymentAmount>
+		</AppliedToTxnAdd>
+	</ReceivePaymentAdd>
+</ReceivePaymentAddRq>
+*/

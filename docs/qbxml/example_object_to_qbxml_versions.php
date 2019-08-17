@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Example of building qbXML for specific versions of QuickBooks using the QuickBooks_Object_* classes
@@ -15,19 +15,28 @@
  * @subpackage Documentation
  */
 
+// Composer Autoloader
+require(dirname(__FILE__, 3) . '/vendor/autoload.php');
+
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\Object\Customer;
+//use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt;
+//use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\SalesTaxLine;
+//use QuickBooksPhpDevKit\QBXML\Object\ReceivePayment;
+//use QuickBooksPhpDevKit\QBXML\Object\ReceivePayment\AppliedToTxn;
+
+
 // Plain text output
-header('Content-Type: text/plain');
+header('Content-Type: text/plain; charset=utf-8');
 
 // Error reporting
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 error_reporting(E_ALL | E_STRICT);
 
-// Require the QuickBooks libraries
-require_once '../QuickBooks.php';
 
 /*
 // Create a new SalesReceipt object
-$SalesReceipt = new Quickbooks_Object_SalesReceipt();
+$SalesReceipt = new SalesReceipt();
 
 // Set some fields
 $SalesReceipt->setCustomerFullName('ConsoliBYTE:Keith Palmer');
@@ -36,12 +45,12 @@ $SalesReceipt->setCustomerFullName('ConsoliBYTE:Keith Palmer');
 $SalesReceipt->setItemSalesTaxFullName('CT Sales Tax');
 
 // This is for Online Edition
-$SalesTaxLine = new QuickBooks_Object_SalesReceipt_SalesTaxLine();
+$SalesTaxLine = new SalesTaxLine();
 $SalesTaxLine->setAmount(7.50);
 $SalesReceipt->addSalesTaxLine($SalesTaxLine);
 
 // Add a line items
-$Line1 = new QuickBooks_Object_SalesReceipt_SalesReceiptLine();
+$Line1 = new SalesReceiptLine();
 $Line1->setItemFullName('QuickBooks Integration:PHP Integration');
 $Line1->setQuantity(1);
 $Line1->setRate(125.0);
@@ -49,43 +58,57 @@ $Line1->setSalesTaxCodeFullName('TAX');
 
 $SalesReceipt->addSalesReceiptLine($Line1);
 
-print('qbXML SalesReceipt for QuickBooks qbXML US editions: ' . "\r\n");
-print($SalesReceipt->asQBXML(QUICKBOOKS_ADD_SALESRECEIPT, null, QUICKBOOKS_LOCALE_UNITED_STATES));
+print('qbXML SalesReceipt for QuickBooks qbXML US editions: ' . "\n");
+print($SalesReceipt->asQBXML(PackageInfo::Actions['ADD_SALESRECEIPT'], null, PackageInfo::Locale['UNITED_STATES']));
 
-print("\r\n\r\n");
+print("\n\n");
 
-print('qbXML SalesReceipt for QuickBooks qbXML Online Edition: ' . "\r\n");
-print($SalesReceipt->asQBXML(QUICKBOOKS_ADD_SALESRECEIPT, null, QUICKBOOKS_LOCALE_ONLINE_EDITION));
-
+print('qbXML SalesReceipt for QuickBooks qbXML Online Edition: ' . "\n");
+print($SalesReceipt->asQBXML(PackageInfo::Actions['ADD_SALESRECEIPT'], null, PackageInfo::Locale['ONLINE_EDITION']));
 
 exit;
 */
 
-// Create a new Customer object
-$Customer = new QuickBooks_QBXML_Object_Customer();
+
+
+// Create a Customer object
+$Customer = new Customer();
 
 // Set some fields
 $Customer->setFullName('Contractors:ConsoliBYTE, LLC:Keith Palmer');
 $Customer->setCustomerTypeFullName('Web:Direct');
+$Customer->setCompanyName('"ConsoliBYTE" aka \'Keith Palmer\'');
+
+// Not in QBOE
+$Customer->setIsActive(false);
 $Customer->setNotes('Test notes go here.');
 
-print('qbXML Customer for QuickBooks qbXML (latest version the framework supports): ' . "\r\n");
-print($Customer->asQBXML(QUICKBOOKS_ADD_CUSTOMER));
+// QBXML 12.0+
+$Customer->setClassListID('50000005-1234567890');
 
-print("\r\n\r\n");
 
-print('qbXML Customer for QuickBooks qbXML US editions: ' . "\r\n");
-print($Customer->asQBXML(QUICKBOOKS_ADD_CUSTOMER, null, QuickBooks_QBXML::LOCALE_UNITED_STATES));
 
-print("\r\n\r\n");
+print('qbXML Customer for QuickBooks qbXML (latest version the framework supports): ' . "\n");
+print($Customer->asQBXML(PackageInfo::Actions['ADD_CUSTOMER']));
+print("\n\n");
 
-print('qbXML Customer for QuickBooks qbXML Online Edition: ' . "\r\n");
-print($Customer->asQBXML(QUICKBOOKS_ADD_CUSTOMER, null, QuickBooks_QBXML::LOCALE_ONLINE_EDITION));
+print('qbXML Customer for QuickBooks qbXML US editions: ' . "\n");
+print($Customer->asQBXML(PackageInfo::Actions['ADD_CUSTOMER'], null, PackageInfo::Locale['UNITED_STATES']));
+print("\n\n");
 
-print("\r\n\r\n");
+print('qbXML Customer for QuickBooks qbXML v10.0 US editions: ' . "\n");
+print($Customer->asQBXML(PackageInfo::Actions['ADD_CUSTOMER'], 10, PackageInfo::Locale['UNITED_STATES']));
+print("\n\n");
 
-$Customer->setListID('1234');
-$Customer->setEditSequence('5678');
+print('qbXML Customer for QuickBooks qbXML Online Edition: ' . "\n");
+print($Customer->asQBXML(PackageInfo::Actions['ADD_CUSTOMER'], null, PackageInfo::Locale['ONLINE_EDITION']));
+print("\n\n");
 
-print('qbXML Customer (modification) for QuickBooks qbXML Online Edition: ' . "\r\n");
-print($Customer->asQBXML(QUICKBOOKS_MOD_CUSTOMER, null, QuickBooks_QBXML::LOCALE_ONLINE_EDITION));
+
+// The QuickBooks ID string assigned to this Customer
+$Customer->setListID('70000007-1234567890');
+// The QuickBooks EditSequence string assigned to this Customer
+$Customer->setEditSequence(9876543210);
+
+print('qbXML Customer (modification) for QuickBooks qbXML Online Edition: ' . "\n");
+print($Customer->asQBXML(PackageInfo::Actions['MOD_CUSTOMER'], null, PackageInfo::Locale['ONLINE_EDITION']));

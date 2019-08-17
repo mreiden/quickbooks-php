@@ -1,20 +1,29 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once '../QuickBooks.php';
+// Composer Autoloader
+require(dirname(__FILE__, 3) . '/vendor/autoload.php');
+
+use QuickBooksPhpDevKit\Cast;
+use QuickBooksPhpDevKit\PackageInfo;
+
+// error reporting
+ini_set('display_errors', '1');
+error_reporting(E_ALL | E_STRICT);
 
 header('Content-Type: text/html; charset=utf-8');
 
-
-$arr = array(
+$arr = [
 	'Keith Palmer, Shannon Daniels, Kurtis & Karli',
 	'Test of some UTF8 chars- Á, Æ, Ë, ¾, Õ, ä, ß, ú, ñ',
 	'Test & Then Some',
 	'Test of already encoded &amp; data.',
 	'Tapio Törmänen',
 	'Here is the £ pound sign for you British gents...',
-	);
+	"Quotes \" in 'String'",
+	'Freddy Krûegër’s — “Nîghtmåre ¾"',
+];
 
-$fields = array(
+$fields = [
 	'Name',
 	'CompanyName',
 	'FirstName',
@@ -39,16 +48,16 @@ $fields = array(
 	'Email',
 	'Contact',
 	'AltContact',
-	);
+];
 
 print("\n");
+print('****** ' . PackageInfo::Actions['ADD_CUSTOMER'] . " Casts: ******\n");
 foreach ($fields as $field)
 {
 	foreach ($arr as $key => $value)
 	{
-		$cast = QuickBooks_Cast::cast(QUICKBOOKS_ADD_CUSTOMER, str_replace('_', ' ', $field), ucfirst($value));
-
-		print("\t" . $field . ': {' . $cast . '} (length: ' . strlen($cast) . ')' . "\n");
+		$cast = Cast::cast(PackageInfo::Actions['ADD_CUSTOMER'], str_replace('_', ' ', $field), ucfirst($value));
+		print("\t" . $field . ' : {' . $cast . '} (length: ' . strlen($cast) . ')' . "\n");
 	}
 
 	print("\n");
@@ -62,7 +71,7 @@ print("\n");
 
 //exit;
 
-$invoice = array(
+$invoice = [
 	'IsPaid' => true,
 	'IsToBePrinted' => false,
 	'IsToBeEmailed' => true,
@@ -71,9 +80,10 @@ $invoice = array(
 
 	'InvoiceLine Class FullName' => 'Test & Class',
 	'InvoiceLine Item FullName' => 'Item & Test',
-	);
+];
 
+print('****** ' . PackageInfo::Actions['ADD_INVOICE'] . " Casts: ******\n");
 foreach ($invoice as $key => $value)
 {
-	print($key . ' => ' . QuickBooks_Cast::cast(QUICKBOOKS_ADD_INVOICE, $field, $value) . "\n");
+	print("\t" . $key . ' => ' . Cast::cast(PackageInfo::Actions['ADD_INVOICE'], $key, $value) . "\n");
 }

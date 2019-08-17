@@ -1,29 +1,29 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
- * Examples of converting qbXML to QuickBooks_Object_* classes, and vice-versa
+ * Examples of converting qbXML to QBXML\Object\* classes, and vice-versa
  *
  * @package QuickBooks
  * @subpackage Documentation
  */
 
-// Plain test
-header('Content-Type: text/plain');
+// Composer Autoloader
+require(dirname(__FILE__, 3) . '/vendor/autoload.php');
 
-// include path
-ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . '/Users/keithpalmerjr/Projects/QuickBooks/');
+use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\XML\Parser;
 
 // error reporting
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 error_reporting(E_ALL | E_STRICT);
 
-/**
- * Require the QuickBooks framework code
- */
-require_once '../QuickBooks.php';
+// Plain text
+header('Content-Type: text/plain; charset=utf-8');
 
-/*
+
 // Our qbXML string
+print("\n\n\n******************  SalesReceiptRet\n");
 $qbxml = '
 	<SalesReceiptRet>
 		<TxnID>141CA5-1231522949</TxnID>
@@ -108,29 +108,30 @@ $qbxml = '
 	</SalesReceiptRet>';
 
 // Convert the qbXML string to an object
-$Object = QuickBooks_Object::fromQBXML($qbxml);
+$Object = AbstractQbxmlObject::fromQBXML($qbxml);
 
 // Print the object
 print_r($Object);
 
 // Now, convert it back to qbXML, as an ADD
-print($Object->asQBXML(QUICKBOOKS_ADD_SALESRECEIPT));
+print($Object->asQBXML(PackageInfo::Actions['ADD_SALESRECEIPT']));
 
 // If you already have it as an XML document, you can convert that too
 $errnum = null;
 $errmsg = null;
-$Parser = new QuickBooks_XML_Parser($qbxml);
+$Parser = new Parser($qbxml);
 if ($Doc = $Parser->parse($errnum, $errmsg))
 {
 	$Root = $Doc->getRoot();
 
-	$Object = QuickBooks_Object::fromXML($Root);
+	$Object = AbstractQbxmlObject::fromXML($Root);
 
 	// Print it out
 	print_r($Object);
 }
 
 // Another test...
+print("\n\n\n******************  CustomerRet\n");
 $qbxml = '
 	<CustomerRet>
 		<ListID>10006-1211236622</ListID>
@@ -176,12 +177,17 @@ $qbxml = '
 	</CustomerRet>';
 
 // Create the customer
-$Object = QuickBooks_Object::fromQBXML($qbxml);
+$Object = AbstractQbxmlObject::fromQBXML($qbxml);
 
 // Print it out
 print_r($Object);
 
+// ... and some qbXML for good measure!
+print('[' . $Object->object() . ']: ' . $Object->asQBXML(PackageInfo::Actions['ADD_CUSTOMER']));
+
+
 // Does it work for qbXML ADD requests too?
+print("\n\n\n******************  CustomerAdd\n");
 $qbxml = '
 	<CustomerAdd>
 		<Name>20706 - Eastern XYZ University</Name>
@@ -205,12 +211,17 @@ $qbxml = '
 	</CustomerAdd>';
 
 // Create it...
-$Object = QuickBooks_Object::fromQBXML($qbxml);
+$Object = AbstractQbxmlObject::fromQBXML($qbxml);
 
 // Print it...
 print_r($Object);
 
+// ... and some qbXML for good measure!
+print('[' . $Object->object() . ']: ' . $Object->asQBXML(PackageInfo::Actions['ADD_CUSTOMER']));
+
+
 // How about with vendors from QuickBooks Online Edition?
+print("\n\n\n******************  VendorRet\n");
 $qbxml = '<VendorRet>
 		<ListID>146</ListID>
 		<TimeCreated>2009-10-24T00:34:07</TimeCreated>
@@ -236,16 +247,18 @@ $qbxml = '<VendorRet>
 	</VendorRet>';
 
 // Create the object from the qbXML
-$Object = QuickBooks_Object::fromQBXML($qbxml);
+$Object = AbstractQbxmlObject::fromQBXML($qbxml);
 
 // Print it
 print_r($Object);
 
-print($Object->asQBXML(QUICKBOOKS_ADD_VENDOR));
-*/
+// ... and some qbXML for good measure!
+print('[' . $Object->object() . ']: ' . $Object->asQBXML(PackageInfo::Actions['ADD_VENDOR']));
 
-/*
+
+
 // Does it work for sales tax item groups?
+print("\n\n\n******************  ItemSalesTaxGroupRet\n");
 $qbxml = '<ItemSalesTaxGroupRet>
 		<ListID>4E0000-1044396142</ListID>
 		<TimeCreated>2009-11-05T03:13:13</TimeCreated>
@@ -265,16 +278,18 @@ $qbxml = '<ItemSalesTaxGroupRet>
 	</ItemSalesTaxGroupRet>';
 
 // Create it...
-$Object = QuickBooks_Object::fromQBXML($qbxml);
+$Object = AbstractQbxmlObject::fromQBXML($qbxml);
 
 // Print it...
 print_r($Object);
 
 // ... and some qbXML for good measure!
-print('[' . $Object->object() . ']: ' . $Object->asQBXML(QUICKBOOKS_ADD_SALESTAXGROUPITEM));
-*/
+print('[' . $Object->object() . ']: ' . $Object->asQBXML(PackageInfo::Actions['ADD_SALESTAXGROUPITEM']));
+
+
 
 // Does it work for service items?
+print("\n\n\n******************  ItemServiceRet\n");
 $qbxml = '<ItemServiceRet>
 <ListID>280001-1265079883</ListID>
 <TimeCreated>2010-02-01T22:04:43-05:00</TimeCreated>
@@ -297,6 +312,8 @@ $qbxml = '<ItemServiceRet>
 </SalesOrPurchase>
 </ItemServiceRet>';
 
-$Object = QuickBooks_QBXML_Object::fromQBXML($qbxml, QUICKBOOKS_QUERY_ITEM);
+$Object = AbstractQbxmlObject::fromQBXML($qbxml, PackageInfo::Actions['QUERY_ITEM']);
 
-print('[' . $Object->object() . ']: ' . $Object->asQBXML(QUICKBOOKS_ADD_SERVICEITEM));
+print('[' . $Object->object() . ']: ' . $Object->asQBXML(PackageInfo::Actions['ADD_SERVICEITEM']));
+
+print ("\n\n ********  Done!\n");
