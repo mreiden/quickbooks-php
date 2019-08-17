@@ -388,13 +388,8 @@ abstract class Driver
 
 	/**
 	 * Forcibly remove an item from the queue
-	 *
-	 * @param string $user
-	 * @param string $action
-	 * @param mixed $ident
-	 * @return boolean
 	 */
-	final public function queueRemove(string $user, string $action, string $ident)
+	final public function queueRemove(string $user, string $action, string $ident): bool
 	{
 		$hookdata = [
 			'username' => $user,
@@ -410,7 +405,7 @@ abstract class Driver
 	/**
 	 * @see Driver::queueRemove()
 	 */
-	abstract protected function _queueRemove(string $user, string $action, string $ident);
+	abstract protected function _queueRemove(string $user, string $action, string $ident): bool;
 
 	/**
 	 * Update the status of a particular item in the queue

@@ -902,7 +902,7 @@ abstract class Sql extends Driver
 	/**
 	 * Forcibly remove an item from the queue
 	 */
-	protected function _queueRemove(string $user, string $action, string $ident)
+	protected function _queueRemove(string $user, string $action, string $ident): bool
 	{
 		$errnum = 0;
 		$errmsg = '';
@@ -1499,7 +1499,8 @@ abstract class Sql extends Driver
 		$errmsg = '';
 
 		// Check if it exists or not first
-		if ($arr = $this->_oauthLoadV2($app_tenant))
+		$arr = $this->_oauthLoadV2($app_tenant);
+		if ($arr)
 		{
 			// Exists... UPDATE!
 			return $this->query("
@@ -1647,7 +1648,8 @@ abstract class Sql extends Driver
 		$errmsg = '';
 
 		// Check if it exists or not first
-		if ($arr = $this->_oauthRequestResolveV2($state))
+		$arr = $this->_oauthRequestResolveV2($state);
+		if ($arr)
 		{
 			$vars = [
 				$encrypted_access_token,
