@@ -370,6 +370,15 @@ class XML
 			return '';
 		}
 
+		// Convert existing HTML named entities (&Acirc;) back into their UTF-8 characters (Ã)
+		// so mb_encode_numericentity can encode them as numeric entities (&#194;).
+		//
+		// ENT_XHTML is used because ENT_XML1 failes to convert the named entities
+		// because it supports the UTF-8 characters natively (no need for named entities).
+		// Coverting named entities into UTF-8 characters and then into numeric entities
+		// is better when dealing with QuickBooks.
+		$str = html_entity_decode($str, ENT_COMPAT | ENT_XHTML, 'UTF-8');
+
 		// Encode Special Characters [&"<>]
 		if ($for_qbxml)
 		{
