@@ -101,9 +101,9 @@ class Utilities
 			{
 				return $dsn[$part];
 			}
-			else if (isset($dsn[$map_url_to_param[$part]]))
+			else if (array_key_exists($part, $map_url_to_param) && isset($dsn[$map_url_to_param[$part]]))
 			{
-				// $part is a parse_url component
+				// Map parse_url part to the dsn key (e.g. user -> username)
 				return $dsn[$map_url_to_param[$part]];
 			}
 
@@ -448,41 +448,47 @@ class Utilities
 
 	/**
 	 *
-	 *
 	 */
-	static public function date($date = null)
+	static public function date($date = null): string
 	{
-		if ($date)
-		{
-			if (is_numeric($date) && strlen($date) > 6)
-			{
-				return date('Y-m-d', $date);
-			}
+		$format = 'Y-m-d';
 
-			return date('Y-m-d', strtotime($date));
+		if (null === $date)
+		{
+			// Return the current date since no date was provided
+			return date($format);
 		}
 
-		return date('Y-m-d');
+		$date = (string) $date;
+		if (ctype_digit($date) && strlen($date) > 6)
+		{
+			// Assume this is a unix timestamp
+			return date($format, (int) $date);
+		}
+
+		return date($format, strtotime($date));
 	}
 
 	/**
 	 *
-	 *
-	 * @return string
 	 */
-	static public function datetime($datetime = null)
+	static public function datetime($datetime = null): string
 	{
-		if ($datetime)
-		{
-			if (is_numeric($datetime) && strlen($datetime) > 6)
-			{
-				return date('Y-m-d', $datetime) . 'T' . date('H:i:s', $datetime);
-			}
+		$format = 'Y-m-d\TH:i:s';
 
-			return date('Y-m-d', strtotime($datetime)) . 'T' . date('H:i:s', strtotime($datetime));
+		if (null === $datetime)
+		{
+			// Return the current datetime since no datetime was provided
+			return date($format);
 		}
 
-		return date('Y-m-d') . 'T' . date('H:i:s');
+		$datetime = (string) $datetime;
+		if (ctype_digit($datetime) && strlen($datetime) > 6)
+		{
+			return date($format, (int) $datetime);
+		}
+
+		return date($format, strtotime($datetime));
 	}
 
 	/**
