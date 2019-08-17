@@ -42,14 +42,6 @@ abstract class Driver
 	//public const HOOK_LOGSIZE = 'Driver::logSize';	// Hook called by the ->logSize() method
 	//public const HOOK_LOGVIEW = 'Driver::logView';	// Hook called by the ->logView() method
 
-	//// Ident related hooks
-	//public const HOOK_IDENTFETCH = 'Driver::identFetch';
-//	public const HOOK_IDENTTOAPPLICATION = 'Driver::identToApplication';  // Hook called by the ->identToApplication() method
-//	public const HOOK_IDENTTOQUICKBOOKS = 'Driver::identToQuickBooks';	// Hook called by the ->identToQuickBooks() method
-//	public const HOOK_IDENTMAP = 'Driver::identMap';
-	//public const HOOK_IDENTVIEW = 'Driver::identView';
-	//public const HOOK_IDENTSIZE = 'Driver::identSize';
-
 	//// Authentication related hooks
 	public const HOOK_AUTHCHECK   = 'Driver::authCheck';		// Hook called by the ->authCheck() method
 	public const HOOK_AUTHCREATE  = 'Driver::authCreate';		// Hook called by the ->authCreate() method
