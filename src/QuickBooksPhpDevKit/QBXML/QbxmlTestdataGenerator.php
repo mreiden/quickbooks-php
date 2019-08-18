@@ -7,7 +7,7 @@ use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
 
 class QbxmlTestdataGenerator
 {
-	public static function Account(string $accountType, string $accountFullName, string $accountDescription, float $openingBalance = 0): \QuickBooksPhpDevKit\QBXML\Object\Account
+	public static function Account(string $accountType, string $accountFullName, string $accountDescription, float $openingBalance = 0, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Account
 	{
 		$qbAccount = new \QuickBooksPhpDevKit\QBXML\Object\Account();
 
@@ -48,10 +48,13 @@ class QbxmlTestdataGenerator
 		//$qbAccount->setSpecialAccountType('SPECIAL');
 		//$qbAccount->setCashFlowClassification('CashFlowPositive');
 
+		// Set any additional fields
+		$qbAccount->setFields($otherFields);
+
 		return $qbAccount;
 	}
 
-	public static function Bill(?string $vendorFullName, ?string $vendorListID = null, ?string $customerFullName = null): \QuickBooksPhpDevKit\QBXML\Object\Bill
+	public static function Bill(?string $vendorFullName, ?string $vendorListID = null, ?string $customerFullName = null, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Bill
 	{
 		if (null === $vendorFullName && null === $vendorListID)
 		{
@@ -113,10 +116,13 @@ class QbxmlTestdataGenerator
 		}
 		$qbBill->addExpenseLine($expenseLine);
 
+		// Set any additional fields
+		$qbBill->setFields($otherFields);
+
 		return $qbBill;
 	}
 
-	public static function CreditMemo($refNumber, $CreditMemoDate, string $customerFullName, ?string $poNumber = null, ?string $salesRepName = null): \QuickBooksPhpDevKit\QBXML\Object\CreditMemo
+	public static function CreditMemo($refNumber, $CreditMemoDate, string $customerFullName, ?string $poNumber = null, ?string $salesRepName = null, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\CreditMemo
 	{
 		$qbCreditMemo = new \QuickBooksPhpDevKit\QBXML\Object\CreditMemo();
 
@@ -194,10 +200,13 @@ class QbxmlTestdataGenerator
 		$line->setTxnLineID(-1);
 		$qbCreditMemo->addCreditMemoLine($line);
 
+		// Set any additional fields
+		$qbCreditMemo->setFields($otherFields);
+
 		return $qbCreditMemo;
 	}
 
-	public static function Customer(string $customerName, ?string $parentFullName = null, ?string $salesRepName = null): \QuickBooksPhpDevKit\QBXML\Object\Customer
+	public static function Customer(string $customerName, ?string $parentFullName = null, ?string $salesRepName = null, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Customer
 	{
 		$qbCustomer = new \QuickBooksPhpDevKit\QBXML\Object\Customer();
 
@@ -280,20 +289,26 @@ class QbxmlTestdataGenerator
 			''						// Note for Address
 		);
 
+		// Set any additional fields
+		$qbCustomer->setFields($otherFields);
+
 		return $qbCustomer;
 	}
 
-	public static function Department(string $departmentName, string $departmentCode): \QuickBooksPhpDevKit\QBXML\Object\Department
+	public static function Department(string $departmentName, string $departmentCode, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Department
 	{
 		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\Department();
 
 		$qbObject->setDepartmentName($departmentName);
 		$qbObject->setDepartmentCode($departmentCode);
 
+		// Set any additional fields
+		$qbObject->setFields($otherFields);
+
 		return $qbObject;
 	}
 
-	public static function Invoice($refNumber, $invoiceDate, string $customerFullName, ?string $poNumber = null, ?string $salesRepName = null): \QuickBooksPhpDevKit\QBXML\Object\Invoice
+	public static function Invoice($refNumber, $invoiceDate, string $customerFullName, ?string $poNumber = null, ?string $salesRepName = null, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Invoice
 	{
 		$qbInvoice = new \QuickBooksPhpDevKit\QBXML\Object\Invoice();
 
@@ -372,10 +387,13 @@ class QbxmlTestdataGenerator
 		$line->setTxnLineID(-1);
 		$qbInvoice->addInvoiceLine($line);
 
+		// Set any additional fields
+		$qbInvoice->setFields($otherFields);
+
 		return $qbInvoice;
 	}
 
-	public static function ItemService(string $itemName, string $accountName): \QuickBooksPhpDevKit\QBXML\Object\ItemService
+	public static function ItemService(string $itemName, string $accountName, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\ItemService
 	{
 		$qbItem = new \QuickBooksPhpDevKit\QBXML\Object\ItemService();
 
@@ -396,31 +414,46 @@ class QbxmlTestdataGenerator
 
 		$qbItem->setDescription("$itemName for $price");
 
+		// Set any additional fields
+		$qbItem->setFields($otherFields);
+
 		return $qbItem;
 	}
 
-	public static function ItemSites(): \QuickBooksPhpDevKit\QBXML\Object\ItemSites
+	public static function ItemSites($ListIDs, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\ItemSites
 	{
 		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\ItemSites();
 
-		$qbObject->addListID('70000100-1111111111');
-		$qbObject->addListID('70000100-1111111112');
-		$qbObject->addListID('70000100-1111111113');
+		if (!is_array($ListIDs))
+		{
+			$ListIDs = [$ListIDs];
+		}
+
+		foreach ($ListIDs as $ListID)
+		{
+			$qbObject->addListID($ListID);
+		}
+
+		// Set any additional fields
+		$qbObject->setFields($otherFields);
 
 		return $qbObject;
 	}
 
-	public static function Qbclass(string $name, bool $isActive = true): \QuickBooksPhpDevKit\QBXML\Object\Qbclass
+	public static function Qbclass(string $name, bool $isActive = true, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Qbclass
 	{
 		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\Qbclass();
 
 		$qbObject->setName($name);
 		$qbObject->setIsActive($isActive);
 
+		// Set any additional fields
+		$qbObject->setFields($otherFields);
+
 		return $qbObject;
 	}
 
-	public static function ReceivePayment(): \QuickBooksPhpDevKit\QBXML\Object\ReceivePayment
+	public static function ReceivePayment(array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\ReceivePayment
 	{
 		$qbPayment = new \QuickBooksPhpDevKit\QBXML\Object\ReceivePayment();
 
@@ -442,10 +475,13 @@ class QbxmlTestdataGenerator
 		// Add the Applied-To_Transaction (i.e. Invoice) to the payment
 		$qbPayment->addAppliedToTxn($qbAppliedToTxn);
 
+		// Set any additional fields
+		$qbPayment->setFields($otherFields);
+
 		return $qbPayment;
 	}
 
-	public static function StandardTerms(string $name, int $daysDue, ?int $daysDiscount = null, ?float $discountPercent = null): \QuickBooksPhpDevKit\QBXML\Object\StandardTerms
+	public static function StandardTerms(string $name, int $daysDue, ?int $daysDiscount = null, ?float $discountPercent = null, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\StandardTerms
 	{
 		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\StandardTerms();
 
@@ -459,10 +495,13 @@ class QbxmlTestdataGenerator
 			$qbObject->setDiscountPct($discountPercent);
 		}
 
+		// Set any additional fields
+		$qbObject->setFields($otherFields);
+
 		return $qbObject;
 	}
 
-	public static function Vendor(): \QuickBooksPhpDevKit\QBXML\Object\Vendor
+	public static function Vendor(array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Vendor
 	{
 		$qbVendor = new \QuickBooksPhpDevKit\QBXML\Object\Vendor();
 
@@ -494,6 +533,9 @@ class QbxmlTestdataGenerator
 		$qbVendor->setAltPhone('(555) 555-4321');
 		$qbVendor->setFax('(555) 555-2222');
 		$qbVendor->setEmail('vendor@example.com');
+
+		// Set any additional fields
+		$qbVendor->setFields($otherFields);
 
 		return $qbVendor;
 	}

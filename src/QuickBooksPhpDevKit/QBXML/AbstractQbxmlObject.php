@@ -213,6 +213,28 @@ abstract class AbstractQbxmlObject
 		return $fullname;
 	}
 
+	public function setFields(array $fields): void
+	{
+		// Set field data
+		foreach ($fields as $key => $value)
+		{
+			$setMethod = 'set' . $key;
+			if (!method_exists($this, $setMethod))
+			{
+				throw new \Exception('Class ' . get_class($this) . ' does not have a method ' . $setMethod .'.');
+			}
+
+			if (is_array($value))
+			{
+				$this->$setMethod(...$value);
+			}
+			else
+			{
+				$this->$setMethod($value);
+			}
+		}
+	}
+
 	/**
 	 * Set a Name field
 	 */
