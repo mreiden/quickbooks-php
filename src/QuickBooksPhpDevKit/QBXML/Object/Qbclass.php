@@ -12,8 +12,10 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+};
 
 /**
  * Using Qbclass because class is a PHP reserved word.

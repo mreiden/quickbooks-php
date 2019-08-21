@@ -17,17 +17,21 @@
 
 namespace QuickBooksPhpDevKit\IPP;
 
-use QuickBooksPhpDevKit\IPP;
-use QuickBooksPhpDevKit\IPP\Entitlement;
-use QuickBooksPhpDevKit\IPP\IDS;
-use QuickBooksPhpDevKit\IPP\BaseObject;
-use QuickBooksPhpDevKit\IPP\Role;
-use QuickBooksPhpDevKit\IPP\User;
-use QuickBooksPhpDevKit\IPP\Object\Report;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\XML;
-use QuickBooksPhpDevKit\XML\Node;
-use QuickBooksPhpDevKit\XML\Parser as XML_Parser;
+use QuickBooksPhpDevKit\{
+	IPP,
+	PackageInfo,
+	XML,
+	XML\Node,
+	XML\Parser as XML_Parser,
+};
+use QuickBooksPhpDevKit\IPP\{
+	BaseObject,
+	Entitlement,
+	IDS,
+	Object\Report,
+	Role,
+	User,
+};
 
 /**
  *
@@ -35,10 +39,6 @@ use QuickBooksPhpDevKit\XML\Parser as XML_Parser;
  */
 class Parser
 {
-	//public function __construct()
-	//{
-	//}
-
 	public function parseIPP(string $xml, string $method, ?int &$xml_errnum, ?string &$xml_errmsg, ?int &$err_code, ?string &$err_desc, ?string &$err_db)
 	{
 		// Massage it... *sigh*

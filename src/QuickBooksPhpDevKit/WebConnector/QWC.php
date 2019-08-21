@@ -17,8 +17,10 @@
 
 namespace QuickBooksPhpDevKit\WebConnector;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	Utilities,
+};
 
 /**
  * QuickBooks .QWC file generation

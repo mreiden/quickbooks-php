@@ -15,10 +15,12 @@
 
 namespace QuickBooksPhpDevKit;
 
-use QuickBooksPhpDevKit\XML\Backend;
-use QuickBooksPhpDevKit\XML\Document;
-use QuickBooksPhpDevKit\XML\Node;
-use QuickBooksPhpDevKit\XML\Parser;
+use QuickBooksPhpDevKit\XML\{
+	Backend,
+	Document,
+	Node,
+	Parser,
+};
 
 /**
  * QuickBooks XML base class

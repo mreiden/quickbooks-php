@@ -12,13 +12,17 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\DiscountLine;			// Sales Receipt discount line item
-use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\SalesReceiptLine;	// Sales Receipt line item
-use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\ShippingLine;			// Sales Receipt shipping line item
-use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\SalesTaxLine;			// Sales Receipt sales tax line item
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt\{
+	DiscountLine,		// Sales Receipt discount line item
+	SalesReceiptLine,	// Sales Receipt line item
+	ShippingLine,		// Sales Receipt shipping line item
+	SalesTaxLine,		// Sales Receipt sales tax line item
+};
 
 /**
  * QuickBooks Sales Receipts

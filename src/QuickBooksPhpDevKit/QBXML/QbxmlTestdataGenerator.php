@@ -2,8 +2,10 @@
 
 namespace QuickBooksPhpDevKit\QBXML;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+};
 
 class QbxmlTestdataGenerator
 {

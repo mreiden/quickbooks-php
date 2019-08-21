@@ -14,10 +14,14 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\ItemReceipt,
+};
 
 /**
  * Quickbooks ItemReceipt ItemGroupLine definition

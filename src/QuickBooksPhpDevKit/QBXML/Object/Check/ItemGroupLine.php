@@ -13,8 +13,10 @@
 namespace QuickBooksPhpDevKit\QBXML\Object\Check;
 
 use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Check;
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\Check,
+};
 
 /**
  *

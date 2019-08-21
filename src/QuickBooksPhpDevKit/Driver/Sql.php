@@ -22,10 +22,12 @@
 
 namespace QuickBooksPhpDevKit\Driver;
 
-use QuickBooksPhpDevKit\Driver;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
-use QuickBooksPhpDevKit\SQL\Schema;
+use QuickBooksPhpDevKit\{
+	Driver,
+	PackageInfo,
+	Utilities,
+	SQL\Schema,
+};
 
 /**
  * SQL driver back-end for QuickBooks queues

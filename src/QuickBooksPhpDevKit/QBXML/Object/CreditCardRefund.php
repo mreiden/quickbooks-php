@@ -14,9 +14,11 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
 
 /**
 * QuickBooks object class

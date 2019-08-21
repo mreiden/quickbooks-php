@@ -16,12 +16,16 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ExpenseLine;
-use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ItemGroupLine;
-use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\ItemLine;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\Object\ItemReceipt\{
+	ExpenseLine,
+	ItemGroupLine,
+	ItemLine,
+};
 
 /**
  * Quickbooks ItemReceipt definition

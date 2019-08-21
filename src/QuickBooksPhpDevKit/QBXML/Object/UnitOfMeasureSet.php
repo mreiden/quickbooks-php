@@ -12,10 +12,14 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet\DefaultUnit;
-use QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet\RelatedUnit;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+};
+use QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet\{
+	DefaultUnit,
+	RelatedUnit,
+};
 
 /**
  *

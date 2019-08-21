@@ -10,8 +10,10 @@
 namespace QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet;
 
 use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\UnitOfMeasureSet;
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\UnitOfMeasureSet,
+};
 
 /**
  *

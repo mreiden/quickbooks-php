@@ -16,10 +16,12 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
 use QuickBooksPhpDevKit\QBXML\Object\CreditMemo\CreditMemoLine;
-use QuickBooksPhpDevKit\XML\Node;
 
 /**
  * QBXML\Ojbect\CreditMemo class

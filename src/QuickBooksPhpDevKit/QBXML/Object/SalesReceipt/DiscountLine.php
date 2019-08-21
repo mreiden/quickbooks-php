@@ -9,10 +9,14 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object\SalesReceipt;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\SalesReceipt;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\SalesReceipt,
+};
 
 /**
  *

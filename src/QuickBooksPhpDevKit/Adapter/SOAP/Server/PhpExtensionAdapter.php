@@ -18,8 +18,10 @@
 
 namespace QuickBooksPhpDevKit\Adapter\SOAP\Server;
 
-use QuickBooksPhpDevKit\Adapter\SOAP\Server\AbstractAdapter;
-use QuickBooksPhpDevKit\Adapter\SOAP\Server\AdapterInterface;
+use QuickBooksPhpDevKit\Adapter\SOAP\Server\{
+    AbstractAdapter,
+    AdapterInterface,
+};
 
 /**
  * Adapter for the \SoapServer class provided by PHP's SOAP extension.

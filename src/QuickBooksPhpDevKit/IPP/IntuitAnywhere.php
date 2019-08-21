@@ -17,13 +17,17 @@
 
 namespace QuickBooksPhpDevKit\IPP;
 
-use QuickBooksPhpDevKit\Driver\Factory;
-use QuickBooksPhpDevKit\HTTP;
-use QuickBooksPhpDevKit\IPP;
-use QuickBooksPhpDevKit\IPP\IDS;
-use QuickBooksPhpDevKit\IPP\OAuthv1;
-use QuickBooksPhpDevKit\IPP\Service\Customer;
-use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\{
+	Driver\Factory,
+	HTTP,
+	IPP,
+	XML,
+};
+use QuickBooksPhpDevKit\IPP\{
+	IDS,
+	OAuthv1,
+	Service\Customer,
+};
 
 class IntuitAnywhere
 {

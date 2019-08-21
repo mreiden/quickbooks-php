@@ -29,10 +29,11 @@ namespace QuickBooksPhpDevKit\Driver\Sql;
 
 use \SQLite3 as PhpSQLite3;
 use \SQLite3Result;
-use QuickBooksPhpDevKit\Driver\Sql;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
-
+use QuickBooksPhpDevKit\{
+	Driver\Sql,
+	PackageInfo,
+	Utilities,
+};
 
 /**
  * QuickBooks SQLite3 back-end driver

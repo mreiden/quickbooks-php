@@ -16,10 +16,14 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object\CreditMemo;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\CreditMemo;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\CreditMemo,
+};
 
 class CreditMemoLine extends AbstractQbxmlObject
 {

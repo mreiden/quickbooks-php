@@ -8,9 +8,10 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object\ItemSalesTaxGroup;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\SalesTaxGroupItem;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+};
 
 /**
  *

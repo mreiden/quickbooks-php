@@ -11,8 +11,10 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object\JournalEntry;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+};
 
 /**
  *

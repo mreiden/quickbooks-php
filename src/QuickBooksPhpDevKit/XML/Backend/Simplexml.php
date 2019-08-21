@@ -2,11 +2,13 @@
 
 namespace QuickBooksPhpDevKit\XML\Backend;
 
-use QuickBooksPhpDevKit\XML;
-use QuickBooksPhpDevKit\XML\Backend\BackendInterface;
-use QuickBooksPhpDevKit\XML\Document;
-use QuickBooksPhpDevKit\XML\Node;
 use \SimpleXMLElement;
+use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\XML\{
+	Backend\BackendInterface,
+	Document,
+	Node,
+};
 
 class Simplexml implements BackendInterface
 {

@@ -17,10 +17,12 @@
 
 namespace QuickBooksPhpDevKit\Status;
 
-use QuickBooksPhpDevKit\Driver\Factory;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\SQL\Schema;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	Driver\Factory,
+	PackageInfo,
+	SQL\Schema,
+	Utilities,
+};
 
 /**
  *

@@ -23,9 +23,11 @@
 namespace QuickBooksPhpDevKit\Driver\Sql;
 
 use \mysqli as PhpMysqli;
-use QuickBooksPhpDevKit\Driver\Sql;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	Driver\Sql,
+	PackageInfo,
+	Utilities,
+};
 
 /**
  * QuickBooks MySQLi back-end driver

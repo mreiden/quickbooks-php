@@ -12,13 +12,17 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Check\ExpenseLine;
-use QuickBooksPhpDevKit\QBXML\Check\ItemLine;
-use QuickBooksPhpDevKit\QBXML\Check\ItemGroupLine;
-use QuickBooksPhpDevKit\QBXML\Check\ApplyCheckToTxn;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\Object\Check\{
+	ExpenseLine,
+	ItemLine,
+	ItemGroupLine,
+	ApplyCheckToTxn,
+};
 
 /**
  *

@@ -22,10 +22,11 @@
 
 namespace QuickBooksPhpDevKit\XML;
 
-use QuickBooksPhpDevKit\XML;
-use QuickBooksPhpDevKit\XML\Node;
-use QuickBooksPhpDevKit\XML\Document;
-use QuickBooksPhpDevKit\XML\Backend;
+use QuickBooksPhpDevKit\{
+	XML,
+	XML\Document,
+	XML\Node,
+};
 
 /**
  * QuickBooks XML Parser

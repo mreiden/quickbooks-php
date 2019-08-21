@@ -16,12 +16,14 @@
 
 namespace QuickBooksPhpDevKit\SQL;
 
-use QuickBooksPhpDevKit\Cast;
-use QuickBooksPhpDevKit\Driver\Sql;
-use QuickBooksPhpDevKit\Utilities;
-use QuickBooksPhpDevKit\XML;
-use QuickBooksPhpDevKit\XML\Node;
-use QuickBooksPhpDevKit\XML\Parser;
+use QuickBooksPhpDevKit\{
+	Cast,
+	Driver\Sql,
+	Utilities,
+	XML,
+	XML\Node,
+	XML\Parser,
+};
 
 /**
  * Schema mapping methods for mapping XML schemas to SQL schemas, and vice versa

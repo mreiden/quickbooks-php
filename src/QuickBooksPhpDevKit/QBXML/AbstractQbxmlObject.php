@@ -18,14 +18,18 @@
 
 namespace QuickBooksPhpDevKit\QBXML;
 
-use QuickBooksPhpDevKit\Cast;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
-use QuickBooksPhpDevKit\XML;
-use QuickBooksPhpDevKit\XML\Node;
-use QuickBooksPhpDevKit\QBXML\Object\Generic;
-use QuickBooksPhpDevKit\QBXML\Schema\AbstractSchemaObject;
-use QuickBooksPhpDevKit\XML\Parser;
+use QuickBooksPhpDevKit\{
+	Cast,
+	PackageInfo,
+	Utilities,
+	XML,
+	XML\Node,
+	XML\Parser,
+};
+use QuickBooksPhpDevKit\QBXML\{
+	Object\Generic,
+	Schema\AbstractSchemaObject,
+};
 
 /**
  * Base class for QuickBooks objects

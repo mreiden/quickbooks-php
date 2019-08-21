@@ -15,9 +15,11 @@
 
 namespace QuickBooksPhpDevKit\IPP;
 
-use QuickBooksPhpDevKit\IPP;
-use QuickBooksPhpDevKit\IPP\IDS;
-use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\{
+	IPP,
+	IPP\IDS,
+	PackageInfo,
+};
 
 class User
 {

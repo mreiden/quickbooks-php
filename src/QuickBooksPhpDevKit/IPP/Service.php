@@ -16,12 +16,14 @@
 
 namespace QuickBooksPhpDevKit\IPP;
 
-use QuickBooksPhpDevKit\IPP;
-use QuickBooksPhpDevKit\IPP\BaseObject;
-use QuickBooksPhpDevKit\IPP\Context;
-use QuickBooksPhpDevKit\IPP\IDS;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\{
+	IPP,
+	IPP\BaseObject,
+	IPP\Context,
+	IPP\IDS,
+	PackageInfo,
+	XML,
+};
 
 /**
  *

@@ -12,11 +12,13 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Schema;
 
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	Utilities,
+	XML,
+	XML\Parser,
+};
 use QuickBooksPhpDevKit\QBXML\Schema\AbstractSchemaObject;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
-use QuickBooksPhpDevKit\XML;
-use QuickBooksPhpDevKit\XML\Parser;
 
 /**
  *

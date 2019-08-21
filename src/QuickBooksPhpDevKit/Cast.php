@@ -15,8 +15,10 @@
 
 namespace QuickBooksPhpDevKit;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	XML,
+};
 
 /**
  * QuickBooks casts and data types

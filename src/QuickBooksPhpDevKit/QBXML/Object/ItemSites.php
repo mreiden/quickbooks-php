@@ -13,8 +13,10 @@
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
 use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\Generic;
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\Generic,
+};
 
 /**
  *

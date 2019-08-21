@@ -26,15 +26,19 @@
 namespace QuickBooksPhpDevKit\WebConnector\Server;
 
 use QuickBooksPhpDevKit\Adapter\SOAP\Server\AdapterInterface; // SOAP Server Interface
-use QuickBooksPhpDevKit\Callbacks\SQL\Callbacks;      // SQL callbacks (request and response handlers)
-use QuickBooksPhpDevKit\Callbacks\SQL\Errors;         // SQL error handlers
-use QuickBooksPhpDevKit\Driver\Singleton;             // SQL drivers
-use QuickBooksPhpDevKit\PackageInfo;                  // Project constants and config variables
-use QuickBooksPhpDevKit\SQL\AbstractSchemaObject;     // SQL objects (convert qbXML to objects to schema)
-use QuickBooksPhpDevKit\SQL\Schema;                   // SQL schema generation
-use QuickBooksPhpDevKit\Utilities;                    // General Utilities
-use QuickBooksPhpDevKit\WebConnector\Handlers;        // Handlers file (we need this for soem constant declarations)
-use QuickBooksPhpDevKit\WebConnector\Server;          // WebConnector Base Server Class
+use QuickBooksPhpDevKit\Callbacks\SQL\{
+	Callbacks,      // SQL callbacks (request and response handlers)
+	Errors,         // SQL error handlers
+};
+use QuickBooksPhpDevKit\{
+	Driver\Singleton,             // SQL drivers
+	PackageInfo,                  // Project constants and config variables
+	SQL\AbstractSchemaObject,     // SQL objects (convert qbXML to objects to schema)
+	SQL\Schema,                   // SQL schema generation
+	Utilities,                    // General Utilities
+	WebConnector\Handlers,        // Handlers file (we need this for soem constant declarations)
+	WebConnector\Server,          // WebConnector Base Server Class
+};
 
 /**
  *

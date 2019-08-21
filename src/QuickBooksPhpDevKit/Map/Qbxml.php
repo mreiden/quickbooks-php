@@ -13,13 +13,15 @@
 
 namespace QuickBooksPhpDevKit\Map;
 
-use QuickBooksPhpDevKit\Driver\Factory;
-use QuickBooksPhpDevKit\Driver\Sql;
-use QuickBooksPhpDevKit\Map;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\SQL\Schema;
-use QuickBooksPhpDevKit\SQL\SqlObject;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	Driver\Factory,
+	Driver\Sql,
+	Map,
+	PackageInfo,
+	SQL\Schema,
+	SQL\SqlObject,
+	Utilities,
+};
 
 class Qbxml extends Map
 {

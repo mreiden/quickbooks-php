@@ -18,19 +18,21 @@
 
 namespace QuickBooksPhpDevKit;
 
-use QuickBooksPhpDevKit\HTTP;					// HTTP request class
-use QuickBooksPhpDevKit\Driver\Factory;			// SQL Driver Factory
-use QuickBooksPhpDevKit\IPP\BaseObject;			// Base IPP Object
-use QuickBooksPhpDevKit\IPP\Context;			// Context element (holds application information)
-use QuickBooksPhpDevKit\IPP\Parser;				// IPP XML parser
-use QuickBooksPhpDevKit\IPP\Federator;			// SAML federation of applications
-use QuickBooksPhpDevKit\IPP\IDS;				// IDS (Intuit Data Services) base class
-use QuickBooksPhpDevKit\IPP\IntuitAnywhere;		// IntuitAnywhere widgets
-use QuickBooksPhpDevKit\IPP\OAuth;				// OAuth
-use QuickBooksPhpDevKit\IPP\Service;			// IDS base service class
-use QuickBooksPhpDevKit\PackageInfo;			// Project constants and configuration
-use QuickBooksPhpDevKit\Utilities;				// Project Utilities
-use QuickBooksPhpDevKit\XML;					// XML parser
+use QuickBooksPhpDevKit\{
+	HTTP,					// HTTP request class
+	Driver\Factory,			// SQL Driver Factory
+	IPP\BaseObject,			// Base IPP Object
+	IPP\Context,			// Context element (holds application information)
+	IPP\Federator,			// SAML federation of applications
+	IPP\IDS,				// IDS (Intuit Data Services) base class
+	IPP\IntuitAnywhere,		// IntuitAnywhere widgets
+	IPP\OAuth,				// OAuth
+	IPP\Parser,				// IPP XML parser
+	IPP\Service,			// IDS base service class
+	PackageInfo,			// Project constants and configuration
+	Utilities,				// Project Utilities
+	XML,					// XML parser
+};
 
 /**
  *

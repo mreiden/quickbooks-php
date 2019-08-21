@@ -21,22 +21,25 @@
 
 namespace QuickBooksPhpDevKit\SOAP;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\XML;
-use QuickBooksPhpDevKit\XML\Parser;
-use QuickBooksPhpDevKit\WebConnector\Request;						// WebConnector Request base class
-use QuickBooksPhpDevKit\WebConnector\Request\Authenticate;			// Object container for request calls to ->authenticate()
-use QuickBooksPhpDevKit\WebConnector\Request\Clientversion;			// Object container for request calls to ->clientVersion()
-use QuickBooksPhpDevKit\WebConnector\Request\Closeconnection;		// Object container for request calls to ->closeConnection()
-use QuickBooksPhpDevKit\WebConnector\Request\Connectionerror;		// Object container for request calls to ->connectionError()
-use QuickBooksPhpDevKit\WebConnector\Request\Getinteractiveurl;		// Object container for request calls to ->getInteractiveURL()
-use QuickBooksPhpDevKit\WebConnector\Request\Getlasterror;			// Object container for request calls to ->getLastError()
-use QuickBooksPhpDevKit\WebConnector\Request\Interactivedone;		// Object container for request calls to ->interactiveDone()
-use QuickBooksPhpDevKit\WebConnector\Request\Interactiverejected;	// Object container for request calls to ->interactiveRejected()
-use QuickBooksPhpDevKit\WebConnector\Request\Receiveresponsexml;	// Object container for request calls to ->receiveResponseXML()
-use QuickBooksPhpDevKit\WebConnector\Request\Sendrequestxml;		// Object container for request calls to ->sendRequestXML()
-use QuickBooksPhpDevKit\WebConnector\Request\Serverversion;			// Object container for request calls to ->serverVersion()
-
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	XML,
+	XML\Parser,
+};
+use QuickBooksPhpDevKit\WebConnector\{
+	Request,						// WebConnector Request base class
+	Request\Authenticate,			// Object container for request calls to ->authenticate()
+	Request\Clientversion,			// Object container for request calls to ->clientVersion()
+	Request\Closeconnection,		// Object container for request calls to ->closeConnection()
+	Request\Connectionerror,		// Object container for request calls to ->connectionError()
+	Request\Getinteractiveurl,		// Object container for request calls to ->getInteractiveURL()
+	Request\Getlasterror,			// Object container for request calls to ->getLastError()
+	Request\Interactivedone,		// Object container for request calls to ->interactiveDone()
+	Request\Interactiverejected,	// Object container for request calls to ->interactiveRejected()
+	Request\Receiveresponsexml,		// Object container for request calls to ->receiveResponseXML()
+	Request\Sendrequestxml,			// Object container for request calls to ->sendRequestXML()
+	Request\Serverversion,			// Object container for request calls to ->serverVersion()
+};
 
 /**
  * QuickBooks SOAP server component

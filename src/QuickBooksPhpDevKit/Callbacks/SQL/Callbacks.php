@@ -42,24 +42,22 @@
 
 namespace QuickBooksPhpDevKit\Callbacks\SQL;
 
-use QuickBooksPhpDevKit\Cast;                                        // Casts qbxml objects into the corresponding PHP class
-use QuickBooksPhpDevKit\Callbacks as NonSqlCallbacks;                // NonSqlCallbacks::callHook is used to call the hooks
-use QuickBooksPhpDevKit\Driver\Sql;                                  // Provides SQL constants and configurion variables
-use QuickBooksPhpDevKit\Driver\Singleton;                            // Provides singleton access to the database driver instances
-use QuickBooksPhpDevKit\Map\Qbxml;                                   // Mapper for qbXML schema
-use QuickBooksPhpDevKit\PackageInfo;                                 // Package constants and config variables
-use QuickBooksPhpDevKit\SQL as QuickbooksSql;                        // Has constants defining hooks
-use QuickBooksPhpDevKit\SQL\Schema;                                  // Schema class (provides mapping for XML schema to SQL schema)
-use QuickBooksPhpDevKit\SQL\SqlObject;                               // Generic Sql Object class
-use QuickBooksPhpDevKit\Utilities;                                   // General Utilities
+use QuickBooksPhpDevKit\{
+	Cast,                              // Casts qbxml objects into the corresponding PHP class
+	Callbacks as NonSqlCallbacks,      // NonSqlCallbacks::callHook is used to call the hooks
+	Driver\Sql,                        // Provides SQL constants and configurion variables
+	Driver\Singleton,                  // Provides singleton access to the database driver instances
+	Map\Qbxml,                         // Mapper for qbXML schema
+	PackageInfo,                       // Package constants and config variables
+	SQL as QuickbooksSql,              // Has constants defining hooks
+	SQL\Schema,                        // Schema class (provides mapping for XML schema to SQL schema)
+	SQL\SqlObject,                     // Generic Sql Object class
+	Utilities,                         // General Utilities
+	XML,                               // Needed for some constants (e.g. XML::OK)
+	XML\Parser,                        // Needed for some constants (e.g. XML::OK)
+};
 use QuickBooksPhpDevKit\WebConnector\Server\SQL as WebConnectorSQL;  // SQL Mirroring WebConnector Server
-use QuickBooksPhpDevKit\XML;                                         // Needed for some constants (e.g. XML::OK)
-use QuickBooksPhpDevKit\XML\Parser;                                  // Needed for some constants (e.g. XML::OK)
 
-// For debugging...
-//require_once '/Users/kpalmer/Projects/QuickBooks/QuickBooks.php';
-//require_once '/Users/kpalmer/Sites/saas/library/quickbooks/QuickBooks.php';
-//require_once '/home/playscape/www/html/QuickBooks/QuickBooks.php';
 
 /**
  * Static callback methods for the SQL mirror server

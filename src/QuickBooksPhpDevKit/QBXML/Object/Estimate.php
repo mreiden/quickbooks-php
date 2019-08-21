@@ -12,10 +12,12 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
 use QuickBooksPhpDevKit\QBXML\Object\Estimate\EstimateLine;
-use QuickBooksPhpDevKit\XML\Node;
 
 /**
  *

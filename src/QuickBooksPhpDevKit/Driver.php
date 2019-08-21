@@ -22,8 +22,10 @@
 
 namespace QuickBooksPhpDevKit;
 
-use QuickBooksPhpDevKit\Encryption\Factory as EncryptionFactory;
-use QuickBooksPhpDevKit\PackageInfo;
+use QuickBooksPhpDevKit\{
+	Encryption\Factory as EncryptionFactory,
+	PackageInfo,
+};
 
 /**
  * QuickBooks driver base class

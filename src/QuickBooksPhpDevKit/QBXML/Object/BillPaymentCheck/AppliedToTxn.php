@@ -11,10 +11,14 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object\BillPaymentCheck;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\BillPaymentCheck;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\BillPaymentCheck,
+};
 
 /**
  *

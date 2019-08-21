@@ -26,8 +26,10 @@
 
 namespace QuickBooksPhpDevKit\Driver\Sql;
 
-use QuickBooksPhpDevKit\Driver\Sql;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	Driver\Sql,
+	Utilities,
+};
 
 /**
  * QuickBooks PostgreSQL back-end driver

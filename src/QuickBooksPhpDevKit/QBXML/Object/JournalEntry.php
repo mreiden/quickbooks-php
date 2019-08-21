@@ -11,10 +11,14 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\JournalEntry\JournalCreditLine;
-use QuickBooksPhpDevKit\QBXML\Object\JournalEntry\JournalDebitLine;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+};
+use QuickBooksPhpDevKit\QBXML\Object\JournalEntry\{
+	JournalCreditLine,
+	JournalDebitLine,
+};
 
 /**
  *

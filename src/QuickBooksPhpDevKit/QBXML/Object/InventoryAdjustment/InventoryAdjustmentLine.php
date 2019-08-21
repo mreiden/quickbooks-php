@@ -14,10 +14,14 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object\InventoryAdjustment;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\InventoryAdjustment;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\{
+	AbstractQbxmlObject,
+	Object\InventoryAdjustment,
+};
 
 /**
  * Quickbooks InventoryAdjustmentLine definition

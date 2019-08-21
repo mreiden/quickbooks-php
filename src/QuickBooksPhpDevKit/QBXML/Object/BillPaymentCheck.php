@@ -12,10 +12,12 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\BillPaymentCheck\AppliedToTxn;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\Object\BillPaymentCheck\AppliedToTxn;
 
 /**
  * QuickBooks ReceivePayment object

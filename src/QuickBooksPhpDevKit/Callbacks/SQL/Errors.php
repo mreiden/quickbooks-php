@@ -18,13 +18,15 @@
 
 namespace QuickBooksPhpDevKit\Callbacks\SQL;
 
-use QuickBooksPhpDevKit\Driver\Singleton;
-use QuickBooksPhpDevKit\Driver\Sql;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\SQL\Schema;
-use QuickBooksPhpDevKit\SQL\SqlObject;
-use QuickBooksPhpDevKit\Utilities;
-use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\{
+	Driver\Singleton,
+	Driver\Sql,
+	PackageInfo,
+	SQL\Schema,
+	SQL\SqlObject,
+	Utilities,
+	XML,
+};
 
 /**
  *

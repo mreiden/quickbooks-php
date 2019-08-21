@@ -18,9 +18,11 @@
 
 namespace QuickBooksPhpDevKit\Driver;
 
-use QuickBooksPhpDevKit\Driver;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	Driver,
+	PackageInfo,
+	Utilities,
+};
 
 /**
  *

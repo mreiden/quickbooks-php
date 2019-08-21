@@ -54,12 +54,13 @@
 namespace QuickBooksPhpDevKit\WebConnector;
 
 use QuickBooksPhpDevKit\Adapter\SOAP\Server\AdapterInterface;
-use QuickBooksPhpDevKit\Callbacks;
-//use QuickBooksPhpDevKit\ErrorHandler;
-use QuickBooksPhpDevKit\Driver\Factory;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
-use QuickBooksPhpDevKit\WebConnector\Handlers;	// Base handlers for each of the methods required by the QuickBooks Web Connector
+use QuickBooksPhpDevKit\{
+	Callbacks,
+	Driver\Factory,
+	PackageInfo,
+	Utilities,
+	WebConnector\Handlers,	// Base handlers for each of the methods required by the QuickBooks Web Connector
+};
 
 /**
  * QuickBooks SOAP Server

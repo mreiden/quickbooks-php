@@ -42,10 +42,12 @@
 
 namespace QuickBooksPhpDevKit\WebConnector;
 
-use QuickBooksPhpDevKit\Driver;
-use QuickBooksPhpDevKit\Driver\Factory;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	Driver,
+	Driver\Factory,
+	PackageInfo,
+	Utilities,
+};
 
 /**
  * QuickBooks queueing class - Queue up actions to be performed in QuickBooks

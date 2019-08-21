@@ -29,8 +29,10 @@
 
 namespace QuickBooksPhpDevKit;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\Utilities;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	Utilities,
+};
 
 class HTTP
 {

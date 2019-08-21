@@ -18,9 +18,11 @@
 namespace QuickBooksPhpDevKit;
 
 use Ramsey\Uuid\Uuid;
-use QuickBooksPhpDevKit\Driver\Factory;
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\XML;
+use QuickBooksPhpDevKit\{
+	Driver\Factory,
+	PackageInfo,
+	XML,
+};
 
 /**
  * Various QuickBooks related utilities
@@ -1060,8 +1062,10 @@ class Utilities
 			case PackageInfo::Actions['OBJECT_CHECK']:
 			case PackageInfo::Actions['OBJECT_BILL']:
 				return 'TxnID';
+
 			case PackageInfo::Actions['OBJECT_COMPANY']:
 				return 'CompanyName';
+
 			default:
 				return 'ListID';
 		}

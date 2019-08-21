@@ -12,13 +12,17 @@
 
 namespace QuickBooksPhpDevKit\QBXML\Object;
 
-use QuickBooksPhpDevKit\PackageInfo;
-use QuickBooksPhpDevKit\QBXML\AbstractQbxmlObject;
-use QuickBooksPhpDevKit\QBXML\Object\Invoice\DiscountLine;
-use QuickBooksPhpDevKit\QBXML\Object\Invoice\InvoiceLine;
-use QuickBooksPhpDevKit\QBXML\Object\Invoice\ShippingLine;
-use QuickBooksPhpDevKit\QBXML\Object\Invoice\SalesTaxLine;
-use QuickBooksPhpDevKit\XML\Node;
+use QuickBooksPhpDevKit\{
+	PackageInfo,
+	QBXML\AbstractQbxmlObject,
+	XML\Node,
+};
+use QuickBooksPhpDevKit\QBXML\Object\Invoice\{
+	DiscountLine,
+	InvoiceLine,
+	ShippingLine,
+	SalesTaxLine,
+};
 
 /**
  * QBXML\Object\Invoice class definition
