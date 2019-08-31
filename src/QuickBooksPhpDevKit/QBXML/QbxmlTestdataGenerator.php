@@ -483,6 +483,27 @@ class QbxmlTestdataGenerator
 		return $qbPayment;
 	}
 
+	public static function SalesRep(string $initial, ?string $FullName, ?bool $isActive = true, ?string $ListID = null, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\SalesRep
+	{
+		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\SalesRep();
+
+		$qbObject->setInitial($initial);
+		if (!empty($ListID))
+		{
+			$qbObject->setSalesRepEntityListID($ListID);
+		}
+		else if (!empty($FullName))
+		{
+			$qbObject->setSalesRepEntityName($FullName);
+		}
+		$qbObject->setIsActive($isActive);
+
+		// Set any additional fields
+		$qbObject->setFields($otherFields);
+
+		return $qbObject;
+	}
+
 	public static function StandardTerms(string $name, int $daysDue, ?int $daysDiscount = null, ?float $discountPercent = null, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\StandardTerms
 	{
 		$qbObject = new \QuickBooksPhpDevKit\QBXML\Object\StandardTerms();
@@ -503,7 +524,7 @@ class QbxmlTestdataGenerator
 		return $qbObject;
 	}
 
-	public static function Vendor(array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Vendor
+	public static function Vendor(string $name, array $otherFields = []): \QuickBooksPhpDevKit\QBXML\Object\Vendor
 	{
 		$qbVendor = new \QuickBooksPhpDevKit\QBXML\Object\Vendor();
 
@@ -514,7 +535,7 @@ class QbxmlTestdataGenerator
 
 		$qbVendor->setIsActive(true);
 		$qbVendor->setVendorTypeRef('1099 Contractor');
-		$qbVendor->setName('Vendor1');
+		$qbVendor->setName($name);
 		$qbVendor->setCompanyName('Vendor Company Name');
 		$qbVendor->setFirstName('John');
 		$qbVendor->setLastName('Doe');
