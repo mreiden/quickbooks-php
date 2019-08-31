@@ -158,8 +158,6 @@ class SQL extends Server
 		// Set the default time zone.  Should be set to the WebConnect client's time zone if possible.
 		$this->setDefaultTimeZone();
 
-		// $dsn_or_conn, $map, $onerror = [], $hooks = [], $log_level = PackageInfo::LogLevel['NORMAL'], $soap = QUICKBOOKS_SOAPSERVER_BUILTIN, $wsdl = QUICKBOOKS_WSDL, $soap_options = [], $handler_options = [], $driver_options = []
-
 		if (!is_array($users))
 		{
 			$users = [$users];
