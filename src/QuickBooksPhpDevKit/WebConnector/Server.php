@@ -451,6 +451,12 @@ class Server
 				}
 				print(' - Current Date/Time: ' . date('Y-m-d H:i:s') . "\n");
 				print(' - Error Reporting: ' . error_reporting() . "\n");
+				print(' - Allow Legacy Passwords: ' . (PackageInfo::$PASSWORD_ALLOW_LEGACY ? 'Yes' : 'No') . "\n");
+				if (PackageInfo::$PASSWORD_ALLOW_LEGACY)
+				{
+					print(' - Upgrade Legacy Passwords On Login: ' . (PackageInfo::$PASSWORD_UPGRADE ? 'Yes' : 'No') . "\n");
+				}
+				print(' - Allow PHP Unserialize of Queue Extra field: ' . (PackageInfo::$ALLOW_PHP_UNSERIALIZE_EXTRA_DATA ? 'Yes' : 'No') . "\n");
 
 				print("\n");
 				print('SOAP Adapter: ' . "\n");
