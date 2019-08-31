@@ -40,7 +40,7 @@ class SalesRep extends AbstractQbxmlObject
 	/**
 	 * Get the initials of this sales rep
 	 */
-	public function getInitial(): string
+	public function getInitial(): ?string
 	{
 		return $this->get('Initial');
 	}
@@ -56,7 +56,7 @@ class SalesRep extends AbstractQbxmlObject
 	/**
 	 * Get whether or not this sales rep is active
 	 */
-	public function getIsActive(): bool
+	public function getIsActive(): ?bool
 	{
 		return $this->getBooleanType('IsActive');
 	}
@@ -72,7 +72,7 @@ class SalesRep extends AbstractQbxmlObject
 	/**
 	 *
 	 */
-	public function getSalesRepEntityListID(): string
+	public function getSalesRepEntityListID(): ?string
 	{
 		return $this->get('SalesRepEntityRef ListID');
 	}
@@ -88,7 +88,7 @@ class SalesRep extends AbstractQbxmlObject
 	/**
 	 *
 	 */
-	public function getSalesRepEntityName(): string
+	public function getSalesRepEntityName(): ?string
 	{
 		return $this->get('SalesRepEntityRef FullName');
 	}
