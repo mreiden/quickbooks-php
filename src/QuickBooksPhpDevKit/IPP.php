@@ -800,7 +800,7 @@ class IPP
 		if (!$attempted_renew &&
 			is_object($this->_driver) &&
 			$this->_authmode == IPP::AUTHMODE_OAUTHV2 &&
-			strtotime($this->_authcred['oauth_access_expiry']) + 60 < time())
+			strtotime($this->_authcred['oauth_access_expiry']) - 60 < time())
 		{
 			$attempted_renew = true;
 
