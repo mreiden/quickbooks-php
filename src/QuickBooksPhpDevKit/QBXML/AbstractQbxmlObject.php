@@ -785,16 +785,19 @@ abstract class AbstractQbxmlObject
 	}
 
 	/**
-	 * Convert this object to a valid qbXML request and warp in the appropriate QBXML or QBXMLPOS wrapper
+	 * Convert this object to a valid qbXML request and add the appropriate QBXML or QBXMLPOS wrapper
 	 */
-	public function asCompleteQBXML(string $request, ?float $version = null, ?string $locale = null, ?string $root = null, ?string $onError = null): string
+	public function asCompleteQBXML(string $request, ?float $version = null, ?string $locale = null, ?string $root = null, ?string $onError = null, ?bool $isQBXMLPOS = null): string
 	{
 		// Create the QBXML for the request
 		$qbxml = $this->asQBXML($request, $version, $locale, $root);
 
 		// Find the schema object and find if it is only in the QB POS sdk
-		$schema = $this->_schema($request);
-		$isQBXMLPOS = ($schema instanceof AbstractSchemaObject) ? $schema->isOnlyInQBPOS() : false;
+		if (null === $isQBXMLPOS)
+		{
+			$schema = $this->_schema($request);
+			$isQBXMLPOS = ($schema instanceof AbstractSchemaObject) ? $schema->isOnlyInQBPOS() : false;
+		}
 
 		return $this->addQbXmlRequestWrapper($qbxml, $version, $onError, $isQBXMLPOS);
 	}
