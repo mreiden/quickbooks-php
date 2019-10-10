@@ -442,7 +442,7 @@ class Server
 				print(' - $debug  = ' . $debug . "\n");
 				print("\n");
 				print('Miscellaneous Information: ' . "\n");
-				print(' - Logging: ' . $this->_loglevel . "\n");
+				print(' - Logging: ' . $this->_loglevel . '(' . array_search($this->_loglevel, PackageInfo::LogLevel) . ")\n");
 
 				if (function_exists('date_default_timezone_get'))
 				{
