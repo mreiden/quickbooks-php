@@ -131,8 +131,10 @@ class QbxmlTestdataGenerator
 		$qbCreditMemo->setIsToBePrinted(false);
 		$qbCreditMemo->setisToBeEmailed(true);
 
-		// Sets the Quickbooks Class (Business Segment)
-		$qbCreditMemo->setClassName('QuickBooksClass');
+		// Set the Quickbooks Class (Business Segment)
+		// Commented out because QuickBooks does not enable this by default
+		//$qbCreditMemo->setClassName('QuickBooksClass');
+
 		//$qbCreditMemo->setTermsName('11% 12 Net 31');
 		//$qbCreditMemo->setTemplateName('Intuit Service Invoice');
 
@@ -317,8 +319,10 @@ class QbxmlTestdataGenerator
 		$qbInvoice->setIsToBePrinted(false);
 		$qbInvoice->setisToBeEmailed(true);
 
-		// Sets the Quickbooks Class (Business Segment)
-		$qbInvoice->setClassName('QuickBooksClass');
+		// Set the Quickbooks Class (Business Segment)
+		// Commented out because QuickBooks does not enable this by default
+		//$qbInvoice->setClassName('QuickBooksClass');
+
 		$qbInvoice->setTermsName('11% 12 Net 31');
 		$qbInvoice->setTemplateName('Intuit Service Invoice');
 		$qbInvoice->setIncludeLinkedTxns(true);
