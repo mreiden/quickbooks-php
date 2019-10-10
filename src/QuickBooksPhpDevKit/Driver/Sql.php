@@ -234,6 +234,8 @@ abstract class Sql extends Driver
 		$errnum = 0;
 		$errmsg = '';
 
+		$value = $value ?? '';
+
 		if ($arr = $this->_fetch($this->_query("
 			SELECT
 				quickbooks_config_id
@@ -2746,7 +2748,14 @@ abstract class Sql extends Driver
 			$where = [];
 			foreach ($restrict as $field => $value)
 			{
-				$where[] = $field . " = '" . $this->_escape($value) . "' ";
+				if (is_null($value))
+				{
+					$where[] = $field . ' IS NULL ';
+				}
+				else
+				{
+					$where[] = $field . " = '" . $this->_escape($value) . "' ";
+				}
 			}
 
 			$errnum = 0;
@@ -2955,7 +2964,14 @@ abstract class Sql extends Driver
 		{
 			foreach ($part as $field => $value)
 			{
-				$wheres[] = $field . " = '" . $this->_escape($value) . "' ";
+				if (is_null($value))
+				{
+					$wheres[] = $field . ' IS NULL ';
+				}
+				else
+				{
+					$wheres[] = $field . " = '" . $this->_escape($value) . "' ";
+				}
 			}
 		}
 
@@ -3131,14 +3147,17 @@ abstract class Sql extends Driver
 			}
 		}
 
-		$sql = "DELETE FROM " . $this->_escape($table);
+		$sql = 'DELETE FROM ' . $this->_escape($table);
 
-		$sql .= " WHERE " . implode(' AND ', $wheres);
+		$sql .= ' WHERE ' . implode(' AND ', $wheres);
 
 		$errnum = 0;
 		$errmsg = '';
 
-		return $this->_query($sql, $errnum, $errmsg);
+		// _query throws an exception on a failed query
+		$this->_query($sql, $errnum, $errmsg);
+
+		return true;
 	}
 
 	/**
