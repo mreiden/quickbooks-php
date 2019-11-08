@@ -234,3 +234,11 @@ There is additional documentation and additional examples on our legacy and new 
 -------------------------------------
 ###Keith Palmer###
 - Follow me on Twitter for updates: https://twitter.com/keith_palmer_jr
+
+
+
+
+
+
+
+[composer]: http://getcomposer.org/
