@@ -1,0 +1,29 @@
+; This is used to configure the databases for tests.
+; Comments start with ';', as in php.ini
+
+[sqlite3]
+;
+; NOTE: SQLite3 uses the special :memory: database where the database does not need to persist
+;
+; Enable the SQLite3 tests
+enabled = true
+; The directory where temporary SQLite3 files should be written [defaults to sys_get_temp_dir()]
+;database_directory = "/tmp"
+
+[mysqli]
+; Enable the MySQLi tests
+;enabled = true
+database = "quickbooks_tests"
+host = "localhost"
+port = 3306
+username = "mysql"
+password = ""
+
+[pgsql]
+; Enable the PostgreSQL tests
+;enabled = true
+database = "quickbooks_tests"
+host = "localhost"
+port = 5432
+username = "postgres"
+password = ""

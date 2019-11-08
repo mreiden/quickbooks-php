@@ -1,0 +1,1 @@
+This is a "corrupt SQLite3 database" or just a text file... same thing.
