@@ -490,11 +490,6 @@ class Callbacks
 
 	/**
 	 * Restrict the queueing maps to "only do these actions" and "dont do these actions" maps
-	 *
-	 * @param array $action_to_priority
-	 * @param array $only_do
-	 * @param array $dont_do
-	 * @return array
 	 */
 	static protected function _filterActions(array $action_to_priority, array $only_do, array $dont_do, $type): array
 	{
@@ -530,19 +525,9 @@ class Callbacks
 
 	/**
 	 *
-	 *
 	 * @todo Implement error handling routines
-	 *
-	 * @param array $hooks
-	 * @param string $hook
-	 * @param string $requestID
-	 * @param string $user
-	 * @param string $err
-	 * @param array $hook_data
-	 * @param array $callback_config
-	 * @return boolean
 	 */
-	protected static function _callHooks(&$hooks, string $hook, int $requestID, string $user, &$err, $hook_data, $callback_config = [])
+	protected static function _callHooks(array &$hooks, string $hook, int $requestID, string $user, &$err, ?array $hook_data, array $callback_config = []): bool
 	{
 		$err = '';
 
@@ -554,11 +539,15 @@ class Callbacks
 	/**
 	 * Returns TRUE if the current version if it's greater than or equal to the required version
 	 */
-	protected static function _requiredVersion(float $required, float $current, string $locale = PackageInfo::Locale['US'], $action = null)
+	protected static function _requiredVersion($required, $current, string $locale = PackageInfo::Locale['US'], $action = null)
 	{
 		if ($locale == PackageInfo::Locale['US'])
 		{
-			return $current >= $required;
+			$required = filter_var($required, FILTER_VALIDATE_FLOAT);
+			if (is_float($required))
+			{
+				return $current >= $required;
+			}
 		}
 
 		return true;
@@ -575,8 +564,10 @@ class Callbacks
 	 * @param string $locale
 	 * @return string
 	 */
-	protected static function _version($version, $locale)
+	protected static function _version(float $version, string $locale): string
 	{
+		$version = number_format($version, 1);
+
 		if ($locale == PackageInfo::Locale['US'])
 		{
 			return $version;
@@ -590,14 +581,13 @@ class Callbacks
 	 *
 	 * @param float $required
 	 * @param float $current
-	 * @param string $element
-	 * @return string
 	 */
-	protected static function _requiredVersionForElement($required, $current, $element, $locale = PackageInfo::Locale['US'], $action = null)
+	protected static function _requiredVersionForElement($required, $current, string $element, string $locale = PackageInfo::Locale['US'], ?string $action = null): string
 	{
-		if ($locale = PackageInfo::Locale['US'])
+		if ($locale == PackageInfo::Locale['US'])
 		{
-			if ($current >= $required)
+			$required = filter_var($required, FILTER_VALIDATE_FLOAT);
+			if (is_float($required) && $current >= $required)
 			{
 				return $element;
 			}
@@ -614,11 +604,10 @@ class Callbacks
 	 * 	XML tag, makes sense for them to have a closing bracket there
 	 *
 	 * @param mixed $extra 		The $extra value that is passed to the method you're calling this from
-	 * @return string
 	 */
-	protected static function _buildIterator($extra, $version = null, $locale = null)
+	protected static function _buildIterator(?array $extra, $version = null, ?string $locale = null): string
 	{
-		$xml = "";
+		$xml = '';
 
 		if ($locale == PackageInfo::Locale['CA'] || $locale == PackageInfo::Locale['UK'] || $locale == PackageInfo::Locale['AU'])
 		{
@@ -653,9 +642,9 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function InventoryLevelsRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InventoryLevelsRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="8.0"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="stopOnError">
@@ -680,13 +669,11 @@ class Callbacks
 	/**
 	 * Handle an inventory stock status report from QuickBooks
 	 */
-	public static function InventoryLevelsResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $callback_config = [])
+	public static function InventoryLevelsResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $callback_config = []): void
 	{
 		$Driver = Singleton::getInstance();
 
 		$col_defs = [];
-
-		//mysql_query("INSERT INTO quickbooks_log ( msg, log_datetime ) VALUES ( 'TESTING', NOW() ) ") or die(mysql_error());
 
 		// First, find the column definitions
 		$tmp = $xml;
@@ -838,9 +825,9 @@ class Callbacks
 		//$Driver->log('Inventory: ' . print_r($items, true), null, PackageInfo::LogLevel['VERBOSE']);
 	}
 
-	public static function InventoryAssemblyLevelsRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InventoryAssemblyLevelsRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="8.0"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="stopOnError">
@@ -863,13 +850,11 @@ class Callbacks
 	/**
 	 * Handle an inventory stock status report from QuickBooks
 	 */
-	public static function InventoryAssemblyLevelsResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $callback_config = [])
+	public static function InventoryAssemblyLevelsResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $callback_config = []): void
 	{
 		$Driver = Singleton::getInstance();
 
 		$col_defs = [];
-
-		//mysql_query("INSERT INTO quickbooks_log ( msg, log_datetime ) VALUES ( 'TESTING', NOW() ) ") or die(mysql_error());
 
 		// First, find the column definitions
 		$tmp = $xml;
@@ -1102,7 +1087,7 @@ class Callbacks
 	/**
 	 * Fetch a list of deleted things from QuickBooks
 	 */
-	public static function ListDeletedQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ListDeletedQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$xml = '';
 
@@ -1111,7 +1096,7 @@ class Callbacks
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml .= '<?xml version="1.0" encoding="utf-8"?>
+		$xml .= '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -1162,7 +1147,7 @@ class Callbacks
 	/**
 	 * Handle a list of deleted items from QuickBooks
 	 */
-	public static function ListDeletedQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ListDeletedQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Driver = Singleton::getInstance();
 
@@ -1187,32 +1172,29 @@ class Callbacks
 				$table = $map[0];
 
 				$data = [
-					'qbsql_flag_deleted' => 1,
+					'qbsql_flag_deleted' => $Driver->hasTrueBoolean() ? 'true' : 1,
 				];
 
-				$multipart = array( 'ListID' => $Node->getChildDataAt('ListDeletedRet ListID') );
+				$multipart = ['ListID' => $Node->getChildDataAt('ListDeletedRet ListID')];
 
-				$Driver->update(Sql::$TablePrefix['SQL_MIRROR'] . $table, $data, array( $multipart ));
+				$Driver->update(Sql::$TablePrefix['SQL_MIRROR'] . $table, $data, [$multipart]);
 			}
 		}
-
-		return true;
 	}
 
 	/**
 	 * Fetch a list of deleted transactions from QuickBooks
 	 */
-	public static function TxnDeletedQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function TxnDeletedQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$xml = '';
-
 
 		if (!static::_requiredVersion(2.0, $version, $locale, PackageInfo::Actions['DELETE_TRANSACTION']))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml .= '<?xml version="1.0" encoding="utf-8"?>
+		$xml .= '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -1257,7 +1239,7 @@ class Callbacks
 	 *
 	 * @todo Actually delete the elements.
 	 */
-	public static function TxnDeletedQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function TxnDeletedQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Driver = Singleton::getInstance();
 
@@ -1285,22 +1267,21 @@ class Callbacks
 			if (!empty($map[0]))
 			{
 				$table = $map[0];
-				$data = array(
-					'qbsql_flag_deleted' => 1,
-					);
-				$multipart = array( 'TxnID' => $Node->getChildDataAt('TxnDeletedRet TxnID') );
+				$data = [
+					'qbsql_flag_deleted' => $Driver->hasTrueBoolean() ? 'true' : 1,
+				];
+				$multipart = ['TxnID' => $Node->getChildDataAt('TxnDeletedRet TxnID')];
 
-				$Driver->update(Sql::$TablePrefix['SQL_MIRROR'] . $table, $data, array( $multipart ));
+				$Driver->update(Sql::$TablePrefix['SQL_MIRROR'] . $table, $data, [$multipart]);
 			}
 
 		}
-		return true;
 	}
 
 	/**
 	 * Delete an object within QuickBooks
 	 */
-	public static function ListDelRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ListDelRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		$ID = str_replace($extra['objectType'], '', $ID);
@@ -1309,7 +1290,7 @@ class Callbacks
 		{
 			$Object = new SqlObject(null, null, $arr);
 
-			$xml = '<?xml version="1.0" encoding="utf-8"?>
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -1331,7 +1312,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ListDelResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ListDelResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Driver = Singleton::getInstance();
 		$Parser = new Parser($xml);
@@ -1354,9 +1335,9 @@ class Callbacks
 			$object = new SqlObject($map[0], trim(Utilities::objectToXMLElement($extra['objectType'])));
 
 			$table = $sqlObject->table();
-			$multipart = array(
+			$multipart = [
 				'ListID' => $Node->getChildDataAt('ListDelRs ListID')
-				);
+			];
 
 				$object->set(Sql::Field['FLAG_DELETED'], 1);
 				$object->set('ListID', $Node->getChildDataAt('ListDelRs ListID'));
@@ -1367,8 +1348,6 @@ class Callbacks
 			//static::_deleteChildren($table, $user, $action, $ID, $object, $extra, $deleted, $config, true, true);
 			*/
 		}
-
-		return true;
 	}
 
 	/**
@@ -1376,13 +1355,13 @@ class Callbacks
 	 *
 	 * @return string
 	 */
-	public static function TxnVoidRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function TxnVoidRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 
 		if ($arr = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . strtolower($extra['object']), [Sql::Field['ID'] => $ID]))
 		{
-			$xml = '<?xml version="1.0" encoding="utf-8"?>
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="stopOnError">
@@ -1404,7 +1383,7 @@ class Callbacks
 	 *
 	 * @return boolean
 	 */
-	public static function TxnVoidResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function TxnVoidResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Driver = Singleton::getInstance();
 
@@ -1416,8 +1395,8 @@ class Callbacks
 		$table = Sql::$TablePrefix['SQL_MIRROR'] . $map[0];
 
 		// We just need to set the voided flag on the transaction
-		$update = array(
-			Sql::Field['FLAG_VOIDED'] => 1,
+		$update = [
+			Sql::Field['FLAG_VOIDED'] => $Driver->hasTrueBoolean() ? 'true' : 1,
 			'AmountDue' => 0.0,
 			'Amount' => 0.0,
 			'OpenAmount' => 0.0,
@@ -1426,7 +1405,7 @@ class Callbacks
 			'TotalAmount' => 0.0,
 			'BalanceRemaining' => 0.0,
 			'SalesTaxTotal' => 0.0,
-			);
+		];
 
 		$where = [
 			[Sql::Field['ID'] => $ID],
@@ -1434,8 +1413,6 @@ class Callbacks
 
 		// Update the SQL table to indicate it was voided
 		$Driver->update($table, $update, $where);
-
-		return true;
 	}
 
 	/**
@@ -1443,15 +1420,15 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function TxnDelRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function TxnDelRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
-		$ID = str_replace($extra['objectType'], "", $ID);
+		$ID = str_replace($extra['objectType'], '', $ID);
 		if ($arr = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . strtolower($extra['objectType']), [Sql::Field['ID'] => $ID]))
 		{
 			$Object = new SqlObject(null, null, $arr);
 
-			$xml = '<?xml version="1.0" encoding="utf-8"?>
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>
 				<?qbxml version="' . static::_version($version, $locale) . '"?>
 				<QBXML>
 					<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -1473,7 +1450,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function TxnDelResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function TxnDelResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Driver = Singleton::getInstance();
 		$Parser = new Parser($xml);
@@ -1524,19 +1501,17 @@ class Callbacks
 			}
 			*/
 		}
-
-		return true;
 	}
 
 	/**
 	 * Fetch derived fields for a customer (Balance, TotalBalance, etc.)
 	 */
-	public static function CustomerDeriveRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerDeriveRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!empty($extra['ListID']))
 		{
-			$xml = '<?xml version="1.0" encoding="utf-8"?>
-				<?qbxml version="' . $version . '"?>
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<?qbxml version="' . static::_version($version, $locale) . '"?>
 				<QBXML>
 					<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 						<CustomerQueryRq requestID="' . $requestID . '">
@@ -1549,8 +1524,8 @@ class Callbacks
 		}
 		else if (!empty($extra['FullName']))
 		{
-			$xml = '<?xml version="1.0" encoding="utf-8"?>
-				<?qbxml version="' . $version . '"?>
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<?qbxml version="' . static::_version($version, $locale) . '"?>
 				<QBXML>
 					<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 						<CustomerQueryRq requestID="' . $requestID . '">
@@ -1569,15 +1544,15 @@ class Callbacks
 	/**
 	 * Handle a derived field (Balance, TotalBalance, etc.) response for a customer, and update the record
 	 */
-	public static function CustomerDeriveResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerDeriveResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
-		return static::_deriveResponse('QBXML QBXMLMsgsRs CustomerQueryRs', PackageInfo::Actions['OBJECT_CUSTOMER'], $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_deriveResponse('QBXML QBXMLMsgsRs CustomerQueryRs', PackageInfo::Actions['OBJECT_CUSTOMER'], $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ItemDeriveRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemDeriveRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemQueryRq requestID="' . $requestID . '">
@@ -1589,23 +1564,23 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemDeriveResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemDeriveResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
-		return static::_deriveResponse('QBXML QBXMLMsgsRs ItemQueryRs', PackageInfo::Actions['OBJECT_ITEM'], $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_deriveResponse('QBXML QBXMLMsgsRs ItemQueryRs', PackageInfo::Actions['OBJECT_ITEM'], $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
 	/**
 	 * Fetch derived fields for a customer (Balance, TotalBalance, etc.)
 	 */
-	public static function InvoiceDeriveRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InvoiceDeriveRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		// Try to fetch it from the database
 		$Driver = Singleton::getInstance();
 
 		if (!empty($extra['TxnID']))
 		{
-			$xml = '<?xml version="1.0" encoding="utf-8"?>
-				<?qbxml version="' . $version . '"?>
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<?qbxml version="' . static::_version($version, $locale) . '"?>
 				<QBXML>
 					<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 						<InvoiceQueryRq requestID="' . $requestID . '">
@@ -1618,8 +1593,8 @@ class Callbacks
 		}
 		else if ($arr = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'invoice', [Sql::Field['ID'] => $ID]))
 		{
-			$xml = '<?xml version="1.0" encoding="utf-8"?>
-				<?qbxml version="' . $version . '"?>
+			$xml = '<?xml version="1.0" encoding="UTF-8"?>
+				<?qbxml version="' . static::_version($version, $locale) . '"?>
 				<QBXML>
 					<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 						<InvoiceQueryRq requestID="' . $requestID . '">
@@ -1638,15 +1613,15 @@ class Callbacks
 	/**
 	 * Handle a derived fields (Balance, TotalBalance, etc.) response for an invoices
 	 */
-	public static function InvoiceDeriveResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function InvoiceDeriveResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
-		return static::_deriveResponse('QBXML QBXMLMsgsRs InvoiceQueryRs', PackageInfo::Actions['OBJECT_INVOICE'], $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_deriveResponse('QBXML QBXMLMsgsRs InvoiceQueryRs', PackageInfo::Actions['OBJECT_INVOICE'], $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
 	/**
 	 *
 	 */
-	protected static function _deriveResponse($path, $type, $requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	protected static function _deriveResponse(string $path, string $type, int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): bool
 	{
 		// Account. 	Balance, TotalBalance
 		// Bill. 		IsPaid, OpenAmount, AmountDue
@@ -1850,7 +1825,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 
@@ -1877,7 +1852,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -1893,7 +1868,7 @@ class Callbacks
 		static::_addResponse(PackageInfo::Actions['OBJECT_CUSTOMER'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function InventoryAdjustmentAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InventoryAdjustmentAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 
@@ -1912,7 +1887,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function InventoryAdjustmentAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function InventoryAdjustmentAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -1932,7 +1907,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerMsgAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerMsgAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($CustomerMsg = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'customermsg', [Sql::Field['ID'] => $ID]))
@@ -1948,7 +1923,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerMsgAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerMsgAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -1968,7 +1943,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function JournalEntryAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function JournalEntryAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 
@@ -1990,7 +1965,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function JournalEntryAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function JournalEntryAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2005,7 +1980,7 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_JOURNALENTRY'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function JournalEntryModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function JournalEntryModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(6.0, $version))
 		{
@@ -2029,7 +2004,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function JournalEntryModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function JournalEntryModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2050,7 +2025,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($arr = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'customer', [Sql::Field['ID'] => $ID]))
@@ -2099,7 +2074,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2118,7 +2093,7 @@ class Callbacks
 	/**
 	 *
 	 */
-	public static function ClassAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ClassAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Class = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'class', [Sql::Field['ID'] => $ID]))
@@ -2134,7 +2109,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ClassAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ClassAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2154,7 +2129,7 @@ class Callbacks
 	/**
 	 *
 	 */
-	public static function DataExtAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function DataExtAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		$xml = '';
@@ -2162,7 +2137,7 @@ class Callbacks
 		{
 			$DataExt = new SqlObject('dataext', null, $arr);
 
-			$xml .= '<?xml version="1.0" encoding="utf-8"?>
+			$xml .= '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -2219,7 +2194,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function DataExtAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function DataExtAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2239,7 +2214,7 @@ class Callbacks
 	/**
 	 *
 	 */
-	public static function DataExtModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function DataExtModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		$xml = '';
@@ -2247,7 +2222,7 @@ class Callbacks
 		{
 			$DataExt = new SqlObject('dataext', null, $arr);
 
-			$xml .= '<?xml version="1.0" encoding="utf-8"?>
+			$xml .= '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -2302,7 +2277,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function DataExtModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function DataExtModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2321,7 +2296,7 @@ class Callbacks
 	/**
 	 *
 	 */
-	public static function ShipMethodAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ShipMethodAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($ShipMethod = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'shipmethod', [Sql::Field['ID'] => $ID]))
@@ -2337,7 +2312,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ShipMethodAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ShipMethodAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2356,7 +2331,7 @@ class Callbacks
 	/**
 	 *
 	 */
-	public static function PaymentMethodAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PaymentMethodAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($PaymentMethod = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'paymentmethod', [Sql::Field['ID'] => $ID]))
@@ -2372,7 +2347,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PaymentMethodAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PaymentMethodAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2393,7 +2368,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function AccountAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function AccountAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'account', [Sql::Field['ID'] => $ID]))
@@ -2409,7 +2384,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function AccountAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function AccountAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2430,7 +2405,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function AccountModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function AccountModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'account', [Sql::Field['ID'] => $ID]))
@@ -2446,7 +2421,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function AccountModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function AccountModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2467,7 +2442,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemDiscountAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemDiscountAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemdiscount', [Sql::Field['ID'] => $ID]))
@@ -2483,7 +2458,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemDiscountAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemDiscountAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2504,7 +2479,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemDiscountModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemDiscountModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemdiscount', [Sql::Field['ID'] => $ID]))
@@ -2520,7 +2495,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemDiscountModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemDiscountModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2541,7 +2516,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemFixedAssetAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemFixedAssetAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemfixedasset', [Sql::Field['ID'] => $ID]))
@@ -2557,7 +2532,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemFixedAssetAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemFixedAssetAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2578,7 +2553,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemFixedAssetModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemFixedAssetModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemfixedasset', [Sql::Field['ID'] => $ID]))
@@ -2594,7 +2569,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemFixedAssetModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemFixedAssetModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2615,7 +2590,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryAssemblyAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemInventoryAssemblyAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'iteminventoryassembly', [Sql::Field['ID'] => $ID]))
@@ -2631,7 +2606,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryAssemblyAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemInventoryAssemblyAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Driver = Singleton::getInstance();
 		$Parser = new Parser($xml);
@@ -2655,7 +2630,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryAssemblyModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemInventoryAssemblyModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'iteminventoryassembly', [Sql::Field['ID'] => $ID]))
@@ -2671,7 +2646,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryAssemblyModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemInventoryAssemblyModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2692,7 +2667,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemInventoryAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'iteminventory', [Sql::Field['ID'] => $ID]))
@@ -2708,7 +2683,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemInventoryAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Driver = Singleton::getInstance();
 		$Parser = new Parser($xml);
@@ -2732,7 +2707,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemInventoryModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'iteminventory', [Sql::Field['ID'] => $ID]))
@@ -2748,7 +2723,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemInventoryModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemInventoryModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2770,7 +2745,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemNonInventoryAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemNonInventoryAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemnoninventory', [Sql::Field['ID'] => $ID]))
@@ -2786,7 +2761,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemNonInventoryAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemNonInventoryAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2807,7 +2782,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemNonInventoryModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemNonInventoryModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemnoninventory', [Sql::Field['ID'] => $ID]))
@@ -2823,7 +2798,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemNonInventoryModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemNonInventoryModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2844,7 +2819,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemOtherChargeAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemOtherChargeAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemothercharge', [Sql::Field['ID'] => $ID]))
@@ -2860,7 +2835,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemOtherChargeAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemOtherChargeAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2881,7 +2856,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemOtherChargeModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemOtherChargeModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemothercharge', [Sql::Field['ID'] => $ID]))
@@ -2897,7 +2872,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemOtherChargeModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemOtherChargeModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2918,7 +2893,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemPaymentAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemPaymentAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itempayment', [Sql::Field['ID'] => $ID]))
@@ -2934,7 +2909,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemPaymentAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemPaymentAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2955,7 +2930,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemPaymentModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemPaymentModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itempayment', [Sql::Field['ID'] => $ID]))
@@ -2971,7 +2946,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemPaymentModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemPaymentModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -2992,7 +2967,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSalesTaxAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemSalesTaxAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemsalestax', [Sql::Field['ID'] => $ID]))
@@ -3008,7 +2983,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSalesTaxAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemSalesTaxAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3029,7 +3004,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSalesTaxModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemSalesTaxModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemsalestax', [Sql::Field['ID'] => $ID]))
@@ -3045,7 +3020,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSalesTaxModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemSalesTaxModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3066,7 +3041,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemServiceAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemServiceAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemservice', [Sql::Field['ID'] => $ID]))
@@ -3082,7 +3057,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemServiceAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemServiceAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3103,7 +3078,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemServiceModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemServiceModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemservice', [Sql::Field['ID'] => $ID]))
@@ -3119,7 +3094,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemServiceModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemServiceModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3140,7 +3115,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSubtotalAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemSubtotalAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemsubtotal', [Sql::Field['ID'] => $ID]))
@@ -3156,7 +3131,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSubtotalAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemSubtotalAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3177,7 +3152,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSubtotalModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemSubtotalModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'itemsubtotal', [Sql::Field['ID'] => $ID]))
@@ -3193,7 +3168,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EmployeeAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function EmployeeAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'employee', [Sql::Field['ID'] => $ID]))
@@ -3209,7 +3184,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EmployeeAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function EmployeeAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3230,7 +3205,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EmployeeModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function EmployeeModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($arr = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'employee', [Sql::Field['ID'] => $ID]))
@@ -3246,7 +3221,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EmployeeModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function EmployeeModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3267,7 +3242,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemSubtotalModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemSubtotalModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3288,7 +3263,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EstimateAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function EstimateAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'estimate', [Sql::Field['ID'] => $ID]))
@@ -3304,7 +3279,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EstimateAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function EstimateAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3325,7 +3300,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EstimateModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function EstimateModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'estimate', [Sql::Field['ID'] => $ID]))
@@ -3341,7 +3316,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EstimateModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function EstimateModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3362,7 +3337,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PurchaseOrderAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PurchaseOrderAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'purchaseorder', [Sql::Field['ID'] => $ID]))
@@ -3378,7 +3353,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PurchaseOrderAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PurchaseOrderAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3399,7 +3374,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PurchaseOrderModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PurchaseOrderModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'purchaseorder', [Sql::Field['ID'] => $ID]))
@@ -3415,7 +3390,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PurchaseOrderModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PurchaseOrderModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3436,7 +3411,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ReceivePaymentAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ReceivePaymentAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'receivepayment', [Sql::Field['ID'] => $ID]))
@@ -3452,7 +3427,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ReceivePaymentAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ReceivePaymentAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3473,7 +3448,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ReceivePaymentModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ReceivePaymentModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		//$args = func_get_args();
 		//$Driver = Singleton::getInstance();
@@ -3493,7 +3468,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ReceivePaymentModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ReceivePaymentModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3514,7 +3489,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function InvoiceAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InvoiceAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Invoice = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'invoice', [Sql::Field['ID'] => $ID]))
@@ -3530,7 +3505,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function InvoiceAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function InvoiceAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3549,7 +3524,7 @@ class Callbacks
 	/**
 	 * Generate a qbXML InvoiceMod request to update an invoice
 	 */
-	public static function InvoiceModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InvoiceModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		//$Driver = Singleton::getInstance();
 		//$args = func_get_args();
@@ -3567,7 +3542,7 @@ class Callbacks
 	/**
 	 * Handle an InvoiceMod response from QuickBooks
 	 */
-	public static function InvoiceModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function InvoiceModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3588,7 +3563,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesReceiptAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesReceiptAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($SalesReceipt = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salesreceipt', [Sql::Field['ID'] => $ID]))
@@ -3604,7 +3579,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesReceiptAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesReceiptAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3623,7 +3598,7 @@ class Callbacks
 	/**
 	 * Generate a qbXML InvoiceMod request to update an invoice
 	 */
-	public static function SalesReceiptModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesReceiptModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($SalesReceipt = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salesreceipt', [Sql::Field['ID'] => $ID]))
@@ -3637,7 +3612,7 @@ class Callbacks
 	/**
 	 * Handle an InvoiceMod response from QuickBooks
 	 */
-	public static function SalesReceiptModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesReceiptModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3659,7 +3634,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CreditMemoAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CreditMemoAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Invoice = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'creditmemo', [Sql::Field['ID'] => $ID]))
@@ -3675,7 +3650,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CreditMemoAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CreditMemoAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3694,7 +3669,7 @@ class Callbacks
 	/**
 	 * Generate a qbXML InvoiceMod request to update an invoice
 	 */
-	public static function CreditMemoModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CreditMemoModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		//$Driver = Singleton::getInstance();
 		//$args = func_get_args();
@@ -3712,7 +3687,7 @@ class Callbacks
 	/**
 	 * Handle an InvoiceMod response from QuickBooks
 	 */
-	public static function CreditMemoModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CreditMemoModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3731,7 +3706,7 @@ class Callbacks
 	/**
 	 * Generate a JobTypeAdd qbXML request to send to QuickBooks
 	 */
-	public static function JobTypeAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function JobTypeAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($JobType = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'jobtype', [Sql::Field['ID'] => $ID]))
@@ -3745,7 +3720,7 @@ class Callbacks
 	/**
 	 * Handle a JobTypeAdd response from QuickBooks
 	 */
-	public static function JobTypeAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function JobTypeAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3764,7 +3739,7 @@ class Callbacks
 	/**
 	 * Generate a qbXML SalesOrderAdd request to send to QuickBooks
 	 */
-	public static function SalesOrderAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesOrderAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salesorder', [Sql::Field['ID'] => $ID]))
@@ -3778,7 +3753,7 @@ class Callbacks
 	/**
 	 * Handle a SalesOrderAdd response from QuickBooks
 	 */
-	public static function SalesOrderAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesOrderAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3799,7 +3774,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesOrderModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesOrderModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salesorder', [Sql::Field['ID'] => $ID]))
@@ -3815,7 +3790,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesOrderModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesOrderModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3836,7 +3811,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesRepAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesRepAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salesrep', [Sql::Field['ID'] => $ID]))
@@ -3852,7 +3827,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesRepAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesRepAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3873,7 +3848,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesRepModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesRepModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salesrep', [Sql::Field['ID'] => $ID]))
@@ -3889,7 +3864,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesRepModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesRepModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3910,7 +3885,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesTaxCodeAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesTaxCodeAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salestaxcode', [Sql::Field['ID'] => $ID]))
@@ -3926,7 +3901,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesTaxCodeAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesTaxCodeAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3947,7 +3922,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesTaxCodeModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesTaxCodeModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Account = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'salestaxcode', [Sql::Field['ID'] => $ID]))
@@ -3963,7 +3938,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesTaxCodeModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesTaxCodeModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -3984,7 +3959,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Customer = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'bill', [Sql::Field['ID'] => $ID]))
@@ -4000,7 +3975,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4015,7 +3990,7 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_BILL'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function BillModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Bill = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'bill', [Sql::Field['ID'] => $ID]))
@@ -4031,7 +4006,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4044,7 +4019,7 @@ class Callbacks
 
 		$extra['IsModResponse'] = true;
 		$extra['is_mod_response'] = true;
-		return static::_QueryResponse(PackageInfo::Actions['OBJECT_BILL'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_QueryResponse(PackageInfo::Actions['OBJECT_BILL'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
 	/**
@@ -4052,7 +4027,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillPaymentCheckAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillPaymentCheckAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($BillPaymentCheck = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'billpaymentcheck', [Sql::Field['ID'] => $ID]))
@@ -4080,7 +4055,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillPaymentCheckAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillPaymentCheckAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4101,7 +4076,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillPaymentCheckModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillPaymentCheckModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($BillPaymentCheck = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'billpaymentcheck', [Sql::Field['ID'] => $ID]))
@@ -4117,7 +4092,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillPaymentCheckModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillPaymentCheckModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4138,7 +4113,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillPaymentCreditCardAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillPaymentCreditCardAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($BillPaymentCreditCard = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'billpaymentcreditcard', [Sql::Field['ID'] => $ID]))
@@ -4154,7 +4129,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillPaymentCreditCardAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillPaymentCreditCardAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4175,7 +4150,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VendorAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Vendor = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'vendor', [Sql::Field['ID'] => $ID]))
@@ -4191,7 +4166,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VendorAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4212,7 +4187,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VendorModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Vendor = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'vendor', [Sql::Field['ID'] => $ID]))
@@ -4228,7 +4203,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VendorModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4250,7 +4225,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorCreditAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VendorCreditAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Vendor = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'vendorcredit', [Sql::Field['ID'] => $ID]))
@@ -4266,7 +4241,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorCreditAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VendorCreditAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4287,7 +4262,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorCreditModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VendorCreditModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Vendor = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'vendorcredit', [Sql::Field['ID'] => $ID]))
@@ -4303,7 +4278,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorCreditModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VendorCreditModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -4350,7 +4325,7 @@ class Callbacks
 			$Object = new SqlObject(null, null, $Object);
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>' . PackageInfo::$CRLF;
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>' . PackageInfo::$CRLF;
 		$xml .= '<?qbxml version="' . static::_version($version, $locale) . '"?>' . PackageInfo::$CRLF;
 		$xml .= "\t" . '<QBXML>' . PackageInfo::$CRLF;
 		$xml .= "\t" . "\t" . '<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">' . PackageInfo::$CRLF;
@@ -5009,11 +4984,11 @@ class Callbacks
 
 	}
 
-	public static function AccountImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function AccountImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$xml = '';
 
-		$xml .= '<?xml version="1.0" encoding="utf-8"?>
+		$xml .= '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5026,7 +5001,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function AccountImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function AccountImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5052,7 +5027,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function AccountQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function AccountQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!empty($extra['ListID']))
 		{
@@ -5074,7 +5049,7 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5087,17 +5062,17 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function AccountQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function AccountQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$extra['is_query_response'] = true;
-		return static::AccountImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::AccountImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
 	/**
 	 *
 	 *
 	 */
-	public static function BillPaymentCheckImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillPaymentCheckImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 
 		if (!static::_requiredVersion(2.0, $version, $locale, PackageInfo::Actions['QUERY_BILLPAYMENTCHECK']))
@@ -5105,7 +5080,7 @@ class Callbacks
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5125,7 +5100,7 @@ class Callbacks
 	 * @todo The $type parameter to _QueryResponse should be from a mapping, not a constant, to support custom mapping later on
 	 *
 	 */
-	public static function BillPaymentCheckImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillPaymentCheckImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5144,14 +5119,14 @@ class Callbacks
 		static::_QueryResponse('billpaymentcheck', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function BillPaymentCreditCardImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillPaymentCreditCardImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(2.0, $version, $locale, PackageInfo::Actions['QUERY_BILLPAYMENTCREDITCARD']))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5171,7 +5146,7 @@ class Callbacks
 	 * @todo The $type parameter to _QueryResponse should be from a mapping, not a constant, to support custom mapping later on
 	 *
 	 */
-	public static function BillPaymentCreditCardImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillPaymentCreditCardImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5190,7 +5165,7 @@ class Callbacks
 		static::_QueryResponse('billpaymentcreditcard', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function BillQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!empty($extra['TxnID']))
 		{
@@ -5214,7 +5189,7 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5227,13 +5202,13 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function BillQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$extra['is_query_response'] = true;
-		return static::BillImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::BillImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function BillImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$iterator = static::_buildIterator($extra, $version, $locale);
 		if (!$iterator)
@@ -5242,7 +5217,7 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5262,7 +5237,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5282,7 +5257,7 @@ class Callbacks
 	}
 
 
-	public static function BillToPayQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillToPayQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(2.0, $version, $locale, PackageInfo::Actions['QUERY_BILLTOPAY']))
 		{
@@ -5290,7 +5265,7 @@ class Callbacks
 		}
 
 		// We pass a blank ListID, because it was discovered that this will get ALL the BillToPay entries rather than only a few.
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5305,7 +5280,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function BillToPayQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillToPayQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5324,14 +5299,14 @@ class Callbacks
 		static::_QueryResponse('billtopay', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function BillingRateQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BillingRateQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(6.0, $version, $locale, PackageInfo::Actions['QUERY_BILLINGRATE']))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5348,7 +5323,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BillingRateQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BillingRateQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5367,14 +5342,14 @@ class Callbacks
 		static::_QueryResponse('billingrate', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function BuildAssemblyQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function BuildAssemblyQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(5.0, $version, $locale, PackageInfo::Actions['QUERY_BUILDASSEMBLY']))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5393,7 +5368,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function BuildAssemblyQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function BuildAssemblyQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5417,7 +5392,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CheckAddRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CheckAddRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Check = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'check', [Sql::Field['ID'] => $ID]))
@@ -5445,7 +5420,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CheckAddResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CheckAddResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5461,7 +5436,7 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_CHECK'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CheckModRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CheckModRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$Driver = Singleton::getInstance();
 		if ($Check = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . 'check', [Sql::Field['ID'] => $ID]))
@@ -5489,7 +5464,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CheckModResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CheckModResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5505,9 +5480,9 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_CHECK'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CheckImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CheckImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5527,7 +5502,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CheckImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CheckImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5550,9 +5525,9 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function JournalEntryImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function JournalEntryImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5571,7 +5546,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function JournalEntryImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function JournalEntryImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5590,14 +5565,14 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_JOURNALENTRY'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ChargeImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ChargeImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(2.0, $version))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5616,7 +5591,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ChargeImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ChargeImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5635,9 +5610,9 @@ class Callbacks
 		static::_QueryResponse('charge', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ClassImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ClassImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5654,7 +5629,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ClassImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ClassImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5673,9 +5648,9 @@ class Callbacks
 		static::_QueryResponse('class', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function HostImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function HostImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5696,7 +5671,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function HostImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function HostImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5709,12 +5684,12 @@ class Callbacks
 
 		$extra['is_import_response'] = true;
 
-		return static::_QueryResponse('host', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_QueryResponse('host', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function PreferencesImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PreferencesImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5731,7 +5706,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PreferencesImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PreferencesImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5746,12 +5721,12 @@ class Callbacks
 
 		$extra['is_import_response'] = true;
 
-		return static::_QueryResponse('preferences', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_QueryResponse('preferences', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CompanyImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CompanyImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5770,7 +5745,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CompanyImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CompanyImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5786,12 +5761,12 @@ class Callbacks
 			$extra['is_import_response'] = true;
 		}
 
-		return static::_QueryResponse('company', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_QueryResponse('company', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CreditCardChargeImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CreditCardChargeImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -5810,7 +5785,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CreditCardChargeImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CreditCardChargeImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5829,10 +5804,10 @@ class Callbacks
 		static::_QueryResponse('creditcardcharge', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CreditCardCreditImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CreditCardCreditImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<CreditCardCreditQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -5850,7 +5825,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CreditCardCreditImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CreditCardCreditImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5870,10 +5845,10 @@ class Callbacks
 	}
 
 
-	public static function CreditMemoImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CreditMemoImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<CreditMemoQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -5892,7 +5867,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CreditMemoImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CreditMemoImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5908,13 +5883,13 @@ class Callbacks
 			$extra['is_import_response'] = true;
 		}
 
-		return static::_QueryResponse('creditmemo', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_QueryResponse('creditmemo', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CustomerMsgImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerMsgImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<CustomerMsgQueryRq requestID="' . $requestID . '">
@@ -5932,7 +5907,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerMsgImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerMsgImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -5945,10 +5920,10 @@ class Callbacks
 
 		$extra['is_import_response'] = true;
 
-		return static::_QueryResponse('customermsg', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_QueryResponse('customermsg', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CustomerImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$iterator = static::_buildIterator($extra, $version, $locale);
 
@@ -5997,7 +5972,7 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -6018,7 +5993,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function CustomerImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6034,10 +6009,10 @@ class Callbacks
 			$extra['is_import_response'] = true;
 		}
 
-		return static::_QueryResponse('customer', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::_QueryResponse('customer', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CustomerQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!empty($extra['ListID']))
 		{
@@ -6059,7 +6034,7 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -6072,17 +6047,17 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function CustomerQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$extra['is_query_response'] = true;
 
-		return static::CustomerImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::CustomerImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function CustomerTypeImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function CustomerTypeImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<CustomerTypeQueryRq requestID="' . $requestID . '">
@@ -6099,7 +6074,7 @@ class Callbacks
 	 * @todo The $type parameter to _QueryResponse should be from a mapping, not a constant, to support custom mapping later on
 	 *
 	 */
-	public static function CustomerTypeImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function CustomerTypeImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6124,14 +6099,14 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function DataExtDefQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function DataExtDefQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(2.0, $version, $locale, PackageInfo::Actions['QUERY_DATAEXTDEF']))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -6151,7 +6126,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function DataExtDefQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function DataExtDefQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6172,10 +6147,10 @@ class Callbacks
 
 
 
-	public static function DateDrivenTermsQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function DateDrivenTermsQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<DateDrivenTermsQueryRq requestID="' . $requestID . '">
@@ -6192,7 +6167,7 @@ class Callbacks
 	 * @todo The $type parameter to _QueryResponse should be from a mapping, not a constant, to support custom mapping later on
 	 *
 	 */
-	public static function DateDrivenTermsQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function DateDrivenTermsQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6212,7 +6187,7 @@ class Callbacks
 	}
 
 
-	public static function DepositImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function DepositImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$xml = '';
 
@@ -6221,8 +6196,8 @@ class Callbacks
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml .= '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml .= '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<DepositQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6240,7 +6215,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function DepositImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function DepositImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6264,12 +6239,12 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EmployeeImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function EmployeeImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$xml = '';
 
-		$xml .= '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml .= '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<EmployeeQueryRq requestID="' . $requestID . '">
@@ -6286,7 +6261,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EmployeeImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function EmployeeImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6310,7 +6285,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EstimateImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function EstimateImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$iterator = static::_buildIterator($extra, $version, $locale);
 		if (!$iterator)
@@ -6318,8 +6293,8 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<EstimateQueryRq requestID="' . $requestID . '" ' . $iterator . '>
@@ -6338,7 +6313,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function EstimateImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function EstimateImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6359,7 +6334,7 @@ class Callbacks
 
 
 
-	public static function InventoryAdjustmentImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InventoryAdjustmentImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(2.0, $version))
 		{
@@ -6367,8 +6342,8 @@ class Callbacks
 		}
 
 		// min version 2.0
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<InventoryAdjustmentQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6382,7 +6357,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function InventoryAdjustmentImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function InventoryAdjustmentImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6403,7 +6378,7 @@ class Callbacks
 
 
 
-	public static function InvoiceImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InvoiceImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$iterator = static::_buildIterator($extra, $version, $locale);
 		if (!$iterator)
@@ -6415,8 +6390,8 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<InvoiceQueryRq requestID="' . $requestID . '" ' . $iterator . '>
@@ -6431,7 +6406,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function InvoiceImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function InvoiceImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6450,7 +6425,7 @@ class Callbacks
 		static::_QueryResponse('invoice', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function InvoiceQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function InvoiceQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$tag1 = '';
 		$tag2 = '';
@@ -6500,8 +6475,8 @@ class Callbacks
 
 		//  ' . static::_buildIterator($extra) . '
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<InvoiceQueryRq requestID="' . $requestID . '">
@@ -6517,7 +6492,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function InvoiceQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function InvoiceQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		// Let the import response function know that the update should be applied as if this is a query response
 		$extra['is_query_response'] = true;
@@ -6526,10 +6501,10 @@ class Callbacks
 		static::InvoiceImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ItemServiceImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemServiceImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemServiceQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6543,7 +6518,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemServiceImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemServiceImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6562,10 +6537,10 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_SERVICEITEM'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ItemNonInventoryImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemNonInventoryImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemNonInventoryQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6579,7 +6554,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemNonInventoryImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemNonInventoryImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6598,10 +6573,10 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_NONINVENTORYITEM'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ItemInventoryImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemInventoryImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemInventoryQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6615,7 +6590,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemInventoryImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemInventoryImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6634,10 +6609,10 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_INVENTORYITEM'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ItemInventoryAssemblyImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemInventoryAssemblyImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemInventoryAssemblyQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6651,7 +6626,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemInventoryAssemblyImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemInventoryAssemblyImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6670,10 +6645,10 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['QUERY_INVENTORYASSEMBLYITEM'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ItemSalesTaxImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemSalesTaxImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemSalesTaxQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6687,7 +6662,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemSalesTaxImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemSalesTaxImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6706,10 +6681,10 @@ class Callbacks
 		static::_QueryResponse(PackageInfo::Actions['OBJECT_SALESTAXITEM'], $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ItemSalesTaxGroupImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemSalesTaxGroupImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemSalesTaxGroupQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6723,7 +6698,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemSalesTaxGroupImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemSalesTaxGroupImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6747,10 +6722,10 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ItemImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6764,7 +6739,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6784,10 +6759,10 @@ class Callbacks
 	}
 
 
-	public static function ItemReceiptImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ItemReceiptImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ItemReceiptQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -6801,7 +6776,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function ItemReceiptImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ItemReceiptImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6821,10 +6796,10 @@ class Callbacks
 	}
 
 
-	public static function JobTypeQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function JobTypeQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<JobTypeQueryRq requestID="' . $requestID . '">
@@ -6840,7 +6815,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function JobTypeQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function JobTypeQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6864,10 +6839,10 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PaymentMethodImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PaymentMethodImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<PaymentMethodQueryRq requestID="' . $requestID . '">
@@ -6884,7 +6859,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PaymentMethodImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PaymentMethodImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6903,10 +6878,10 @@ class Callbacks
 		static::_QueryResponse('paymentmethod', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function PayrollItemWageImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PayrollItemWageImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<PayrollItemWageQueryRq requestID="' . $requestID . '">
@@ -6922,7 +6897,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PayrollItemWageImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PayrollItemWageImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6938,10 +6913,10 @@ class Callbacks
 		static::_QueryResponse('payrollitemwage', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function PayrollItemNonWageImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PayrollItemNonWageImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<PayrollItemNonWageQueryRq requestID="' . $requestID . '">
@@ -6957,7 +6932,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PayrollItemNonWageImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PayrollItemNonWageImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -6977,15 +6952,15 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PriceLevelImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PriceLevelImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(4.0, $version))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<PriceLevelQueryRq requestID="' . $requestID . '">
@@ -7001,7 +6976,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PriceLevelImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PriceLevelImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7024,7 +6999,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PurchaseOrderImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PurchaseOrderImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$iterator = static::_buildIterator($extra, $version, $locale);
 		if (!$iterator)
@@ -7034,8 +7009,8 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<PurchaseOrderQueryRq requestID="' . $requestID . '" ' . $iterator . '>
@@ -7054,7 +7029,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function PurchaseOrderImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PurchaseOrderImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7073,7 +7048,7 @@ class Callbacks
 		static::_QueryResponse('purchaseorder', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function PurchaseOrderQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function PurchaseOrderQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!empty($extra['TxnID']))
 		{
@@ -7097,7 +7072,7 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -7110,17 +7085,17 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function PurchaseOrderQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function PurchaseOrderQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$extra['is_query_response'] = true;
-		return static::PurchaseOrderImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::PurchaseOrderImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
 	/**
 	 *
 	 *
 	 */
-	public static function ReceivePaymentImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ReceivePaymentImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		$iterator = static::_buildIterator($extra);
 
@@ -7136,8 +7111,8 @@ class Callbacks
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ReceivePaymentQueryRq requestID="' . $requestID . '" ' . $iterator . '>
@@ -7155,7 +7130,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ReceivePaymentImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ReceivePaymentImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7174,7 +7149,7 @@ class Callbacks
 		static::_QueryResponse('receivepayment', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function ReceivePaymentQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ReceivePaymentQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		//$iterator = static::_buildIterator($extra);
 
@@ -7227,8 +7202,8 @@ class Callbacks
 			return PackageInfo::Actions['NOOP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ReceivePaymentQueryRq>
@@ -7247,13 +7222,13 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ReceivePaymentQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ReceivePaymentQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$extra['is_query_response'] = true;
-		return static::ReceivePaymentImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
+		static::ReceivePaymentImportResponse($requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function SalesOrderImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesOrderImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(2.1, $version))
 		{
@@ -7264,8 +7239,8 @@ class Callbacks
 		//	since this entire action is qbXML versions 2.1 or greater, we can
 		//	just assume it'll be present.
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<SalesOrderQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -7280,7 +7255,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function SalesOrderImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesOrderImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7299,10 +7274,10 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesReceiptImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesReceiptImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<SalesReceiptQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -7320,7 +7295,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesReceiptImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesReceiptImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7335,10 +7310,10 @@ class Callbacks
 		static::_QueryResponse('salesreceipt', $List, $requestID, $user, $action, $ID, $extra, $err, $last_action_time, $last_actionident_time, $xml, $idents, $config);
 	}
 
-	public static function SalesRepImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesRepImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<SalesRepQueryRq requestID="' . $requestID . '">
@@ -7354,7 +7329,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesRepImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesRepImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7375,10 +7350,10 @@ class Callbacks
 
 
 
-	public static function SalesTaxCodeImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function SalesTaxCodeImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<SalesTaxCodeQueryRq requestID="' . $requestID . '">
@@ -7394,7 +7369,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function SalesTaxCodeImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function SalesTaxCodeImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7415,10 +7390,10 @@ class Callbacks
 
 
 
-	public static function ShipMethodImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function ShipMethodImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<ShipMethodQueryRq requestID="' . $requestID . '">
@@ -7435,7 +7410,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function ShipMethodImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function ShipMethodImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7461,10 +7436,10 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function TermsImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function TermsImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<TermsQueryRq requestID="' . $requestID . '">
@@ -7481,7 +7456,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function TermsImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function TermsImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7503,10 +7478,10 @@ class Callbacks
 
 
 
-	public static function TimeTrackingImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function TimeTrackingImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<TimeTrackingQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -7522,7 +7497,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function TimeTrackingImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function TimeTrackingImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7541,15 +7516,15 @@ class Callbacks
 
 
 
-	public static function UnitOfMeasureSetQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function UnitOfMeasureSetQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(7.0, $version))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<UnitOfMeasureSetQueryRq requestID="' . $requestID . '">
@@ -7565,7 +7540,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function UnitOfMeasureSetQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function UnitOfMeasureSetQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7586,15 +7561,15 @@ class Callbacks
 
 
 
-	public static function VehicleMileageQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VehicleMileageQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(6.0, $version))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<VehicleMileageQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -7610,7 +7585,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VehicleMileageQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VehicleMileageQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7632,15 +7607,15 @@ class Callbacks
 
 
 
-	public static function VehicleImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VehicleImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(6.0, $version))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<VehicleQueryRq requestID="' . $requestID . '">
@@ -7656,7 +7631,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VehicleImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VehicleImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7678,10 +7653,10 @@ class Callbacks
 
 
 
-	public static function VendorCreditImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VendorCreditImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<VendorCreditQueryRq requestID="' . $requestID . '" ' . static::_buildIterator($extra) . '>
@@ -7696,7 +7671,7 @@ class Callbacks
 		return $xml;
 	}
 
-	public static function VendorCreditImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VendorCreditImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7717,10 +7692,10 @@ class Callbacks
 
 
 
-	public static function VendorTypeImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VendorTypeImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<VendorTypeQueryRq requestID="' . $requestID . '">
@@ -7736,7 +7711,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorTypeImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VendorTypeImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7757,9 +7732,9 @@ class Callbacks
 
 
 
-	public static function VendorImportRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function VendorImportRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
 			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
@@ -7778,7 +7753,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function VendorImportResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function VendorImportResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -7801,15 +7776,15 @@ class Callbacks
 
 
 
-	public static function WorkersCompCodeQueryRequest($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $version, $locale, $config = [])
+	public static function WorkersCompCodeQueryRequest(int $requestID, string $user, string $action, string $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, float $version, string $locale, array $config = []): string
 	{
 		if (!static::_requiredVersion(7.0, $version))
 		{
 			return PackageInfo::Actions['SKIP'];
 		}
 
-		$xml = '<?xml version="1.0" encoding="utf-8"?>
-			<?qbxml version="' . $version . '"?>
+		$xml = '<?xml version="1.0" encoding="UTF-8"?>
+			<?qbxml version="' . static::_version($version, $locale) . '"?>
 			<QBXML>
 				<QBXMLMsgsRq onError="' . WebConnectorSQL::$ON_ERROR . '">
 					<WorkersCompCodeQueryRq requestID="' . $requestID . '">
@@ -7825,7 +7800,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	public static function WorkersCompCodeQueryResponse($requestID, $user, $action, $ID, $extra, &$err, $last_action_time, $last_actionident_time, $xml, $idents, $config = [])
+	public static function WorkersCompCodeQueryResponse(int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $config = []): void
 	{
 		$Parser = new Parser($xml);
 
@@ -9119,99 +9094,99 @@ class Callbacks
 				],
 			],
 
-			"billingrate" => [
-				"id_field" => "ListID",
-				"children" => [
-					"billingrate_billingrateperitem" => "BillingRate_ListID",
+			'billingrate' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'billingrate_billingrateperitem' => 'BillingRate_ListID',
 				],
 			],
 
-			"billpaymentcheck" => [
-				"id_field" => "ListID",
-				"children" => [
-					"billpaymentcheck_appliedtotxn" => "FromTxnID",
-					"dataext" => "Entity_ListID",
+			'billpaymentcheck' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'billpaymentcheck_appliedtotxn' => 'FromTxnID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"billpaymentcreditcard" => [
-				"id_field" => "ListID",
-				"children" => [
-					"billpaymentcreditcard_appliedtotxn" => "FromTxnID",
-					"dataext" => "Entity_ListID",
+			'billpaymentcreditcard' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'billpaymentcreditcard_appliedtotxn' => 'FromTxnID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"charge" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'charge' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"check" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"check_expenseline" => "Check_TxnID",
-					"check_itemgroupline" => "Check_TxnID",
-					"check_itemgroupline_itemline" => "Check_TxnID",
-					"check_itemline" => "Check_TxnID",
-					"check_linkedtxn" => "FromTxnID",
-					"dataext" => "Txn_TxnID",
+			'check' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'check_expenseline' => 'Check_TxnID',
+					'check_itemgroupline' => 'Check_TxnID',
+					'check_itemgroupline_itemline' => 'Check_TxnID',
+					'check_itemline' => 'Check_TxnID',
+					'check_linkedtxn' => 'FromTxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"company" => [
-				"id_field" => "CompanyName",
-				"children" => [
-					"company_subscribedservices_service" => "Company_CompanyName",
+			'company' => [
+				'id_field' => 'CompanyName',
+				'children' => [
+					'company_subscribedservices_service' => 'Company_CompanyName',
 				],
 			],
 
-			"creditcardcharge" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"creditcardcharge_expenseline" => "CreditCardCharge_TxnID",
-					"creditcardcharge_itemgroupline" => "CreditCardCharge_TxnID",
-					"creditcardcharge_itemgroupline_itemline" => "CreditCardCharge_TxnID",
-					"creditcardcharge_itemline" => "CreditCardCharge_TxnID",
-					"dataext" => "Txn_TxnID",
+			'creditcardcharge' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'creditcardcharge_expenseline' => 'CreditCardCharge_TxnID',
+					'creditcardcharge_itemgroupline' => 'CreditCardCharge_TxnID',
+					'creditcardcharge_itemgroupline_itemline' => 'CreditCardCharge_TxnID',
+					'creditcardcharge_itemline' => 'CreditCardCharge_TxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"creditcardcredit" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"creditcardcredit_expenseline" => "CreditCardCredit_TxnID",
-					"creditcardcredit_itemgroupline" => "CreditCardCredit_TxnID",
-					"creditcardcredit_itemgroupline_itemline" => "CreditCardCredit_TxnID",
-					"creditcardcredit_itemline" => "CreditCardCredit_TxnID",
-					"dataext" => "Txn_TxnID",
+			'creditcardcredit' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'creditcardcredit_expenseline' => 'CreditCardCredit_TxnID',
+					'creditcardcredit_itemgroupline' => 'CreditCardCredit_TxnID',
+					'creditcardcredit_itemgroupline_itemline' => 'CreditCardCredit_TxnID',
+					'creditcardcredit_itemline' => 'CreditCardCredit_TxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"creditmemo" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"creditmemo_creditmemoline" => "CreditMemo_TxnID",
-					"creditmemo_creditmemolinegroup" => "CreditMemo_TxnID",
-					"creditmemo_creditmemolinegroup_creditmemoline" => "CreditMemo_TxnID",
-					"creditmemo_linkedtxn" => "FromTxnID",
-					"dataext" => "Txn_TxnID",
+			'creditmemo' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'creditmemo_creditmemoline' => 'CreditMemo_TxnID',
+					'creditmemo_creditmemolinegroup' => 'CreditMemo_TxnID',
+					'creditmemo_creditmemolinegroup_creditmemoline' => 'CreditMemo_TxnID',
+					'creditmemo_linkedtxn' => 'FromTxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"creditmemolinegroup" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'creditmemolinegroup' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"creditmemolinegroup_creditmemoline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'creditmemolinegroup_creditmemoline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
@@ -9222,19 +9197,19 @@ class Callbacks
 				],
 			],
 
-			"deposit" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"deposit_depositline" => "Deposit_TxnID",
-					"dataext" => "Txn_TxnID",
+			'deposit' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'deposit_depositline' => 'Deposit_TxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"employee" => [
-				"id_field" => "ListID",
-				"children" => [
-					"employee_earnings" => "Employee_ListID",
-					"dataext" => "Entity_ListID",
+			'employee' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'employee_earnings' => 'Employee_ListID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
@@ -9244,322 +9219,322 @@ class Callbacks
 					'estimate_estimateline' => 'Estimate_TxnID',
 					'estimate_estimatelinegroup' => 'Estimate_TxnID',
 					'estimate_estimatelinegroup_estimateline' => 'Estimate_TxnID',
-					//'invoice_linkedtxn" => "FromTxnID",
+					//'invoice_linkedtxn' => 'FromTxnID',
 					'dataext' => 'Entity_ListID',
 				]
 			],
 
-			"estimate_estimatelinegroup" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'estimate_estimatelinegroup' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"estimate_estimateline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'estimate_estimateline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"estimate_estimatelinegroup" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'estimate_estimatelinegroup' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"estimate_estimatelinegroup_estimateline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'estimate_estimatelinegroup_estimateline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"inventoryadjustment" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"inventoryadjustment_inventoryadjustmentline" => "InventoryAdjustment_TxnID",
-					"dataext" => "Txn_TxnID",
+			'inventoryadjustment' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'inventoryadjustment_inventoryadjustmentline' => 'InventoryAdjustment_TxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"invoice" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"invoice_invoiceline" => "Invoice_TxnID",
-					"invoice_invoicelinegroup" => "Invoice_TxnID",
-					"invoice_invoicelinegroup_invoiceline" => "Invoice_TxnID",
-					"invoice_linkedtxn" => "FromTxnID",
-					"dataext" => "Txn_TxnID",
+			'invoice' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'invoice_invoiceline' => 'Invoice_TxnID',
+					'invoice_invoicelinegroup' => 'Invoice_TxnID',
+					'invoice_invoicelinegroup_invoiceline' => 'Invoice_TxnID',
+					'invoice_linkedtxn' => 'FromTxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"invoice_invoiceline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'invoice_invoiceline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"invoice_invoicelinegroup" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'invoice_invoicelinegroup' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"invoice_invoicelinegroup_invoiceline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'invoice_invoicelinegroup_invoiceline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"itemgroup" => [
-				"id_field" => "ListID",
-				"children" => [
-					"itemgroup_itemgroupline" => "ItemGroup_ListID",
-					"dataext" => "Entity_ListID",
+			'itemgroup' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'itemgroup_itemgroupline' => 'ItemGroup_ListID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"iteminventory" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'iteminventory' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"iteminventoryassembly" => [
-				"id_field" => "ListID",
-				"children" => [
-					"iteminventoryassembly_iteminventoryassemblyline" => "ItemInventoryAssembly_ListID",
-					"dataext" => "Txn_TxnID",
+			'iteminventoryassembly' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'iteminventoryassembly_iteminventoryassemblyline' => 'ItemInventoryAssembly_ListID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"itemnoninventory" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'itemnoninventory' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itemdiscount" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'itemdiscount' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itemfixedasset" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'itemfixedasset' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itemothercharge" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'itemothercharge' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itempayment" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'itempayment' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itemreceipt" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"itemreceipt_expenseline" => "ItemReceipt_TxnID",
-					"itemreceipt_itemgroupline" => "ItemReceipt_TxnID",
-					"itemreceipt_itemgroupline_itemline" => "ItemReceipt_TxnID",
-					"itemreceipt_itemline" => "ItemReceipt_TxnID",
-					"itemreceipt_linkedtxn" => "FromTxnID",
-					"dataext" => "Entity_ListID",
+			'itemreceipt' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'itemreceipt_expenseline' => 'ItemReceipt_TxnID',
+					'itemreceipt_itemgroupline' => 'ItemReceipt_TxnID',
+					'itemreceipt_itemgroupline_itemline' => 'ItemReceipt_TxnID',
+					'itemreceipt_itemline' => 'ItemReceipt_TxnID',
+					'itemreceipt_linkedtxn' => 'FromTxnID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itemsalestaxgroup" => [
-				"id_field" => "ListID",
-				"children" => [
-					"itemsalestaxgroup_itemsalestax" => "ItemSalesTaxGroup_ListID",
-					"dataext" => "Entity_ListID",
+			'itemsalestaxgroup' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'itemsalestaxgroup_itemsalestax' => 'ItemSalesTaxGroup_ListID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itemservice" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'itemservice' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"itemsubtotal" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'itemsubtotal' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"journalentry" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"journalentry_journalcreditline" => "JournalEntry_TxnID",
-					"journalentry_journaldebitline" => "JournalEntry_TxnID",
-					"dataext" => "Entity_ListID",
+			'journalentry' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'journalentry_journalcreditline' => 'JournalEntry_TxnID',
+					'journalentry_journaldebitline' => 'JournalEntry_TxnID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"pricelevel" => [
-				"id_field" => "ListID",
-				"children" => [
-					"pricelevel_pricelevelperitem" => "PriceLevel_ListID",
+			'pricelevel' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'pricelevel_pricelevelperitem' => 'PriceLevel_ListID',
 				],
 			],
 
-			"purchaseorder" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"purchaseorder_purchaseorderline" => "PurchaseOrder_TxnID",
-					"purchaseorder_purchaseorderlinegroup" => "PurchaseOrder_TxnID",
-					"purchaseorder_purchaseorderlinegroup_purchaseorderline" => "PurchaseOrder_TxnID",
-					"purchaseorder_linkedtxn" => "FromTxnID",
-					"dataext" => "Entity_ListID",
+			'purchaseorder' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'purchaseorder_purchaseorderline' => 'PurchaseOrder_TxnID',
+					'purchaseorder_purchaseorderlinegroup' => 'PurchaseOrder_TxnID',
+					'purchaseorder_purchaseorderlinegroup_purchaseorderline' => 'PurchaseOrder_TxnID',
+					'purchaseorder_linkedtxn' => 'FromTxnID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"purchaseorder_purchaseorderline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'purchaseorder_purchaseorderline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"purchaseorder_purchaseorderlinegroup" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'purchaseorder_purchaseorderlinegroup' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"purchaseorder_purchaseorderlinegroup_purchaseorderline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'purchaseorder_purchaseorderlinegroup_purchaseorderline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"receievepayment" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"receivepayment_appliedtotxn" => "FromTxnID",
+			'receievepayment' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'receivepayment_appliedtotxn' => 'FromTxnID',
 					'receivepayment_appliedtotxn' => 'ReceivePayment_TxnID',
-					"dataext" => "Txn_TxnID",
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"salesorder" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"salesorder_salesorderline" => "SalesOrder_TxnID",
-					"salesorder_salesorderlinegroup" => "SalesOrder_TxnID",
-					"salesorder_salesorderlinegroup_salesorderline" => "SalesOrder_TxnID",
-					"salesorder_linkedtxn" => "FromTxnID",
-					"dataext" => "Entity_ListID",
+			'salesorder' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'salesorder_salesorderline' => 'SalesOrder_TxnID',
+					'salesorder_salesorderlinegroup' => 'SalesOrder_TxnID',
+					'salesorder_salesorderlinegroup_salesorderline' => 'SalesOrder_TxnID',
+					'salesorder_linkedtxn' => 'FromTxnID',
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"salesorder_salesorderline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'salesorder_salesorderline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"salesorder_salesorderlinegroup" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'salesorder_salesorderlinegroup' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"salesorder_salesorderlinegroup_salesorderline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'salesorder_salesorderlinegroup_salesorderline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"salesreceipt" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"salesreceipt_salesreceiptline" => "SalesReceipt_TxnID",
-					"salesreceipt_salesreceiptlinegroup" => "SalesReceipt_TxnID",
-					"salesreceipt_salesreceiptlinegroup_salesreceiptline" => "SalesReceipt_TxnID",
-					"dataext" => "Txn_TxnID",
+			'salesreceipt' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'salesreceipt_salesreceiptline' => 'SalesReceipt_TxnID',
+					'salesreceipt_salesreceiptlinegroup' => 'SalesReceipt_TxnID',
+					'salesreceipt_salesreceiptlinegroup_salesreceiptline' => 'SalesReceipt_TxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"salesreceipt_salesreceiptline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'salesreceipt_salesreceiptline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"salereceipt_salesreceiptlinegroup" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'salereceipt_salesreceiptlinegroup' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"salesreceipt_salesreceiptlinegroup_salesreceiptline" => [
-				"id_field" => "TxnLineID",
-				"children" => [
-					"dataext" => "Txn_TxnID",
+			'salesreceipt_salesreceiptlinegroup_salesreceiptline' => [
+				'id_field' => 'TxnLineID',
+				'children' => [
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"unitofmeasureset" => [
-				"id_field" => "ListID",
-				"children" => [
-					"unitofmeasureset_defaultunit" => "UnitOfMeasureSet_ListID",
-					"unitofmeasureset_relatedunit" => "UnitOfMeasureSet_ListID",
+			'unitofmeasureset' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'unitofmeasureset_defaultunit' => 'UnitOfMeasureSet_ListID',
+					'unitofmeasureset_relatedunit' => 'UnitOfMeasureSet_ListID',
 				],
 			],
 
-			"vendor" => [
-				"id_field" => "ListID",
-				"children" => [
-					"dataext" => "Entity_ListID",
+			'vendor' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'dataext' => 'Entity_ListID',
 				],
 			],
 
-			"vendorcredit" => [
-				"id_field" => "TxnID",
-				"children" => [
-					"vendorcredit_expenseline" => "VendorCredit_TxnID",
-					"vendorcredit_itemline" => "VendorCredit_TxnID",
-					"vendorcredit_itemgroupline" => "VendorCredit_TxnID",
-					"vendorcredit_itemgroupline_itemline" => "VendorCredit_TxnID",
-					"vendorcredit_linkedtxn" => "FromTxnID",
-					"dataext" => "Txn_TxnID",
+			'vendorcredit' => [
+				'id_field' => 'TxnID',
+				'children' => [
+					'vendorcredit_expenseline' => 'VendorCredit_TxnID',
+					'vendorcredit_itemline' => 'VendorCredit_TxnID',
+					'vendorcredit_itemgroupline' => 'VendorCredit_TxnID',
+					'vendorcredit_itemgroupline_itemline' => 'VendorCredit_TxnID',
+					'vendorcredit_linkedtxn' => 'FromTxnID',
+					'dataext' => 'Txn_TxnID',
 				],
 			],
 
-			"workerscompcode" => [
-				"id_field" => "ListID",
-				"children" => [
-					"workerscompcode_ratehistory" => "WorkersCompCode_ListID",
+			'workerscompcode' => [
+				'id_field' => 'ListID',
+				'children' => [
+					'workerscompcode_ratehistory' => 'WorkersCompCode_ListID',
 				],
 			],
 		];
@@ -9720,7 +9695,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	protected static function _queryResponse(string $type, $List, int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, $last_action_time, $last_actionident_time, ?string $xml, array $idents, array $callback_config = [])
+	protected static function _queryResponse(string $type, $List, int $requestID, string $user, string $action, $ID, array $extra, ?string &$err, ?int $last_action_time, ?int $last_actionident_time, ?string $xml, array $idents, array $callback_config = [])
 	{
 		$type = strtolower($type);
 
@@ -9822,12 +9797,12 @@ class Callbacks
 						$hooks = $callback_config['hooks'];
 					}
 
-					if ($tmp = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . $table, $multipart ))
+					$tmp = $Driver->get(Sql::$TablePrefix['SQL_MIRROR'] . $table, $multipart);
+					if ($tmp)
 					{
 						$actually_do_update = false;
 						$actually_do_updaterelatives = false;
 						$actually_do_deletechildren = false;
-
 
 
 						if (isset($tmp[Utilities::keyForAction($action)]))
@@ -10009,7 +9984,7 @@ class Callbacks
 							$object->set(Sql::Field['MODIFY'], date('Y-m-d H:i:s'));
 
 							//$Driver->log('Applying UPDATE: ' . $table . ': ' . print_r($object, true) . ', where: ' . print_r($multipart, true), null, PackageInfo::LogLevel['DEVELOP']);
-							$Driver->update(Sql::$TablePrefix['SQL_MIRROR'] . $table, $object, array( $multipart ));
+							$Driver->update(Sql::$TablePrefix['SQL_MIRROR'] . $table, $object, [$multipart]);
 
 							$qbsql_id = null;
 							if (!empty($multipart[Sql::Field['ID']]))			// I'm not sure why this would ever be empty...?
@@ -10213,7 +10188,7 @@ class Callbacks
 	 *
 	 *
 	 */
-	protected static function _triggerActions($user, $table, $Object, $action = null)
+	protected static function _triggerActions(string $user, string $table, $Object, ?string $action = null)
 	{
 		$Driver = Singleton::getInstance();
 
@@ -10242,11 +10217,10 @@ class Callbacks
 		switch (strtolower($table))
 		{
 			case 'receivepayment_appliedtotxn':
-
 				// Fetch the linked invoice
-				$where = array(
+				$where = [
 					'TxnID' => $Object->get('ToTxnID'),
-					);
+				];
 
 				// @todo WARNING WARNING WARNING THIS DOES NOT WORK, I DONT KNOW WHY!
 
@@ -10265,11 +10239,10 @@ class Callbacks
 						array( 'ListID' => $arr['Customer_ListID'] ) );
 				}
 				*/
-
 				break;
+
 			case 'receivepayment':
 			case 'invoice':
-
 				// A customer has an updated invoice or payment, so the Customer Balance changed
 
 				/*
@@ -10278,15 +10251,12 @@ class Callbacks
 				$Driver->queueEnqueue($user, PackageInfo::Actions['DERIVE_CUSTOMER'], null, true, $priority,
 					array( 'ListID' => $Object->get('Customer_ListID') ) );
 				*/
-
 				break;
+
 			case 'bill':
 			case 'billpaymentcheck':
 			case 'billpaymentcreditcard':
-
 				// We paid a bill, so the Vendor Balance has changed
-
-
 
 				break;
 		}
@@ -10345,11 +10315,6 @@ class Callbacks
 		//$Driver->log('object: ' . print_r($object, true));
 
 		return $retr;
-	}
-
-	protected static function _massageBoolean($value)
-	{
-
 	}
 
 	/**
@@ -11377,11 +11342,8 @@ class Callbacks
 
 	/**
 	 *
-	 *
-	 * @param string $action
-	 * @return string
 	 */
-	protected static function _keySyncCurr($action)
+	protected static function _keySyncCurr(string $action): string
 	{
 		return $action . '-curr';
 	}
@@ -11393,11 +11355,8 @@ class Callbacks
 	 * We need to know the previous time the action was run so that we know
 	 * when we need to look for modifications from. We need to know the current
 	 * time the action started to run on each subsequent call for the iterator.
-	 *
-	 * @param string $action
-	 * @return string
 	 */
-	protected static function _keySyncPrev($action)
+	protected static function _keySyncPrev(string $action): string
 	{
 		return $action . '-prev';
 	}
@@ -11411,7 +11370,7 @@ class Callbacks
 	 * @param boolean $filter_wrap
 	 * @return string
 	 */
-	protected static function _buildFilter($user, $action, $extra, $filter_wrap = false)
+	protected static function _buildFilter(string $user, string $action, ?array $extra, bool $filter_wrap = false): string
 	{
 		$Driver = Singleton::getInstance();
 		$xml = '';
@@ -11442,7 +11401,7 @@ class Callbacks
 		// @TODO MAKE SURE THIS DOESN'T BREAK ANYTHING!
 		$prev_sync_datetime = date('Y-m-d', strtotime($prev_sync_datetime) - 600) . 'T' . date('H:i:s', strtotime($prev_sync_datetime) - 600);
 
-		if (!is_array($extra) or
+		if (!is_array($extra) ||
 			empty($extra['iteratorID'])) 	// Checks to see if this is the first iteration or not
 		{
 			// Start of a new iterator!
