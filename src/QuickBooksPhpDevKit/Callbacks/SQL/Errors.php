@@ -69,11 +69,16 @@ class Errors
 		$Node = current($List->children());
 		*/
 
-		$map = [];;
-		$others = [];;
+		$map = [];
+		$others = [];
 		Schema::mapToSchema(trim(Utilities::actionToXMLElement($action)), Schema::MAP_TO_SQL, $map, $others);
+
+		$table = null;
 		$object = new SqlObject($map[0], trim(Utilities::actionToXMLElement($action)));
-		$table = $object->table();
+		if (!is_null($map[0]))
+		{
+			$table = $object->table();
+		}
 
 		$existing = null;
 
