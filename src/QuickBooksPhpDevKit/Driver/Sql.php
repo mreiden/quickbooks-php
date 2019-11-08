@@ -46,6 +46,7 @@ abstract class Sql extends Driver
 		// This is the prefix for the base SQL tables
 		'BASE' => 'quickbooks_',
 		// This is the prefix for the SQL mirror tables
+		// This needs to be short for PostgreSql to be under the maximum 63 character identifier name length
 		'SQL_MIRROR' => 'qb_',
 		// This is the prefix used for any extra SQL tables needed by the integrators
 		'INTEGRATOR' => 'qb_',
