@@ -1,6 +1,6 @@
 language: php
-sudo: false
-dist: trusty
+#sudo: false
+#dist: trusty
 
 cache:
     directories:
@@ -14,6 +14,7 @@ addons:
   apt:
     packages:
     - libxml2-dev
+    - libsodium-dev
 
 env:
   matrix:
@@ -35,19 +36,12 @@ matrix:
       env:
         - PHPCS=1
 
-#before_install:
-#  - |
-#    if [[ "$PHPCS" != 1 ]] ; then
-#      pear config-set preferred_state beta;
-#      pecl channel-update pecl.php.net;
-#      if [[ ${TRAVIS_PHP_VERSION:0:1} == '7' ]] ; then
-#        printf "\n" | pecl install gmagick;
-#        printf "\n" | pecl install imagick;
-#      else
-#        printf "\n" | pecl install gmagick-1.1.7RC3;
-#        printf "\n" | pecl install imagick;
-#      fi;
-#    fi;
+before_install:
+  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - php -m
+  - |
+    if [[ "$PHPCS" != 1 ]] ; then
+    fi;
 
 install:
   - REMOVE_PACKAGE="squizlabs/php_codesniffer"; if [ "$PHPCS" = 1 ]; then REMOVE_PACKAGE="phpunit/phpunit"; fi; composer remove --no-update --no-scripts --dev $REMOVE_PACKAGE
