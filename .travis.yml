@@ -1,0 +1,71 @@
+language: php
+
+sudo: false
+
+cache:
+    directories:
+    - $HOME/.composer/cache
+
+php:
+  - 7.2
+  - 7.3
+
+addons:
+  apt:
+    packages:
+    - libxml2-devel
+
+env:
+  matrix:
+    -
+
+matrix:
+  include:
+    - php: 7.2
+      env:
+        - PHPCS=1
+    - php: 7.3
+      env:
+        - PHPCS=1
+  allow_failures:
+    - php: 7.2
+      env:
+        - PHPCS=1
+    - php: 7.3
+      env:
+        - PHPCS=1
+
+#before_install:
+#  - |
+#    if [[ "$PHPCS" != 1 ]] ; then
+#      pear config-set preferred_state beta;
+#      pecl channel-update pecl.php.net;
+#      if [[ ${TRAVIS_PHP_VERSION:0:1} == '7' ]] ; then
+#        printf "\n" | pecl install gmagick;
+#        printf "\n" | pecl install imagick;
+#      else
+#        printf "\n" | pecl install gmagick-1.1.7RC3;
+#        printf "\n" | pecl install imagick;
+#      fi;
+#    fi;
+
+install:
+  - REMOVE_PACKAGE="squizlabs/php_codesniffer"; if [ "$PHPCS" = 1 ]; then REMOVE_PACKAGE="phpunit/phpunit"; fi; composer remove --no-update --no-scripts --dev $REMOVE_PACKAGE
+  - travis_retry composer install --prefer-dist
+  - phpenv rehash
+
+before_script:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS quickbooks;'
+  - psql -U postgres -c 'create database quickbooks;'
+#  - cp config/database.yml.travis config/database.yml
+
+script:
+  - if [[ "$PHPCS" == 1 ]]; then ./vendor/bin/phpcs --standard=psr2 src/ tests/; exit $?; fi;
+  - ./vendor/bin/phpunit -c tests --coverage-text --verbose
+
+services:
+  - mysql
+  - postgresql
+  
+notifications:
+  email: false
