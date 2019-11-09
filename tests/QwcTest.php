@@ -146,7 +146,7 @@ final class QwcTest extends XmlBaseTest
 			'Short Descript of What It Does (e.g. Import our Invoices from website)',
 			'htt://example.com/MyWebConnectorUrl',
 			'https://example.com/Support-Info-About-Url',
-			'WebConnectorUserName',
+			'WebConnectorUserName'
 		);
 		$qwc->generate();
 	}
@@ -163,7 +163,7 @@ final class QwcTest extends XmlBaseTest
 			'Short Descript of What It Does (e.g. Import our Invoices from website)',
 			'https://example.com/MyWebConnectorUrl',
 			'blah:/example.com/Support-Info-About-Url',
-			'WebConnectorUserName',
+			'WebConnectorUserName'
 		);
 		$qwc->generate();
 	}
@@ -183,7 +183,7 @@ final class QwcTest extends XmlBaseTest
 			'WebConnectorUserName',
 			'{FileID}',
 			'{OwnerID}',
-			'InvalidQbType',
+			'InvalidQbType'
 		);
 		$qwc->generate();
 	}
@@ -205,7 +205,7 @@ final class QwcTest extends XmlBaseTest
 			'{OwnerID}',
 			PackageInfo::QbType['QBFS'],
 			false,
-			'15 minuataetasutes',
+			'15 minuataetasutes'
 		);
 		$qwc->generate();
 	}
@@ -227,7 +227,7 @@ final class QwcTest extends XmlBaseTest
 			'{OwnerID}',
 			PackageInfo::QbType['QBFS'],
 			false,
-			[],
+			[]
 		);
 		$qwc->generate();
 	}
@@ -323,7 +323,7 @@ final class QwcTest extends XmlBaseTest
 			$OwnerID,
 			PackageInfo::QbType['QBFS'],
 			false,
-			'47 seconds',
+			'47 seconds'
 		);
 
 		$xml = $qwc->generate();
