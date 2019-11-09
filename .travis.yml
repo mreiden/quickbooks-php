@@ -55,10 +55,9 @@ install:
   - phpenv rehash
 
 before_script:
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS quickbooks;'
-  - psql -U postgres -c 'create database quickbooks;'
-  - cat tests/database-configuration.ini-example | sed 's/^;enabled/enabled/' | sed -r 's/^username = "(mysql|postgres)"/username = "travis"/' > tests/database-configuration.ini
-#  - cp config/database.yml.travis config/database.yml
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS quickbooks_tests;'
+  - psql -U postgres -c 'CREATE DATABASE quickbooks_tests;'
+  - cat tests/database-configuration.ini-example | sed 's/^;enabled/enabled/' | sed 's/^username = "mysql"/username = "travis"/' > tests/database-configuration.ini
 
 script:
   - if [[ "$PHPCS" == 1 ]]; then vendor/bin/phpcs --standard=psr12 src/ tests/; exit $?; fi;
