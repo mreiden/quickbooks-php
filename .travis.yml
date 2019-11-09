@@ -13,7 +13,7 @@ php:
 addons:
   apt:
     packages:
-    - libxml2-devel
+    - libxml2-dev
 
 env:
   matrix:
