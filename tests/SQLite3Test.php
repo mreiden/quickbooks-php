@@ -440,7 +440,7 @@ class SQLite3Test extends DatabaseTest
 
 		// Test using user set in Queue constructor or via Queue->user('User')
 		$dbId = 600;
-		$this->assertSame(true, $q->enqueue(PackageInfo::Actions['MOD_CUSTOMER'], $dbId, $priority, $extra,));
+		$this->assertSame(true, $q->enqueue(PackageInfo::Actions['MOD_CUSTOMER'], $dbId, $priority, $extra));
 		$test = $q->exists(PackageInfo::Actions['MOD_CUSTOMER'], $dbId);
 		$this->assertEquals($this->__webconnectUser, $test['qb_username']);
 
