@@ -60,8 +60,8 @@ before_script:
 #  - cp config/database.yml.travis config/database.yml
 
 script:
-  - if [[ "$PHPCS" == 1 ]]; then ./vendor/bin/phpcs --standard=psr2 src/ tests/; exit $?; fi;
-  - ./vendor/bin/phpunit -c tests --coverage-text --verbose
+  - if [[ "$PHPCS" == 1 ]]; then vendor/bin/phpcs --standard=psr12 src/ tests/; exit $?; fi;
+  - vendor/bin/phpunit --bootstrap vendor/autoload.php --coverage-text --whitelist src/QuickBooksPhpDevKit --verbose tests/
 
 services:
   - mysql
