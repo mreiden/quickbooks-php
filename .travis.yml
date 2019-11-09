@@ -57,6 +57,7 @@ install:
 before_script:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS quickbooks;'
   - psql -U postgres -c 'create database quickbooks;'
+  - cat tests/database-configuration.ini-example | sed 's/^;enabled/enabled/' | sed -r 's/^username = "(mysql|postgres)"/username = "travis"/' > tests/database-configuration.ini
 #  - cp config/database.yml.travis config/database.yml
 
 script:
