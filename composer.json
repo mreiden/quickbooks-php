@@ -15,8 +15,8 @@
     ],
     "require": {
         "php": ">=7.2.0",
-        "symfony/polyfill-php73": "^1.11",
-        "ramsey/uuid": "^3.8",
+        "symfony/polyfill-php73": "*",
+        "ramsey/uuid": "^3.3",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-SimpleXML": "*"

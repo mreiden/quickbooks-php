@@ -1,19 +1,19 @@
 # QuickBooks PHP DevKit
 
-QuickBooks integration support for PHP 7.2+
+QuickBooks integration support for PHP 7.2+.  This is a fork of consolibyte/quickbooks-php until it is (hopefully) merged into that repo.
 
-## *\*\*\* Note about this Repo:*
+## *\*\*\* Important:*
 
-This is a fork of consolibyte/quickbooks-php until it is (hopefully) merged into that repo.
+**The ***[namespace](https://github.com/mreiden/quickbooks-php/tree/namespace)*** branch is the active branch** since composer ends up using the original consolibyte/quickbooks-master if a dependency fails when composer requires a git branch using the installation instructions below.
 
 
 ## Installation
 
-The preferred method of installation is via [Composer][]. Run the following command to install the package and add it as a requirement to your project's `composer.json`:
+The preferred method of installation is via [Composer](https://getcomposer.org/). Run the following command to install the package and add it as a requirement to your project's `composer.json`:
 
 ```bash
 composer config repositories.QuickBooksPhpDevKit vcs https://github.com/mreiden/quickbooks-php
-composer require consolibyte/quickbooks:dev-master
+composer require consolibyte/quickbooks:dev-namespace
 ```
 
 
