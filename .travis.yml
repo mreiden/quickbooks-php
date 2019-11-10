@@ -37,8 +37,9 @@ matrix:
         - PHPCS=1
 
 before_install:
-  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - php -i
+  - pecl install sodium
+#  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+#  - php -i
 #  - |
 #    if [[ "$PHPCS" != 1 ]] ; then
 #    fi;
