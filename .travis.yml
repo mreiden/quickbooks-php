@@ -6,50 +6,49 @@ cache:
     directories:
     - $HOME/.composer/cache
 
-php:
-  - 7.2
-  - 7.3
-
 addons:
   apt:
     packages:
     - libxml2-dev
-#    - libsodium-dev
+
+
+php:
+  - 7.2
+  - 7.3
 
 env:
   matrix:
     -
 
-matrix:
+jobs:
+  fast_finish: true
   include:
-    - php: 7.2
-      env:
-        - PHPCS=1
+#    - php: 7.2
+#      env:
+#        - PHPCS=1
     - php: 7.3
       env:
         - PHPCS=1
   allow_failures:
-    - php: 7.2
-      env:
-        - PHPCS=1
+#    - php: 7.2
+#      env:
+#        - PHPCS=1
     - php: 7.3
       env:
         - PHPCS=1
 
 before_install:
+  # Need libsodium >= 1.0.9
   - sudo add-apt-repository ppa:ondrej/php -y
   - sudo apt-get update -q
   - sudo apt-get install libsodium-dev -y
-#  - pecl install libsodium
-#  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-#  - php -i
   - |
     if [ $TRAVIS_PHP_VERSION = '7.2' ]; then
+      # Install pecl libsodium since Travis-CI PHP 7.2 does not include the PHP sodium extension
       pecl install libsodium
     fi;
 
 install:
-#  - pecl install libsodium
   - REMOVE_PACKAGE="squizlabs/php_codesniffer"; if [ "$PHPCS" = 1 ]; then REMOVE_PACKAGE="phpunit/phpunit"; fi; composer remove --no-update --no-scripts --dev $REMOVE_PACKAGE
   - travis_retry composer install --prefer-dist
   - phpenv rehash
