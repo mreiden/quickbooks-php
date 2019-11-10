@@ -46,7 +46,7 @@ before_install:
   - |
 #    if [[ "$PHPCS" != 1 ]] ; then
       if [[ ${TRAVIS_PHP_VERSION:0:4} == '7.2.' ]] ; then
-        pecl install libsodium
+        pecl install libsodium;
       fi;
 #    fi;
 
