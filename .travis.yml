@@ -37,7 +37,10 @@ matrix:
         - PHPCS=1
 
 before_install:
-  - pecl install libsodium
+  - sudo add-apt-repository ppa:ondrej/php -y
+  - sudo apt-get update -q
+  - sudo apt-get install libsodium-dev -y
+#  - pecl install libsodium
 #  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 #  - php -i
 #  - |
@@ -50,6 +53,7 @@ install:
   - phpenv rehash
 
 before_script:
+  - pecl install libsodium
   - mysql -e 'CREATE DATABASE IF NOT EXISTS quickbooks_tests;'
   - psql -U postgres -c 'CREATE DATABASE quickbooks_tests;'
   - cat tests/database-configuration.ini-example | sed 's/^;enabled/enabled/' | sed 's/^username = "mysql"/username = "travis"/' > tests/database-configuration.ini
