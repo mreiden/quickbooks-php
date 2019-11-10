@@ -48,12 +48,12 @@ before_install:
 #    fi;
 
 install:
+  - pecl install libsodium
   - REMOVE_PACKAGE="squizlabs/php_codesniffer"; if [ "$PHPCS" = 1 ]; then REMOVE_PACKAGE="phpunit/phpunit"; fi; composer remove --no-update --no-scripts --dev $REMOVE_PACKAGE
   - travis_retry composer install --prefer-dist
   - phpenv rehash
 
 before_script:
-  - pecl install libsodium
   - mysql -e 'CREATE DATABASE IF NOT EXISTS quickbooks_tests;'
   - psql -U postgres -c 'CREATE DATABASE quickbooks_tests;'
   - cat tests/database-configuration.ini-example | sed 's/^;enabled/enabled/' | sed 's/^username = "mysql"/username = "travis"/' > tests/database-configuration.ini
