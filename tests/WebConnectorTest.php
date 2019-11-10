@@ -166,6 +166,11 @@ final class WebConnectorTest extends XmlBaseTest
      */
     public function testInfoPageV6(): void
     {
+        if (getenv('TRAVIS') == 'true)
+        {
+            $this->markTestSkipped('IPv6 Skipped on Travis because it lacks IPv6 support.');
+        }
+
         try {
             $ip6_8080 = new Process(['php', '-d', 'variables_order=EGPCS', '-S', '[::1]:8080', self::$scriptWebConnector], null, ['DBFILE' => self::$dbFile]);
             $ip6_8080->start();
