@@ -37,7 +37,7 @@ matrix:
         - PHPCS=1
 
 before_install:
-  - pecl install sodium
+  - pecl install libsodium
 #  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 #  - php -i
 #  - |
