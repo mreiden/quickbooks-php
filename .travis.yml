@@ -38,10 +38,10 @@ matrix:
 
 before_install:
   - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - php -m
-  - |
-    if [[ "$PHPCS" != 1 ]] ; then
-    fi;
+  - php -i
+#  - |
+#    if [[ "$PHPCS" != 1 ]] ; then
+#    fi;
 
 install:
   - REMOVE_PACKAGE="squizlabs/php_codesniffer"; if [ "$PHPCS" = 1 ]; then REMOVE_PACKAGE="phpunit/phpunit"; fi; composer remove --no-update --no-scripts --dev $REMOVE_PACKAGE
