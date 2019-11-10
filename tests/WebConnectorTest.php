@@ -166,7 +166,7 @@ final class WebConnectorTest extends XmlBaseTest
      */
     public function testInfoPageV6(): void
     {
-        if (getenv('TRAVIS') == 'true)
+        if (getenv('TRAVIS') == 'true')
         {
             $this->markTestSkipped('IPv6 Skipped on Travis because it lacks IPv6 support.');
         }
