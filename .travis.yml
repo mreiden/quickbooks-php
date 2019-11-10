@@ -43,9 +43,9 @@ before_install:
 #  - pecl install libsodium
 #  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 #  - php -i
-  - echo "Travis PHP Version: $TRAVIS_PHP_VERSION"
-  - echo "${TRAVIS_PHP_VERSION:0:4}"
   - |
+    echo "Travis PHP Version: $TRAVIS_PHP_VERSION"
+    echo "${TRAVIS_PHP_VERSION:0:4}"
     if [[ ${TRAVIS_PHP_VERSION:0:4} == '7.2.' ]] ; then
       pecl install libsodium;
     fi;
