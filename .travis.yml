@@ -43,12 +43,15 @@ before_install:
 #  - pecl install libsodium
 #  - echo "extension = sodium.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 #  - php -i
-#  - |
-#    if [[ "$PHPCS" != 1 ]] ; then
-#    fi;
+  - |
+    if [[ "$PHPCS" != 1 ]] ; then
+      if [[ ${TRAVIS_PHP_VERSION:0:4} == '7.2.' ]] ; then
+        pecl install libsodium
+      fi;
+    fi;
 
 install:
-  - pecl install libsodium
+#  - pecl install libsodium
   - REMOVE_PACKAGE="squizlabs/php_codesniffer"; if [ "$PHPCS" = 1 ]; then REMOVE_PACKAGE="phpunit/phpunit"; fi; composer remove --no-update --no-scripts --dev $REMOVE_PACKAGE
   - travis_retry composer install --prefer-dist
   - phpenv rehash
